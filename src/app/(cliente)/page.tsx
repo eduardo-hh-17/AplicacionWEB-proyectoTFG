@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import LayoutLateral from '@/components/LayoutLateral'
-import PanelInicio from '@/components/PanelInicio'
-import PanelSobreNosotros from '@/components/PanelSobreNosotros'
-import PanelReservas from '@/components/PanelReservas'
-import PanelContacto from '@/components/PanelContacto'
-import PanelMenu from '@/components/PanelMenu'
+import LayoutLateral from '@/components/cliente/LayoutLateral'
+import PanelInicio from '@/components/cliente/PanelInicio'
+import PanelSobreNosotros from '@/components/cliente/PanelSobreNosotros'
+import PanelReservas from '@/components/cliente/PanelReservas'
+import PanelContacto from '@/components/cliente/PanelContacto'
+import PanelMenu from '@/components/cliente/PanelMenu'
 import { supabase } from '@/lib/supabase'
 
 type Vista = 'inicio' | 'sobre' | 'reservas' | 'contacto' | 'menu'

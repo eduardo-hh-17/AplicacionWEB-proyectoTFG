@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/hooks/useToast'
-import { Toast } from '@/components/Toast'
+import { Toast } from '@/components/cliente/Toast'
 
 
 export default function PanelMenu({ tokenActivo, mesaActiva }: { 
