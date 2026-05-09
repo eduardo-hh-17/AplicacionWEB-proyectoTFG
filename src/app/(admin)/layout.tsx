@@ -1,9 +1,22 @@
+'use client'
 import React from 'react'
+
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode
-}) {
+}) 
+
+{
+
+  const router = useRouter()
+
+const cerrarSesion = async () => {
+  await supabase.auth.signOut()
+  router.push('/login')
+}
   return (
     <div className="min-h-screen bg-slate-100">
       
@@ -19,7 +32,12 @@ export default function AdminLayout({
           <a href="/dashboard" className="text-slate-300 hover:text-white text-sm transition-colors">Dashboard</a>
           <a href="/pedidos" className="text-slate-300 hover:text-white text-sm transition-colors">Pedidos</a>
           <a href="/menu" className="text-slate-300 hover:text-white text-sm transition-colors">Menú</a>
-          <a href="/login" className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg transition-colors">Cerrar sesión</a>
+          <button
+            onClick={cerrarSesion}
+            className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg transition-colors"
+            >
+            Cerrar sesión
+          </button>
         </div>
       </nav>
 
