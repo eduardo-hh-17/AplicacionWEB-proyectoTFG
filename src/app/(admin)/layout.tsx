@@ -32,6 +32,7 @@ const cerrarSesion = async () => {
           <a href="/dashboard" className="text-slate-300 hover:text-white text-sm transition-colors">Dashboard</a>
           <a href="/pedidos" className="text-slate-300 hover:text-white text-sm transition-colors">Pedidos</a>
           <a href="/menu" className="text-slate-300 hover:text-white text-sm transition-colors">Menú</a>
+          <a href="/cocina" className="text-slate-300 hover:text-white text-sm transition-colors">Cocina</a>
           <button
             onClick={cerrarSesion}
             className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg transition-colors"
