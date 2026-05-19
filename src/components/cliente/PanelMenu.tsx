@@ -23,6 +23,18 @@ export default function PanelMenu({ tokenActivo, mesaActiva }: {
   // Cargar platos desde Supabase
   useEffect(() => {
     cargarPlatos()
+
+    // Escucha cambios en tiempo real
+    const canal = supabase
+      .channel('platos-cliente')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'platos'
+      }, () => cargarPlatos())
+      .subscribe()
+
+    return () => { supabase.removeChannel(canal) }
   }, [])
 
   const cargarPlatos = async () => {
@@ -37,14 +49,7 @@ export default function PanelMenu({ tokenActivo, mesaActiva }: {
         setPlatos(data)
       } else {
         // Datos de respaldo por si la BD está vacía
-        setPlatos([
-          { id: 1, emoji: '🍔', nombre: 'Hamburguesa Clásica', desc: 'Carne de ternera con queso cheddar', precio: 10.99, ingredientes: [] },
-          { id: 2, emoji: '🍕', nombre: 'Pizza Margarita', desc: 'Tomate, mozzarella y albahaca', precio: 12.99, ingredientes: [] },
-          { id: 3, emoji: '🥗', nombre: 'Ensalada César', desc: 'Lechuga romana, pollo, parmesano', precio: 8.99, ingredientes: [] },
-          { id: 4, emoji: '🥩', nombre: 'Chuletón', desc: 'Carne a la brasa con patatas', precio: 18.99, ingredientes: [] },
-          { id: 5, emoji: '🍝', nombre: 'Pasta Carbonara', desc: 'Pasta, huevo, panceta', precio: 11.99, ingredientes: [] },
-          { id: 6, emoji: '🥤', nombre: 'Refresco', desc: 'Coca-Cola, Fanta, Sprite', precio: 2.50, ingredientes: [] },
-        ])
+        setPlatos([])
       }
     } catch (error) {
       console.error('Error cargando platos:', error)
@@ -80,6 +85,7 @@ const abrirModal = (plato: any) => {
 
 
 const enviarPedido = async () => {
+  console.log('Mesa activa:', mesaActiva)
     if (!platoSeleccionado) return
 
     const nuevoPedido = {
@@ -157,7 +163,7 @@ const enviarPedido = async () => {
             </div>
             <div className="p-4">
               <h3 className="font-bold text-lg">{plato.nombre}</h3>
-              <p className="text-gray-500 text-sm mt-1">{plato.desc || 'Deliciosa opción'}</p>
+              <p className="text-gray-500 text-sm mt-1">{plato.descripcion || 'Deliciosa opción'}</p>
               <div className="flex justify-between items-center mt-3">
                 <span className="text-orange-600 font-bold text-xl">{plato.precio}€</span>
                 <span className="text-sm text-gray-400">👆 Pulsa para personalizar</span>
@@ -175,7 +181,7 @@ const enviarPedido = async () => {
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-orange-500 to-red-600 text-white">
               <div className="flex items-center gap-3">
                 <span className="text-3xl">{platoSeleccionado.emoji || '🍽️'}</span>
-                <h2 className="text-xl font-bold">Personaliza tu {platoSeleccionado.nombre}</h2>
+                <p className="text-gray-500 text-sm mt-1">{platoSeleccionado.descripcion || 'Deliciosa opción'}</p>
               </div>
               <button 
                 onClick={() => setModalAbierto(false)}

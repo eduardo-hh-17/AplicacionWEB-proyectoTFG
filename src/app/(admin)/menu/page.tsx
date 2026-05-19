@@ -1,12 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { supabase } from '@/lib/supabase'
 
 // ── TIPOS ──
 type Ingrediente = {
@@ -24,6 +19,7 @@ type Plato = {
   precio: number
   ingredientes: Ingrediente[]
   activo: boolean
+  categoria_id:number | null
 }
 
 export default function Menu() {
@@ -41,10 +37,20 @@ export default function Menu() {
   const [precio, setPrecio] = useState('')
   const [ingredientes, setIngredientes] = useState<Ingrediente[]>([])
   const [guardando, setGuardando] = useState(false)
+  // --Nuevos componentes
+  const [modalNuevo, setModalNuevo] = useState(false)
+  const [nuevoNombre, setNuevoNombre] = useState('')
+  const [nuevoEmoji, setNuevoEmoji] = useState('')
+  const [nuevaDesc, setNuevaDesc] = useState('')
+  const [nuevoPrecio, setNuevoPrecio] = useState('')
+  const [categorias, setCategorias] = useState<{id: number, nombre: string, emoji: string}[]>([])
+  const [nuevaCategoria, setNuevaCategoria] = useState<number | null>(null)
+  const [categoriaEditar, setCategoriaEditar] = useState<number | null>(null)
 
   // ── CARGA INICIAL ──
   useEffect(() => {
     cargarPlatos()
+    cargarCategorias()
 
     // Escucha cambios en tiempo real
     const canal = supabase
@@ -56,6 +62,13 @@ export default function Menu() {
   }, [])
 
   // ── FUNCIONES ──
+    const cargarCategorias = async () => {
+    const { data } = await supabase
+      .from('categorias')
+      .select('*')
+      .order('orden')
+    if (data) setCategorias(data)
+  }
 
   const cargarPlatos = async () => {
     const { data } = await supabase
@@ -72,6 +85,7 @@ export default function Menu() {
     setNombre(plato.nombre)
     setDescripcion(plato.descripcion)
     setPrecio(plato.precio.toString())
+    setCategoriaEditar(plato.categoria_id ?? null)
     setIngredientes(
       Array.isArray(plato.ingredientes)
         ? plato.ingredientes.map(ing =>
@@ -94,6 +108,7 @@ export default function Menu() {
         nombre,
         descripcion,
         precio: parseFloat(precio),
+        categoria_id: categoriaEditar,
         ingredientes,
       })
       .eq('id', platoSeleccionado.id)
@@ -121,6 +136,48 @@ export default function Menu() {
     setModalEliminar(false)
     setModalAbierto(false)
   }
+
+const crearPlato = async () => {
+  if (!nuevoNombre || !nuevoPrecio) return
+
+  // Verificar sesión activa
+  const { data: { session } } = await supabase.auth.getSession()
+  console.log('Sesión activa:', session?.user?.email)
+  console.log('Token:', session?.access_token?.substring(0, 20))
+
+  if (!session) {
+    alert('No hay sesión activa — vuelve a iniciar sesión')
+    return
+  }
+
+  const { data, error } = await supabase
+    .from('platos')
+    .insert({
+      nombre: nuevoNombre,
+      emoji: nuevoEmoji || '🍽️',
+      descripcion: nuevaDesc,
+      precio: parseFloat(nuevoPrecio),
+      categoria_id: nuevaCategoria,
+      ingredientes: [],
+      activo: true,
+    })
+    .select()
+
+  console.log('Resultado:', data)
+  console.log('Error:', error)
+
+  if (error) {
+    alert('Error: ' + error.message)
+    return
+  }
+
+  setModalNuevo(false)
+  setNuevoNombre('')
+  setNuevoEmoji('')
+  setNuevaDesc('')
+  setNuevoPrecio('')
+  setNuevaCategoria(null)
+}
 
   // Envía el plato a cocina — crea un pedido en Supabase
   const enviarACocina = async () => {
@@ -157,7 +214,12 @@ export default function Menu() {
       {/* ── CABECERA ── */}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-medium text-[#0d1f3c]">Menú</h1>
-        <span className="text-slate-400 text-sm">{platos.length} platos</span>
+        <button
+          onClick={() => setModalNuevo(true)}
+          className="bg-[#0d1f3c] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors flex items-center gap-2"
+        >
+          + Añadir plato
+        </button>
       </div>
 
       {/* ── GRID DE PLATOS ── */}
@@ -236,6 +298,22 @@ export default function Menu() {
                     rows={3}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors resize-none"
                   />
+                </div>
+
+                <div>
+                  <label className="text-slate-400 text-xs block mb-1">Categoría</label>
+                  <select
+                    value={nuevaCategoria ?? ''}
+                    onChange={(e) => setNuevaCategoria(Number(e.target.value))}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
+                  >
+                    <option value="">Selecciona una categoría</option>
+                    {categorias.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.emoji} {cat.nombre}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -356,6 +434,98 @@ export default function Menu() {
           </div>
         </div>
       )}
+
+
+      {/* ── MODAL NUEVO PLATO ── */}
+      {modalNuevo && (
+        <div
+          onClick={() => setModalNuevo(false)}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl w-96 overflow-hidden shadow-2xl"
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+              <h2 className="text-[#0d1f3c] font-medium">Nuevo plato</h2>
+              <button
+                onClick={() => setModalNuevo(false)}
+                className="text-slate-400 hover:text-slate-600 text-xl"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 flex flex-col gap-4">
+              <div>
+                <label className="text-slate-400 text-xs block mb-1">Emoji</label>
+                <input
+                  value={nuevoEmoji}
+                  onChange={(e) => setNuevoEmoji(e.target.value)}
+                  placeholder="🍽️"
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-slate-400 text-xs block mb-1">Nombre</label>
+                <input
+                  value={nuevoNombre}
+                  onChange={(e) => setNuevoNombre(e.target.value)}
+                  placeholder="Nombre del plato"
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-slate-400 text-xs block mb-1">Descripción</label>
+                <textarea
+                  value={nuevaDesc}
+                  onChange={(e) => setNuevaDesc(e.target.value)}
+                  placeholder="Descripción del plato"
+                  rows={3}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition-colors resize-none"
+                />
+              </div>
+
+
+              <div>
+                <label className="text-slate-400 text-xs block mb-1">Categoría</label>
+                <select
+                  value={categoriaEditar ?? ''}
+                  onChange={(e) => setCategoriaEditar(Number(e.target.value))}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
+                >
+                  <option value="">Sin categoría</option>
+                  {categorias.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.emoji} {cat.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-slate-400 text-xs block mb-1">Precio (€)</label>
+                <input
+                  value={nuevoPrecio}
+                  onChange={(e) => setNuevoPrecio(e.target.value)}
+                  placeholder="0.00"
+                  type="number"
+                  step="0.01"
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition-colors"
+                />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-slate-200">
+              <button
+                onClick={crearPlato}
+                className="w-full bg-[#0d1f3c] text-white py-3 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors"
+              >
+                ✓ Crear plato
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
 
     </div>
   )

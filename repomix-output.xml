@@ -1,0 +1,2411 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+AGENTS.md
+CLAUDE.md
+eslint.config.mjs
+next.config.ts
+package.json
+postcss.config.mjs
+public/file.svg
+public/globe.svg
+public/icon.jpg
+public/next.svg
+public/vercel.svg
+public/window.svg
+README.md
+src/app/(admin)/cocina/page.tsx
+src/app/(admin)/dashboard/page.tsx
+src/app/(admin)/layout.tsx
+src/app/(admin)/login/page.tsx
+src/app/(admin)/menu/page.tsx
+src/app/(admin)/pedidos/page.tsx
+src/app/(cliente)/page.tsx
+src/app/favicon.ico
+src/app/globals.css
+src/app/layout.tsx
+src/components/cliente/LayoutLateral.tsx
+src/components/cliente/PanelContacto.tsx
+src/components/cliente/PanelInicio.tsx
+src/components/cliente/PanelMenu.tsx
+src/components/cliente/PanelReservas.tsx
+src/components/cliente/PanelSobreNosotros.tsx
+src/components/cliente/Toast.tsx
+src/hooks/useToast.ts
+src/lib/supabase.ts
+src/middleware.ts
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="AGENTS.md">
+<!-- BEGIN:nextjs-agent-rules -->
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+<!-- END:nextjs-agent-rules -->
+</file>
+
+<file path="CLAUDE.md">
+@AGENTS.md
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+</file>
+
+<file path="postcss.config.mjs">
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="README.md">
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</file>
+
+<file path="src/app/(admin)/cocina/page.tsx">
+'use client'
+
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
+
+type Ingrediente = {
+  id: number
+  nombre: string
+  emoji: string
+  activo: boolean
+}
+
+type Pedido = {
+  id: number
+  plato_nombre: string
+  precio: number
+  estado: string
+  mesa: number | null
+  ingredientes: Ingrediente[]
+  fecha: string
+}
+
+export default function Cocina() {
+
+  const [pedidos, setPedidos] = useState<Pedido[]>([])
+  const [cargando, setCargando] = useState(true)
+
+  useEffect(() => {
+    cargarPedidos()
+
+    // Escucha cambios en tiempo real
+    const canal = supabase
+      .channel('cocina-pedidos')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'pedidos'
+      }, () => cargarPedidos())
+      .subscribe()
+
+    return () => { supabase.removeChannel(canal) }
+  }, [])
+
+  const cargarPedidos = async () => {
+    const { data } = await supabase
+      .from('pedidos')
+      .select('*')
+      .eq('estado', 'pendiente')
+      .order('fecha', { ascending: true })
+    if (data) setPedidos(data)
+    setCargando(false)
+  }
+
+  // Marca el pedido como completado
+  const completarPedido = async (id: number) => {
+    await supabase
+      .from('pedidos')
+      .update({ estado: 'completado' })
+      .eq('id', id)
+  }
+
+  // Marca el pedido como en preparación
+  const prepararPedido = async (id: number) => {
+    await supabase
+      .from('pedidos')
+      .update({ estado: 'preparando' })
+      .eq('id', id)
+  }
+
+  // Color según el estado
+  const colorTarjeta = (estado: string) => {
+    if (estado === 'preparando') return 'border-blue-400 bg-blue-50'
+    return 'border-slate-200 bg-white'
+  }
+
+  // Tiempo desde que se hizo el pedido
+  const tiempoTranscurrido = (fecha: string) => {
+    const minutos = Math.floor((Date.now() - new Date(fecha).getTime()) / 60000)
+    if (minutos < 1) return 'Ahora mismo'
+    if (minutos === 1) return 'Hace 1 minuto'
+    return `Hace ${minutos} minutos`
+  }
+
+  if (cargando) return (
+    <div className="flex items-center justify-center h-64">
+      <p className="text-slate-400">Cargando pedidos...</p>
+    </div>
+  )
+
+  return (
+    <div>
+
+      {/* ── CABECERA ── */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-medium text-[#0d1f3c]">Pantalla de cocina</h1>
+          <p className="text-slate-400 text-sm mt-1">Los pedidos se actualizan en tiempo real</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-2 text-sm text-slate-400">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse inline-block"/>
+            En vivo
+          </span>
+          {pedidos.length > 0 && (
+            <span className="bg-blue-500 text-white text-sm px-3 py-1 rounded-full font-medium">
+              {pedidos.length} pendiente{pedidos.length > 1 ? 's' : ''}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* ── PEDIDOS ── */}
+      {pedidos.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-slate-200 p-16 text-center">
+          <p className="text-5xl mb-4">✅</p>
+          <p className="text-[#0d1f3c] text-lg font-medium mb-2">Todo al día</p>
+          <p className="text-slate-400 text-sm">No hay pedidos pendientes ahora mismo</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-4">
+          {pedidos.map((pedido) => (
+            <div
+              key={pedido.id}
+              className={`rounded-2xl border-2 p-5 transition-all ${colorTarjeta(pedido.estado)}`}
+            >
+
+              {/* Cabecera tarjeta */}
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-[#0d1f3c] text-lg font-medium">{pedido.plato_nombre}</p>
+                  <p className="text-slate-400 text-xs mt-1">{tiempoTranscurrido(pedido.fecha)}</p>
+                </div>
+                <div className="text-right">
+                  {pedido.mesa && (
+                    <span className="bg-[#0d1f3c] text-white text-xs px-2 py-1 rounded-lg">
+                      Mesa {pedido.mesa}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Ingredientes */}
+              {pedido.ingredientes && pedido.ingredientes.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+                    Ingredientes
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {pedido.ingredientes.map((ing, index) => (
+                      <span
+                        key={index}
+                        className={`text-xs px-2 py-1 rounded-lg ${
+                          ing.activo
+                            ? 'bg-slate-100 text-slate-600'
+                            : 'bg-red-100 text-red-500 line-through'
+                        }`}
+                      >
+                        {ing.emoji} {ing.nombre}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Estado actual */}
+              <div className="mb-4">
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                  pedido.estado === 'preparando'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-orange-100 text-orange-700'
+                }`}>
+                  {pedido.estado === 'preparando' ? '👨‍🍳 Preparando' : '⏳ Pendiente'}
+                </span>
+              </div>
+
+              {/* Botones */}
+              <div className="flex flex-col gap-2">
+                {pedido.estado === 'pendiente' && (
+                  <button
+                    onClick={() => prepararPedido(pedido.id)}
+                    className="w-full bg-blue-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-blue-600 transition-colors"
+                  >
+                    👨‍🍳 Empezar a preparar
+                  </button>
+                )}
+                <button
+                  onClick={() => completarPedido(pedido.id)}
+                  className="w-full bg-[#0d1f3c] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors"
+                >
+                  ✅ Listo — entregar
+                </button>
+              </div>
+
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
+  )
+}
+</file>
+
+<file path="src/app/(admin)/dashboard/page.tsx">
+export default function Dashboard() {
+  return (
+    <div>
+
+      <h1 className="text-2xl font-medium text-[#0d1f3c] mb-8">Panel de administración</h1>
+
+      {/* Tarjetas de resumen */}
+      <div className="grid grid-cols-4 gap-6 mb-8">
+
+        <div className="bg-white rounded-2xl p-6 border border-slate-200">
+          <p className="text-slate-400 text-sm mb-1">Pedidos hoy</p>
+          <p className="text-[#0d1f3c] text-3xl font-medium">0</p>
+          <p className="text-blue-500 text-xs mt-2">↑ Sin datos aún</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 border border-slate-200">
+          <p className="text-slate-400 text-sm mb-1">Ingresos hoy</p>
+          <p className="text-[#0d1f3c] text-3xl font-medium">0€</p>
+          <p className="text-blue-500 text-xs mt-2">↑ Sin datos aún</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 border border-slate-200">
+          <p className="text-slate-400 text-sm mb-1">Platos en menú</p>
+          <p className="text-[#0d1f3c] text-3xl font-medium">8</p>
+          <p className="text-blue-500 text-xs mt-2">↑ Activos</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 border border-slate-200">
+          <p className="text-slate-400 text-sm mb-1">Empleados</p>
+          <p className="text-[#0d1f3c] text-3xl font-medium">0</p>
+          <p className="text-blue-500 text-xs mt-2">↑ Sin datos aún</p>
+        </div>
+
+      </div>
+
+      {/* Sección de pedidos recientes */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-6">
+        <h2 className="text-[#0d1f3c] text-base font-medium mb-4">Pedidos recientes</h2>
+        <div className="text-center py-12">
+          <p className="text-4xl mb-3">📋</p>
+          <p className="text-slate-400 text-sm">No hay pedidos todavía</p>
+          <p className="text-slate-300 text-xs mt-1">Cuando lleguen pedidos aparecerán aquí</p>
+        </div>
+      </div>
+
+    </div>
+  )
+}
+</file>
+
+<file path="src/app/(admin)/menu/page.tsx">
+'use client'
+
+import { useState, useEffect } from 'react'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+// ── TIPOS ──
+type Ingrediente = {
+  id: number
+  nombre: string
+  emoji: string
+  activo: boolean
+}
+
+type Plato = {
+  id: number
+  nombre: string
+  emoji: string
+  descripcion: string
+  precio: number
+  ingredientes: Ingrediente[]
+  activo: boolean
+}
+
+export default function Menu() {
+
+  // ── ESTADOS ──
+  const [platos, setPlatos] = useState<Plato[]>([])
+  const [cargando, setCargando] = useState(true)
+  const [platoSeleccionado, setPlatoSeleccionado] = useState<Plato | null>(null)
+  const [modalAbierto, setModalAbierto] = useState(false)
+  const [modalEliminar, setModalEliminar] = useState(false)
+
+  // Campos editables del modal
+  const [nombre, setNombre] = useState('')
+  const [descripcion, setDescripcion] = useState('')
+  const [precio, setPrecio] = useState('')
+  const [ingredientes, setIngredientes] = useState<Ingrediente[]>([])
+  const [guardando, setGuardando] = useState(false)
+
+  // ── CARGA INICIAL ──
+  useEffect(() => {
+    cargarPlatos()
+
+    // Escucha cambios en tiempo real
+    const canal = supabase
+      .channel('platos-cambios')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'platos' }, () => cargarPlatos())
+      .subscribe()
+
+    return () => { supabase.removeChannel(canal) }
+  }, [])
+
+  // ── FUNCIONES ──
+
+  const cargarPlatos = async () => {
+    const { data } = await supabase
+      .from('platos')
+      .select('*')
+      .order('id')
+    if (data) setPlatos(data)
+    setCargando(false)
+  }
+
+  // Abre el modal con los datos del plato
+  const abrirModal = (plato: Plato) => {
+    setPlatoSeleccionado(plato)
+    setNombre(plato.nombre)
+    setDescripcion(plato.descripcion)
+    setPrecio(plato.precio.toString())
+    setIngredientes(
+      Array.isArray(plato.ingredientes)
+        ? plato.ingredientes.map(ing =>
+            typeof ing === 'string'
+              ? { id: 0, nombre: ing, emoji: '🍽️', activo: true }
+              : ing
+          )
+        : []
+    )
+    setModalAbierto(true)
+  }
+
+  // Guarda los cambios en Supabase
+  const guardarCambios = async () => {
+    if (!platoSeleccionado) return
+    setGuardando(true)
+    await supabase
+      .from('platos')
+      .update({
+        nombre,
+        descripcion,
+        precio: parseFloat(precio),
+        ingredientes,
+      })
+      .eq('id', platoSeleccionado.id)
+    setGuardando(false)
+    setModalAbierto(false)
+  }
+
+  // Desactiva el plato — desaparece de la web del cliente
+  const desactivarPlato = async () => {
+    if (!platoSeleccionado) return
+    await supabase
+      .from('platos')
+      .update({ activo: !platoSeleccionado.activo })
+      .eq('id', platoSeleccionado.id)
+    setModalAbierto(false)
+  }
+
+  // Elimina el plato — pregunta confirmación primero
+  const eliminarPlato = async () => {
+    if (!platoSeleccionado) return
+    await supabase
+      .from('platos')
+      .delete()
+      .eq('id', platoSeleccionado.id)
+    setModalEliminar(false)
+    setModalAbierto(false)
+  }
+
+  // Envía el plato a cocina — crea un pedido en Supabase
+  const enviarACocina = async () => {
+    if (!platoSeleccionado) return
+    await supabase
+      .from('pedidos')
+      .insert({
+        plato_nombre: platoSeleccionado.nombre,
+        plato_id: platoSeleccionado.id,
+        precio: platoSeleccionado.precio,
+        ingredientes,
+        estado: 'pendiente',
+        fecha: new Date().toISOString(),
+      })
+    setModalAbierto(false)
+  }
+
+  // Activa o desactiva un ingrediente
+  const toggleIngrediente = (index: number) => {
+    setIngredientes(ingredientes.map((ing, i) =>
+      i === index ? { ...ing, activo: !ing.activo } : ing
+    ))
+  }
+
+  if (cargando) return (
+    <div className="flex items-center justify-center h-64">
+      <p className="text-slate-400">Cargando menú...</p>
+    </div>
+  )
+
+  return (
+    <div>
+
+      {/* ── CABECERA ── */}
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl font-medium text-[#0d1f3c]">Menú</h1>
+        <span className="text-slate-400 text-sm">{platos.length} platos</span>
+      </div>
+
+      {/* ── GRID DE PLATOS ── */}
+      <div className="grid grid-cols-4 gap-4">
+        {platos.map((plato) => (
+          <button
+            key={plato.id}
+            onClick={() => abrirModal(plato)}
+            className={`bg-white rounded-2xl border text-left overflow-hidden hover:shadow-md transition-all ${plato.activo ? 'border-slate-200' : 'border-red-200 opacity-60'}`}
+          >
+            {/* Imagen / Emoji */}
+            <div className="h-24 bg-[#f8faff] flex items-center justify-center text-5xl border-b border-slate-100">
+              {plato.emoji}
+            </div>
+
+            {/* Info */}
+            <div className="p-4">
+              <p className="text-[#0d1f3c] text-sm font-medium mb-1">{plato.nombre}</p>
+              <p className="text-slate-400 text-xs mb-3 line-clamp-2 leading-relaxed">{plato.descripcion}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-blue-600 text-sm font-medium">{plato.precio.toFixed(2)}€</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${plato.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-500'}`}>
+                  {plato.activo ? 'Activo' : 'Inactivo'}
+                </span>
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* ── MODAL EDICIÓN ── */}
+      {modalAbierto && platoSeleccionado && (
+        <div
+          onClick={() => setModalAbierto(false)}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl w-[560px] overflow-hidden shadow-2xl"
+          >
+
+            {/* Cabecera modal */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+              <h2 className="text-[#0d1f3c] font-medium">
+                {platoSeleccionado.emoji} {platoSeleccionado.nombre}
+              </h2>
+              <button
+                onClick={() => setModalAbierto(false)}
+                className="text-slate-400 hover:text-slate-600 text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Cuerpo modal — dos columnas */}
+            <div className="grid grid-cols-2 gap-0">
+
+              {/* Columna izquierda — campos editables */}
+              <div className="p-6 border-r border-slate-200 flex flex-col gap-4">
+                <p className="text-[#0d1f3c] text-sm font-medium">Editar plato</p>
+
+                <div>
+                  <label className="text-slate-400 text-xs block mb-1">Nombre</label>
+                  <input
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-slate-400 text-xs block mb-1">Descripción</label>
+                  <textarea
+                    value={descripcion}
+                    onChange={(e) => setDescripcion(e.target.value)}
+                    rows={3}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-slate-400 text-xs block mb-1">Precio (€)</label>
+                  <input
+                    value={precio}
+                    onChange={(e) => setPrecio(e.target.value)}
+                    type="number"
+                    step="0.01"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Columna derecha — ingredientes */}
+              <div className="p-6 flex flex-col gap-3">
+                <p className="text-[#0d1f3c] text-sm font-medium">Ingredientes</p>
+                {ingredientes.length === 0 ? (
+                  <p className="text-slate-400 text-xs">Sin ingredientes</p>
+                ) : (
+                  ingredientes.map((ing, index) => (
+                    <div
+                      key={index}
+                      onClick={() => toggleIngrediente(index)}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-xl border cursor-pointer transition-all
+                        ${ing.activo
+                          ? 'border-slate-200 hover:border-blue-300 hover:bg-blue-50'
+                          : 'border-red-200 bg-red-50'
+                        }`}
+                    >
+                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all
+                        ${ing.activo ? 'bg-[#0d1f3c] border-[#0d1f3c] text-white' : 'bg-white border-slate-300'}`}
+                      >
+                        {ing.activo && <span className="text-[10px]">✓</span>}
+                      </div>
+                      <span className="text-base">{ing.emoji}</span>
+                      <span className={`text-xs flex-1 ${ing.activo ? 'text-[#0d1f3c]' : 'text-red-400 line-through'}`}>
+                        {ing.nombre}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Pie modal — botones */}
+            <div className="px-6 py-4 border-t border-slate-200 flex items-center gap-2">
+
+              {/* Guardar */}
+              <button
+                onClick={guardarCambios}
+                disabled={guardando}
+                className="flex-1 bg-[#0d1f3c] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors disabled:opacity-50"
+              >
+                {guardando ? 'Guardando...' : '💾 Guardar cambios'}
+              </button>
+
+              {/* Enviar a cocina */}
+              <button
+                onClick={enviarACocina}
+                className="flex-1 bg-green-600 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-green-700 transition-colors"
+              >
+                🍳 Enviar a cocina
+              </button>
+
+              {/* Desactivar */}
+              <button
+                onClick={desactivarPlato}
+                className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
+              >
+                🚫
+              </button>
+
+              {/* Eliminar */}
+              <button
+                onClick={() => setModalEliminar(true)}
+                className="px-4 py-2.5 rounded-xl text-sm font-medium bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+              >
+                🗑️
+              </button>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL CONFIRMAR ELIMINAR ── */}
+      {modalEliminar && (
+        <div
+          onClick={() => setModalEliminar(false)}
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60]"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl w-80 p-6 shadow-2xl"
+          >
+            <div className="text-center mb-6">
+              <p className="text-4xl mb-3">🗑️</p>
+              <h3 className="text-[#0d1f3c] font-medium text-base mb-2">¿Eliminar plato?</h3>
+              <p className="text-slate-400 text-sm">
+                Vas a eliminar <strong>{platoSeleccionado?.nombre}</strong> de la base de datos. Esta acción no se puede deshacer.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={eliminarPlato}
+                className="w-full bg-red-500 text-white py-3 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors"
+              >
+                Sí, eliminar
+              </button>
+              <button
+                onClick={() => setModalEliminar(false)}
+                className="w-full border border-slate-200 text-slate-500 py-3 rounded-xl text-sm hover:bg-slate-50 transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  )
+}
+</file>
+
+<file path="src/app/(admin)/pedidos/page.tsx">
+'use client'
+
+import { useState, useEffect } from 'react'
+import { supabase} from '@/lib/supabase'
+
+// Conexión a Supabase
+
+
+// Tipos — como clases en Java
+type Mesa = {
+  id: number
+  numero: number
+  capacidad: number
+  estado: 'libre' | 'ocupada' | 'esperando'
+  personas: number
+}
+
+type Pedido = {
+  id: number
+  plato_nombre: string
+  precio: number
+  estado: string
+  mesa: number | null
+  ingredientes: any[]
+  fecha: string
+}
+
+export default function Pedidos() {
+
+  // Estados — como variables de instancia en Java
+  const [mesas, setMesas] = useState<Mesa[]>([])
+  const [pedidos, setPedidos] = useState<Pedido[]>([])
+  const [mesaSeleccionada, setMesaSeleccionada] = useState<Mesa | null>(null)
+  const [modalMesa, setModalMesa] = useState(false)
+  const [personas, setPersonas] = useState(0)
+  const [cargando, setCargando] = useState(true)
+
+  // Carga inicial — como el constructor en Java
+  useEffect(() => {
+    cargarMesas()
+    cargarPedidos()
+
+    // Suscripción en tiempo real — escucha cambios en la base de datos
+    const canal = supabase
+      .channel('cambios')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'mesas' }, () => cargarMesas())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => cargarPedidos())
+      .subscribe()
+
+    // Limpia la suscripción cuando el componente se desmonta
+    return () => { supabase.removeChannel(canal) }
+  }, [])
+
+  // Carga las mesas desde Supabase
+  const cargarMesas = async () => {
+    const { data } = await supabase
+      .from('mesas')
+      .select('*')
+      .order('numero')
+    if (data) setMesas(data)
+    setCargando(false)
+  }
+
+  // Carga los pedidos desde Supabase
+  const cargarPedidos = async () => {
+    const { data } = await supabase
+      .from('pedidos')
+      .select('*')
+      .eq('estado', 'pendiente')
+      .order('fecha', { ascending: false })
+    if (data) setPedidos(data)
+  }
+
+  // Abre el modal de una mesa
+  const abrirMesa = (mesa: Mesa) => {
+    setMesaSeleccionada(mesa)
+    setPersonas(mesa.personas)
+    setModalMesa(true)
+  }
+
+  // Activa una mesa — la pone como ocupada
+  const activarMesa = async () => {
+    if (!mesaSeleccionada) return
+    await supabase
+      .from('mesas')
+      .update({ estado: 'ocupada', personas })
+      .eq('id', mesaSeleccionada.id)
+    setModalMesa(false)
+  }
+
+  // Libera una mesa — la pone como libre
+  const liberarMesa = async () => {
+    if (!mesaSeleccionada) return
+    await supabase
+      .from('mesas')
+      .update({ estado: 'libre', personas: 0 })
+      .eq('id', mesaSeleccionada.id)
+    setModalMesa(false)
+  }
+
+  // Marca un pedido como completado
+  const completarPedido = async (id: number) => {
+    await supabase
+      .from('pedidos')
+      .update({ estado: 'completado' })
+      .eq('id', id)
+  }
+
+  // Color según el estado de la mesa
+  const colorMesa = (estado: string) => {
+    if (estado === 'ocupada') return 'bg-blue-50 border-blue-300'
+    if (estado === 'esperando') return 'bg-orange-50 border-orange-300'
+    return 'bg-white border-slate-200'
+  }
+
+  const colorBadge = (estado: string) => {
+    if (estado === 'ocupada') return 'bg-blue-100 text-blue-700'
+    if (estado === 'esperando') return 'bg-orange-100 text-orange-700'
+    return 'bg-slate-100 text-slate-500'
+  }
+
+  if (cargando) return (
+    <div className="flex items-center justify-center h-64">
+      <p className="text-slate-400">Cargando...</p>
+    </div>
+  )
+
+    return (
+    <div className="flex gap-8 h-[calc(100vh-120px)]">
+        {/* ── COLUMNA IZQUIERDA — MESAS (FIJAS, SIN SCROLL INTERNO) ── */}
+        <div className="flex-1 overflow-y-auto">
+        <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-medium text-[#0d1f3c]">Mesas</h1>
+            <div className="flex items-center gap-3 text-xs">
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-slate-300 inline-block"/> Libre</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-blue-400 inline-block"/> Ocupada</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-orange-400 inline-block"/> Esperando</span>
+            </div>
+        </div>
+
+        {/* Grid de mesas (sin altura fija, fluye normalmente) */}
+        <div className="grid grid-cols-4 gap-4">
+            {mesas.map((mesa) => (
+            <button
+                key={mesa.id}
+                onClick={() => abrirMesa(mesa)}
+                className={`rounded-2xl border p-4 text-left transition-all hover:shadow-md ${colorMesa(mesa.estado)}`}
+            >
+                <div className="flex items-center justify-between mb-3">
+                <span className="text-[#0d1f3c] font-medium text-sm">Mesa {mesa.numero}</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${colorBadge(mesa.estado)}`}>
+                    {mesa.estado}
+                </span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-400 text-xs">
+                <span>👥 {mesa.personas}/{mesa.capacidad}</span>
+                </div>
+            </button>
+            ))}
+        </div>
+        </div>
+
+        {/* ── COLUMNA DERECHA — PEDIDOS PENDIENTES (CON SCROLL INDEPENDIENTE) ── */}
+        <div className="w-80 flex-shrink-0 flex flex-col h-full">
+        <h2 className="text-xl font-medium text-[#0d1f3c] mb-6 flex-shrink-0">
+            Pedidos pendientes
+            {pedidos.length > 0 && (
+            <span className="ml-2 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {pedidos.length}
+            </span>
+            )}
+        </h2>
+
+        {/* Scroll SOLO para pedidos */}
+        <div className="flex-1 overflow-y-auto pr-1 space-y-3">
+            {pedidos.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+                <p className="text-2xl mb-2">✅</p>
+                <p className="text-slate-400 text-sm">No hay pedidos pendientes</p>
+            </div>
+            ) : (
+            pedidos.map((pedido) => (
+                <div key={pedido.id} className="bg-white rounded-2xl border border-slate-200 p-4">
+                <div className="flex items-start justify-between mb-2">
+                    <div>
+                    <p className="text-[#0d1f3c] text-sm font-medium">{pedido.plato_nombre}</p>
+                    <p className="text-slate-400 text-xs mt-0.5">
+                        {pedido.mesa ? `Mesa ${pedido.mesa}` : 'Sin mesa'}
+                    </p>
+                    </div>
+                    <p className="text-blue-600 text-sm font-medium">{pedido.precio}€</p>
+                </div>
+
+                {/* Ingredientes */}
+                {pedido.ingredientes && pedido.ingredientes.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-3">
+                    {pedido.ingredientes.map((ing: any, i: number) => (
+                        <span
+                        key={i}
+                        className={`text-xs px-2 py-0.5 rounded-full ${ing.activo ? 'bg-slate-100 text-slate-600' : 'bg-red-100 text-red-500 line-through'}`}
+                        >
+                        {ing.emoji} {ing.nombre}
+                        </span>
+                    ))}
+                    </div>
+                )}
+
+                <button
+                    onClick={() => completarPedido(pedido.id)}
+                    className="w-full bg-[#0d1f3c] text-white py-2 rounded-xl text-xs font-medium hover:bg-[#1e3a6e] transition-colors"
+                >
+                    ✓ Marcar como completado
+                </button>
+                </div>
+            ))
+            )}
+        </div>
+        </div>
+
+        {/* ── MODAL MESA (sin cambios) ── */}
+        {modalMesa && mesaSeleccionada && (
+        <div
+            onClick={() => setModalMesa(false)}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        >
+            <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl w-80 overflow-hidden shadow-2xl"
+            >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+                <h2 className="text-[#0d1f3c] font-medium">Mesa {mesaSeleccionada.numero}</h2>
+                <button onClick={() => setModalMesa(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+            </div>
+
+            <div className="p-6">
+                <div className="flex items-center gap-2 mb-6">
+                <span className="text-slate-400 text-sm">Estado:</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${colorBadge(mesaSeleccionada.estado)}`}>
+                    {mesaSeleccionada.estado}
+                </span>
+                </div>
+
+                <div className="mb-6">
+                <p className="text-[#0d1f3c] text-sm font-medium mb-3">Número de personas</p>
+                <div className="flex items-center gap-4">
+                    <button
+                    onClick={() => setPersonas(Math.max(0, personas - 1))}
+                    className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-[#0d1f3c] hover:bg-slate-50 transition-colors text-lg"
+                    >
+                    −
+                    </button>
+                    <span className="text-[#0d1f3c] text-2xl font-medium w-8 text-center">{personas}</span>
+                    <button
+                    onClick={() => setPersonas(Math.min(mesaSeleccionada.capacidad, personas + 1))}
+                    className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-[#0d1f3c] hover:bg-slate-50 transition-colors text-lg"
+                    >
+                    +
+                    </button>
+                    <span className="text-slate-400 text-xs">máx. {mesaSeleccionada.capacidad}</span>
+                </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                {mesaSeleccionada.estado === 'libre' ? (
+                    <button
+                    onClick={activarMesa}
+                    className="w-full bg-[#0d1f3c] text-white py-3 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors"
+                    >
+                    ✓ Activar mesa
+                    </button>
+                ) : (
+                    <button
+                    onClick={liberarMesa}
+                    className="w-full bg-red-500 text-white py-3 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors"
+                    >
+                    Liberar mesa
+                    </button>
+                )}
+                <button
+                    onClick={() => setModalMesa(false)}
+                    className="w-full border border-slate-200 text-slate-500 py-3 rounded-xl text-sm hover:bg-slate-50 transition-colors"
+                >
+                    Cancelar
+                </button>
+                </div>
+            </div>
+            </div>
+        </div>
+        )}
+    </div>
+    )
+}
+</file>
+
+<file path="src/app/(cliente)/page.tsx">
+'use client'
+
+import { useState, useEffect } from 'react'
+import LayoutLateral from '@/components/cliente/LayoutLateral'
+import PanelInicio from '@/components/cliente/PanelInicio'
+import PanelSobreNosotros from '@/components/cliente/PanelSobreNosotros'
+import PanelReservas from '@/components/cliente/PanelReservas'
+import PanelContacto from '@/components/cliente/PanelContacto'
+import PanelMenu from '@/components/cliente/PanelMenu'
+import { supabase } from '@/lib/supabase'
+
+type Vista = 'inicio' | 'sobre' | 'reservas' | 'contacto' | 'menu'
+
+export default function Home() {
+  const [vistaActiva, setVistaActiva] = useState<Vista>('inicio')
+  const [tokenActivo, setTokenActivo] = useState<string | null>(null)
+  const [mesaActiva, setMesaActiva] = useState<number | null>(null)
+  const [animando, setAnimando] = useState(false)
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const token = urlParams.get('token')
+    const mesa = urlParams.get('mesa')
+    
+    if (token && mesa) {
+      setTokenActivo(token)
+      setMesaActiva(parseInt(mesa))
+      setVistaActiva('menu')
+
+      // Activa la mesa automáticamente en Supabase
+      supabase
+        .from('mesas')
+        .update({ estado: 'ocupada' })
+        .eq('numero', parseInt(mesa))
+        .then(({ error }) => {
+          if (error) console.error('Error activando mesa:', error)
+        })
+    }
+  }, [])
+
+  const cambiarVista = (nuevaVista: Vista) => {
+    // Inicia la animación de salida
+    setAnimando(true)
+    
+    // Espera 200ms (la duración de la animación)
+    setTimeout(() => {
+      // Cambia el contenido
+      setVistaActiva(nuevaVista)
+      
+      // Pequeño retraso para que la entrada se vea suave
+      setTimeout(() => {
+        setAnimando(false)
+      }, 50)
+    }, 200)
+  }
+
+  const renderizarPanel = () => {
+    switch (vistaActiva) {
+      case 'inicio':
+        return <PanelInicio />
+      case 'sobre':
+        return <PanelSobreNosotros />
+      case 'reservas':
+        return <PanelReservas />
+      case 'contacto':
+        return <PanelContacto />
+      case 'menu':
+        return <PanelMenu tokenActivo={tokenActivo} mesaActiva={mesaActiva} />
+      default:
+        return <PanelInicio />
+    }
+  }
+
+  return (
+    <LayoutLateral 
+      vistaActiva={vistaActiva} 
+      onCambiarVista={cambiarVista}
+    >
+      <div className="min-h-[500px] p-4">
+        <div className={`transition-all duration-300 ease-out
+          ${animando ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+          {renderizarPanel()}
+        </div>
+      </div>
+    </LayoutLateral>
+  )
+}
+</file>
+
+<file path="src/app/globals.css">
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Restaurante Lempira",
+  description: "El mejor restaurante Hondureño",
+  icons: {
+    icon: '/icon.jpg',
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">{children}</body>
+    </html>
+  );
+}
+</file>
+
+<file path="src/components/cliente/LayoutLateral.tsx">
+'use client'
+
+type Vista = 'inicio' | 'sobre' | 'reservas' | 'contacto' | 'menu'
+
+const menuItems = [
+  { id: 'inicio' as Vista, icono: '🏠', nombre: 'Inicio' },
+  { id: 'sobre' as Vista, icono: '📖', nombre: 'Sobre Nosotros' },
+  { id: 'reservas' as Vista, icono: '📅', nombre: 'Reservas' },
+  { id: 'contacto' as Vista, icono: '📞', nombre: 'Contacto' },
+  { id: 'menu' as Vista, icono: '🍔', nombre: 'Menú' },
+]
+
+export default function LayoutLateral({ 
+  children,
+  vistaActiva,
+  onCambiarVista 
+}: { 
+  children: React.ReactNode
+  vistaActiva: Vista
+  onCambiarVista: (vista: Vista) => void 
+}) {
+  return (
+    <div className="flex h-screen bg-gray-100">
+      {/* Menú lateral */}
+      <aside className="w-72 bg-[#0d1f3c] text-white flex flex-col shadow-xl">
+        <div className="p-6 border-b border-blue-800">
+          <h1 className="text-2xl font-bold hover:scale-105 transition-transform duration-200">🍽️ Lempira</h1>
+          <p className="text-sm text-blue-300 mt-1">Restaurante</p>
+        </div>
+
+        <nav className="flex-1 p-4 space-y-2">
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onCambiarVista(item.id)}
+              className={`group w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ease-out
+                ${vistaActiva === item.id 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'text-gray-300 hover:bg-blue-800 hover:text-white hover:translate-x-1 hover:shadow-md'
+                } active:scale-95`}
+            >
+              <span className={`text-xl transition-all duration-200 ${vistaActiva !== item.id && 'group-hover:scale-110 group-hover:rotate-6'}`}>
+                {item.icono}
+              </span>
+              <span>{item.nombre}</span>
+              {vistaActiva === item.id && (
+                <span className="ml-auto text-sm animate-pulse">✓</span>
+              )}
+              {vistaActiva !== item.id && (
+                <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-sm">→</span>
+              )}
+            </button>
+          ))}
+        </nav>
+
+        <div className="p-4 border-t border-blue-800 text-xs text-blue-300">
+          <p>© 2025 Restaurante Lempira</p>
+        </div>
+      </aside>
+
+      {/* Panel central */}
+      <main className="flex-1 overflow-y-auto">
+        {children}
+      </main>
+    </div>
+  )
+}
+</file>
+
+<file path="src/components/cliente/PanelContacto.tsx">
+'use client'
+
+import { useState } from 'react'
+
+export default function PanelContacto() {
+  const [email, setEmail] = useState('')
+  const [mensajeContacto, setMensajeContacto] = useState('')
+  const [enviado, setEnviado] = useState(false)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setEnviado(true)
+    setTimeout(() => setEnviado(false), 3000)
+    setEmail('')
+    setMensajeContacto('')
+  }
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">📞 Contacto</h1>
+      
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* Columna izquierda - Información */}
+        <div>
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 className="text-xl font-bold mb-4">Información de contacto</h2>
+            
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">📍</span>
+                <div>
+                  <p className="font-medium">Dirección</p>
+                  <p className="text-gray-600">Calle Principal #123, Colonia Centro</p>
+                  <p className="text-gray-600">San Pedro Sula, Honduras</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">📞</span>
+                <div>
+                  <p className="font-medium">Teléfono</p>
+                  <p className="text-gray-600">+504 1234-5678</p>
+                  <p className="text-gray-600">+504 8765-4321</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">✉️</span>
+                <div>
+                  <p className="font-medium">Email</p>
+                  <p className="text-gray-600">info@restaurantelempira.com</p>
+                  <p className="text-gray-600">reservas@restaurantelempira.com</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">⏰</span>
+                <div>
+                  <p className="font-medium">Horario</p>
+                  <p className="text-gray-600">Lunes a Domingo: 12:00 - 23:00</p>
+                  <p className="text-gray-600">Viernes y Sábado: 12:00 - 00:00</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-xl p-6 text-white text-center">
+            <p className="text-4xl mb-2">🎉</p>
+            <p className="font-bold">¿Evento especial?</p>
+            <p className="text-sm mt-1">Consulta por nuestros paquetes para cumpleaños, aniversarios y eventos corporativos.</p>
+          </div>
+        </div>
+        
+        {/* Columna derecha - Formulario de contacto y mapa */}
+        <div>
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 className="text-xl font-bold mb-4">Envíanos un mensaje</h2>
+            
+            {enviado && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                ✅ Mensaje enviado. Te responderemos pronto.
+              </div>
+            )}
+            
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-medium mb-2">Email *</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="tucorreo@ejemplo.com"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                />
+              </div>
+              
+              <div className="mb-4">
+                <label className="block text-gray-700 font-medium mb-2">Mensaje *</label>
+                <textarea
+                  value={mensajeContacto}
+                  onChange={(e) => setMensajeContacto(e.target.value)}
+                  placeholder="Escribe tu mensaje aquí..."
+                  rows={4}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                />
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 rounded-lg font-semibold hover:from-orange-600 hover:to-red-700 transition-all"
+              >
+                📧 Enviar Mensaje
+              </button>
+            </form>
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="bg-gray-200 h-48 flex items-center justify-center">
+              <div className="text-center">
+                <span className="text-4xl block mb-2">🗺️</span>
+                <p className="text-gray-500 text-sm">Mapa de ubicación</p>
+                <p className="text-gray-400 text-xs mt-1">Calle Principal #123, San Pedro Sula</p>
+              </div>
+            </div>
+            <div className="p-4 text-center">
+              <a 
+                href="https://maps.google.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-orange-600 hover:text-orange-700 text-sm font-medium"
+              >
+                Ver en Google Maps →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="src/components/cliente/PanelInicio.tsx">
+export default function PanelInicio() {
+  return (
+    <div className="p-6">
+      {/* Hero simplificado */}
+      <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl p-8 text-white mb-8">
+        <h1 className="text-3xl font-bold">Bienvenido a Restaurante Lempira</h1>
+        <p className="mt-2">Tradición hondureña en cada plato</p>
+      </div>
+
+      {/* Tarjetas de estadísticas como en CARHUB */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-xl shadow p-6">
+          <p className="text-gray-500 text-sm">Clientes hoy</p>
+          <p className="text-3xl font-bold">147</p>
+        </div>
+        <div className="bg-white rounded-xl shadow p-6">
+          <p className="text-gray-500 text-sm">Pedidos hoy</p>
+          <p className="text-3xl font-bold">89</p>
+        </div>
+        <div className="bg-white rounded-xl shadow p-6">
+          <p className="text-gray-500 text-sm">Reservas hoy</p>
+          <p className="text-3xl font-bold">23</p>
+        </div>
+        <div className="bg-white rounded-xl shadow p-6">
+          <p className="text-gray-500 text-sm">Valoración</p>
+          <p className="text-3xl font-bold">⭐ 4.8</p>
+        </div>
+      </div>
+
+      {/* Últimos pedidos */}
+      <div className="bg-white rounded-xl shadow">
+        <div className="p-4 border-b">
+          <h2 className="font-bold">Últimos pedidos</h2>
+        </div>
+        <div className="divide-y">
+          {/* Aquí iría la lista de pedidos recientes */}
+        </div>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="src/components/cliente/PanelMenu.tsx">
+'use client'
+
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
+import { useToast } from '@/hooks/useToast'
+import { Toast } from '@/components/cliente/Toast'
+
+
+export default function PanelMenu({ tokenActivo, mesaActiva }: { 
+  tokenActivo: string | null
+  mesaActiva: number | null 
+}) {
+  const [platos, setPlatos] = useState<any[]>([])
+  const [carrito, setCarrito] = useState<any[]>([])
+  const [modalAbierto, setModalAbierto] = useState(false)
+  const [platoSeleccionado, setPlatoSeleccionado] = useState<any>(null)
+  const [ingredientesSeleccionados, setIngredientesSeleccionados] = useState<any[]>([])
+  const [cargando, setCargando] = useState(true)
+
+  const { toasts, showToast, removeToast } = useToast()
+
+
+  // Cargar platos desde Supabase
+  useEffect(() => {
+    cargarPlatos()
+
+    // Escucha cambios en tiempo real
+    const canal = supabase
+      .channel('platos-cliente')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'platos'
+      }, () => cargarPlatos())
+      .subscribe()
+
+    return () => { supabase.removeChannel(canal) }
+  }, [])
+
+  const cargarPlatos = async () => {
+    setCargando(true)
+    try {
+      const { data, error } = await supabase
+        .from('platos')
+        .select('*')
+        .eq('activo', true)
+      
+      if (!error && data && data.length > 0) {
+        setPlatos(data)
+      } else {
+        // Datos de respaldo por si la BD está vacía
+        setPlatos([])
+      }
+    } catch (error) {
+      console.error('Error cargando platos:', error)
+    } finally {
+      setCargando(false)
+    }
+  }
+
+const abrirModal = (plato: any) => {
+  setPlatoSeleccionado(plato)
+  
+  let ingredientes = plato?.ingredientes || []
+  
+  if (!ingredientes.length) {
+    ingredientes = [
+      { id: 1, nombre: 'Lechuga', emoji: '🥬', activo: true },
+      { id: 2, nombre: 'Tomate', emoji: '🍅', activo: true },
+      { id: 3, nombre: 'Cebolla', emoji: '🧅', activo: true },
+    ]
+  }
+  
+  setIngredientesSeleccionados([...ingredientes])
+  setModalAbierto(true)
+}
+
+  const toggleIngrediente = (id: number) => {
+    setIngredientesSeleccionados(ingredientesSeleccionados.map(ing =>
+      ing.id === id ? { ...ing, activo: !ing.activo } : ing
+    ))
+  }
+
+
+
+
+const enviarPedido = async () => {
+  console.log('Mesa activa:', mesaActiva)
+    if (!platoSeleccionado) return
+
+    const nuevoPedido = {
+      plato_id: platoSeleccionado.id,
+      plato_nombre: platoSeleccionado.nombre,
+      ingredientes: ingredientesSeleccionados.filter(i => i.activo),
+      precio: platoSeleccionado.precio,
+      estado: 'pendiente',
+      mesa: mesaActiva || null,
+      creado_en: new Date().toISOString()
+    }
+    
+    try {
+      const { error } = await supabase.from('pedidos').insert([nuevoPedido])
+      if (error) {
+        console.error('Error:', error)
+        showToast('❌ Error al enviar el pedido: ' + error.message, 'error')
+        return
+      }
+      
+      setCarrito([...carrito, { ...nuevoPedido, id: Date.now() }])
+      showToast(`✅ ${platoSeleccionado.nombre} enviado a cocina!`, 'success')
+      setModalAbierto(false)
+    } catch (err) {
+      console.error('Error inesperado:', err)
+       showToast('❌ Error de conexión', 'error')
+    }
+  }
+  
+  
+
+  if (cargando) {
+    return (
+      <div className="p-6 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
+        <p className="mt-4 text-gray-500">Cargando menú...</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="p-6">
+      {/* Banner de estado */}
+      <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+        <p className="text-green-800 font-medium">
+          ✅ Modo pedido activo - Selecciona un plato para personalizar
+        </p>
+      </div>
+
+      {/* Mostrar carrito */}
+      {carrito.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+          <p className="text-blue-800 font-medium">📋 Pedidos realizados:</p>
+          <ul className="mt-2 space-y-1">
+            {carrito.map((item, idx) => (
+              <li key={idx} className="text-sm text-blue-700">
+                {item.plato_nombre} - {item.precio}€ ({item.ingredientes?.length || 0} ingredientes)
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Grid de platos */}
+      <h2 className="text-2xl font-bold mb-6">🍽️ Nuestro Menú</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {platos.map((plato) => (
+          <div 
+            key={plato.id} 
+            onClick={() => abrirModal(plato)}
+            className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105 overflow-hidden"
+          >
+            <div className="h-32 bg-gradient-to-r from-orange-100 to-red-100 flex items-center justify-center">
+              <span className="text-6xl">{plato.emoji || '🍽️'}</span>
+            </div>
+            <div className="p-4">
+              <h3 className="font-bold text-lg">{plato.nombre}</h3>
+              <p className="text-gray-500 text-sm mt-1">{plato.descripcion || 'Deliciosa opción'}</p>
+              <div className="flex justify-between items-center mt-3">
+                <span className="text-orange-600 font-bold text-xl">{plato.precio}€</span>
+                <span className="text-sm text-gray-400">👆 Pulsa para personalizar</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* MODAL DE PERSONALIZACIÓN */}
+      {modalAbierto && platoSeleccionado && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl w-[600px] max-w-[90vw] max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            {/* Cabecera */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-orange-500 to-red-600 text-white">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{platoSeleccionado.emoji || '🍽️'}</span>
+                <p className="text-gray-500 text-sm mt-1">{platoSeleccionado.descripcion || 'Deliciosa opción'}</p>
+              </div>
+              <button 
+                onClick={() => setModalAbierto(false)}
+                className="text-white/80 hover:text-white text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Contenido del modal - dos columnas */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="grid grid-cols-2">
+                {/* Columna izquierda - info del plato */}
+                <div className="p-6 bg-orange-50 flex flex-col items-center text-center">
+                  <div className="w-32 h-32 bg-white rounded-2xl flex items-center justify-center mb-4 shadow">
+                    <span className="text-6xl">{platoSeleccionado.emoji || '🍽️'}</span>
+                  </div>
+                  <h3 className="font-bold text-lg">{platoSeleccionado.nombre}</h3>
+                  <p className="text-gray-500 text-sm mt-1">{platoSeleccionado.desc || 'Deliciosa opción'}</p>
+                  <p className="text-orange-600 font-bold text-2xl mt-3">{platoSeleccionado.precio}€</p>
+                </div>
+
+                {/* Columna derecha - ingredientes */}
+                <div className="p-6">
+                  <p className="font-semibold mb-3 text-gray-700">Elige tus ingredientes:</p>
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+                    {Array.isArray(ingredientesSeleccionados) && ingredientesSeleccionados.length > 0 ? (
+                      ingredientesSeleccionados.map((ing, idx) => (
+                        <label
+                          key={ing?.id ?? idx}
+                          className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all
+                            ${ing?.activo 
+                              ? 'bg-green-50 border border-green-300' 
+                              : 'bg-gray-50 border border-gray-200'
+                            }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">{ing?.emoji || '🥬'}</span>
+                            <span className={`text-sm ${ing?.activo ? 'text-gray-800 font-medium' : 'text-gray-400'}`}>
+                              {ing?.nombre || 'Ingrediente'}
+                            </span>
+                          </div>
+                          <input
+                            type="checkbox"
+                            checked={ing?.activo || false}
+                            onChange={() => toggleIngrediente(ing?.id ?? idx)}
+                            className="w-5 h-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
+                          />
+                        </label>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-center py-4">Cargando ingredientes...</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer con botones */}
+            <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end bg-gray-50">
+              <button
+                onClick={() => setModalAbierto(false)}
+                className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={enviarPedido}
+                className="px-5 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition flex items-center gap-2"
+              >
+                🍳 Enviar a cocina
+                <span className="bg-white/20 px-2 py-0.5 rounded-full text-sm">
+                  {platoSeleccionado.precio}€
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+        {/* Renderizar toasts */}
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          onClose={() => removeToast(toast.id)}
+        />
+      ))}
+    </div>
+  )
+}
+</file>
+
+<file path="src/components/cliente/PanelReservas.tsx">
+'use client'
+
+import { useState } from 'react'
+
+export default function PanelReservas() {
+  const [fecha, setFecha] = useState('')
+  const [personas, setPersonas] = useState(2)
+  const [nombre, setNombre] = useState('')
+  const [telefono, setTelefono] = useState('')
+  const [mensaje, setMensaje] = useState('')
+  const [enviado, setEnviado] = useState(false)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!fecha || !nombre || !telefono) {
+      alert('Por favor, completa todos los campos obligatorios')
+      return
+    }
+    
+    // Aquí puedes enviar los datos a tu backend
+    console.log({
+      fecha,
+      personas,
+      nombre,
+      telefono,
+      mensaje
+    })
+    
+    setEnviado(true)
+    setTimeout(() => setEnviado(false), 3000)
+    
+    // Limpiar formulario
+    setFecha('')
+    setPersonas(2)
+    setNombre('')
+    setTelefono('')
+    setMensaje('')
+  }
+
+  return (
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">📅 Reservas</h1>
+      
+      {enviado && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          ✅ ¡Reserva enviada! Te contactaremos para confirmar.
+        </div>
+      )}
+      
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-gradient-to-r from-orange-500 to-red-600 px-6 py-4">
+          <h2 className="text-white text-xl font-bold">Solicitar Reserva</h2>
+          <p className="text-orange-100 text-sm">Completa el formulario y te confirmamos disponibilidad</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="p-6">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Nombre completo *</label>
+              <input
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                placeholder="Tu nombre"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                required
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Teléfono *</label>
+              <input
+                type="tel"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                placeholder="+504 XXXX-XXXX"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                required
+              />
+            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Fecha y hora *</label>
+              <input
+                type="datetime-local"
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                required
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Número de personas</label>
+              <input
+                type="number"
+                min="1"
+                max="20"
+                value={personas}
+                onChange={(e) => setPersonas(parseInt(e.target.value))}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+          </div>
+          
+          <div className="mb-6">
+            <label className="block text-gray-700 font-medium mb-2">Mensaje adicional</label>
+            <textarea
+              value={mensaje}
+              onChange={(e) => setMensaje(e.target.value)}
+              placeholder="Alergias, ocasión especial (cumpleaños, aniversario), preferencia de mesa..."
+              rows={3}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+          
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 rounded-lg font-semibold hover:from-orange-600 hover:to-red-700 transition-all"
+          >
+            📅 Solicitar Reserva
+          </button>
+        </form>
+      </div>
+      
+      <div className="mt-6 bg-gray-50 rounded-xl p-4 text-center">
+        <p className="text-gray-600 text-sm">
+          📞 También puedes llamarnos al <strong className="text-orange-600">+504 1234-5678</strong> para reservar directamente
+        </p>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="src/components/cliente/PanelSobreNosotros.tsx">
+export default function PanelSobreNosotros() {
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">📖 Sobre Nosotros</h1>
+      
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div className="h-48 bg-gradient-to-r from-orange-500 to-red-600"></div>
+        <div className="p-8">
+          <h2 className="text-2xl font-bold mb-4">Restaurante Lempira</h2>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            Fundado en 2010, Restaurante Lempira nació con la visión de llevar los auténticos 
+            sabores de Honduras a cada mesa. Nuestro nombre es un homenaje a la moneda 
+            hondureña y a la riqueza cultural de nuestro país.
+          </p>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            Desde nuestros inicios, nos hemos comprometido a usar ingredientes frescos y 
+            locales, preparando cada plato con el cariño y la tradición que nos caracteriza. 
+            Nuestra cocina combina recetas familiares transmitidas por generaciones con 
+            técnicas modernas.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Hoy, Restaurante Lempira es un punto de encuentro para amantes de la buena 
+            comida, donde cada cliente es tratado como parte de nuestra familia. Nos 
+            enorgullece ofrecer una experiencia gastronómica única que celebra lo mejor 
+            de nuestra tierra.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6 border border-orange-100">
+          <div className="text-4xl mb-3">🎯</div>
+          <h3 className="font-bold text-xl mb-2">Misión</h3>
+          <p className="text-gray-600">
+            Ofrecer la mejor experiencia gastronómica con sabores auténticos, utilizando 
+            ingredientes frescos y de calidad, superando las expectativas de nuestros clientes.
+          </p>
+        </div>
+        
+        <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6 border border-orange-100">
+          <div className="text-4xl mb-3">👁️</div>
+          <h3 className="font-bold text-xl mb-2">Visión</h3>
+          <p className="text-gray-600">
+            Ser el restaurante referente de la gastronomía hondureña, reconocido por nuestra 
+            excelencia culinaria y servicio, expandiendo nuestra tradición a más ciudades.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="text-center p-4">
+          <div className="text-3xl font-bold text-orange-600">15+</div>
+          <div className="text-gray-500">Años de experiencia</div>
+        </div>
+        <div className="text-center p-4">
+          <div className="text-3xl font-bold text-orange-600">50+</div>
+          <div className="text-gray-500">Platos en nuestro menú</div>
+        </div>
+        <div className="text-center p-4">
+          <div className="text-3xl font-bold text-orange-600">10k+</div>
+          <div className="text-gray-500">Clientes satisfechos</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="src/components/cliente/Toast.tsx">
+'use client'
+
+import { useState, useEffect } from 'react'
+
+type ToastProps = {
+  message: string
+  type: 'success' | 'error' | 'info'
+  duration?: number
+  onClose: () => void
+}
+
+export function Toast({ message, type, duration = 3000, onClose }: ToastProps) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose()
+    }, duration)
+    return () => clearTimeout(timer)
+  }, [duration, onClose])
+
+  const bgColor = {
+    success: 'bg-green-500',
+    error: 'bg-red-500',
+    info: 'bg-blue-500'
+  }[type]
+
+  return (
+    <div className={`fixed bottom-4 right-4 z-50 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg animate-slide-up`}>
+      <div className="flex items-center gap-3">
+        {type === 'success' && <span></span>}
+        {type === 'error' && <span>❌</span>}
+        {type === 'info' && <span>ℹ️</span>}
+        <span>{message}</span>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="src/hooks/useToast.ts">
+import { useState, useCallback } from 'react'
+
+type ToastType = {
+  message: string
+  type: 'success' | 'error' | 'info'
+  id: number
+}
+
+export function useToast() {
+  const [toasts, setToasts] = useState<ToastType[]>([])
+
+  const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    const id = Date.now()
+    setToasts(prev => [...prev, { message, type, id }])
+    
+    // Auto remover después de 3 segundos
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id))
+    }, 3000)
+  }, [])
+
+  const removeToast = useCallback((id: number) => {
+    setToasts(prev => prev.filter(t => t.id !== id))
+  }, [])
+
+  return { toasts, showToast, removeToast }
+}
+</file>
+
+<file path="src/lib/supabase.ts">
+import { createBrowserClient } from '@supabase/ssr'
+
+export const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+</file>
+
+<file path="package.json">
+{
+  "name": "proyecto-tgf",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.105.3",
+    "next": "16.2.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+</file>
+
+<file path="src/app/(admin)/login/page.tsx">
+'use client'
+
+import { useState } from 'react'
+import { supabase } from '@/lib/supabase'
+
+export default function Login() {
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [cargando, setCargando] = useState(false)
+
+  const iniciarSesion = async () => {
+    setCargando(true)
+    setError('')
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      setError('Email o contraseña incorrectos')
+      setCargando(false)
+      return
+    }
+
+    window.location.href = '/dashboard'
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0d1f3c] flex items-center justify-center">
+      <div className="bg-white rounded-2xl p-8 w-96 shadow-2xl">
+
+        <div className="text-center mb-8">
+          <div className="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center text-2xl mx-auto mb-4">
+            🍽️
+          </div>
+          <h1 className="text-[#0d1f3c] text-xl font-medium">Restaurante Lempira</h1>
+          <p className="text-slate-400 text-sm mt-1">Panel de administración</p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="text-[#0d1f3c] text-sm font-medium block mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="empleado@restaurante.com"
+              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-400 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label className="text-[#0d1f3c] text-sm font-medium block mb-1">Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-400 transition-colors"
+              onKeyDown={(e) => e.key === 'Enter' && iniciarSesion()}
+            />
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-500 text-sm px-4 py-3 rounded-xl">
+              {error}
+            </div>
+          )}
+
+          <button
+            onClick={iniciarSesion}
+            disabled={cargando}
+            className="w-full bg-[#0d1f3c] text-white py-3 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors mt-2 disabled:opacity-50"
+          >
+            {cargando ? 'Entrando...' : 'Iniciar sesión'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="src/middleware.ts">
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export async function middleware(req: NextRequest) {
+  let res = NextResponse.next()
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            req.cookies.set(name, value)
+            res = NextResponse.next({ request: req })
+            res.cookies.set(name, value, options)
+          })
+        },
+      },
+    }
+  )
+
+  const { data: { session } } = await supabase.auth.getSession()
+
+  const rutasProtegidas = ['/dashboard', '/pedidos', '/menu']
+  const esRutaProtegida = rutasProtegidas.some(ruta =>
+    req.nextUrl.pathname.startsWith(ruta)
+  )
+
+  if (esRutaProtegida && !session) {
+    return NextResponse.redirect(new URL('/login', req.url))
+  }
+
+  if (req.nextUrl.pathname === '/login' && session) {
+    return NextResponse.redirect(new URL('/dashboard', req.url))
+  }
+
+  return res
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/pedidos/:path*', '/menu/:path*','/cocina/:path*', '/login']
+}
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="src/app/(admin)/layout.tsx">
+'use client'
+import React from 'react'
+
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) 
+
+{
+
+  const router = useRouter()
+
+const cerrarSesion = async () => {
+  await supabase.auth.signOut()
+  router.push('/login')
+}
+  return (
+    <div className="min-h-screen bg-slate-100">
+      
+      {/* Navbar del admin */}
+      <nav className="h-14 bg-[#0d1f3c] flex items-center px-6">
+        <div className="flex items-center gap-3 flex-1">
+          <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-sm">
+            🍽️
+          </div>
+          <span className="text-white text-sm font-medium">Restaurante Lempira — Admin</span>
+        </div>
+        <div className="flex items-center gap-6">
+          <a href="/dashboard" className="text-slate-300 hover:text-white text-sm transition-colors">Dashboard</a>
+          <a href="/pedidos" className="text-slate-300 hover:text-white text-sm transition-colors">Pedidos</a>
+          <a href="/menu" className="text-slate-300 hover:text-white text-sm transition-colors">Menú</a>
+          <a href="/cocina" className="text-slate-300 hover:text-white text-sm transition-colors">Cocina</a>
+          <button
+            onClick={cerrarSesion}
+            className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg transition-colors"
+            >
+            Cerrar sesión
+          </button>
+        </div>
+      </nav>
+
+      {/* Contenido de cada página */}
+      <main className="p-8">
+        {children}
+      </main>
+
+    </div>
+  )
+}
+</file>
+
+</files>

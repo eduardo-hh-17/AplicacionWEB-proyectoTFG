@@ -26,6 +26,15 @@ export default function Home() {
       setTokenActivo(token)
       setMesaActiva(parseInt(mesa))
       setVistaActiva('menu')
+
+      // Activa la mesa automáticamente en Supabase
+      supabase
+        .from('mesas')
+        .update({ estado: 'ocupada' })
+        .eq('numero', parseInt(mesa))
+        .then(({ error }) => {
+          if (error) console.error('Error activando mesa:', error)
+        })
     }
   }, [])
 
