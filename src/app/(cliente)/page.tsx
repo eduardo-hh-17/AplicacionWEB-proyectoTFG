@@ -16,27 +16,54 @@ export default function Home() {
   const [tokenActivo, setTokenActivo] = useState<string | null>(null)
   const [mesaActiva, setMesaActiva] = useState<number | null>(null)
   const [animando, setAnimando] = useState(false)
+  const [errorQR, setErrorQR] = useState<string | null>(null)
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const token = urlParams.get('token')
-    const mesa = urlParams.get('mesa')
-    
-    if (token && mesa) {
-      setTokenActivo(token)
-      setMesaActiva(parseInt(mesa))
-      setVistaActiva('menu')
+  const urlParams = new URLSearchParams(window.location.search)
+  const token = urlParams.get('token')
+  const mesa = urlParams.get('mesa')
+  
+  if (token && mesa) {
+    verificarToken(token, parseInt(mesa))
+  }
+}, [])
 
-      // Activa la mesa automáticamente en Supabase
-      supabase
-        .from('mesas')
-        .update({ estado: 'ocupada' })
-        .eq('numero', parseInt(mesa))
-        .then(({ error }) => {
-          if (error) console.error('Error activando mesa:', error)
-        })
-    }
-  }, [])
+const verificarToken = async (token: string, numeroMesa: number) => {
+  // Busca el QR en la base de datos
+  const { data: qr, error } = await supabase
+    .from('qr_mesas')
+    .select('*, mesas(numero, estado)')
+    .eq('codigo', token)
+    .single()
+
+  if (error || !qr) {
+    setErrorQR('El código QR no es valido. Solicita al camarero un nuevo QR.')
+    return
+  }
+
+  // Comprueba que el QR corresponde a la mesa correcta
+  if (qr.mesas.numero !== numeroMesa) {
+    setErrorQR('Este QR no corresponde a esta mesa. Pide ayuda al camarero.')
+    return
+  }
+
+  // Comprueba que el QR está activo
+  if (!qr.activo) {
+    setErrorQR('Este QR está desactivado. Pide al camarero que active tu mesa.')
+    return
+  }
+
+  // Todo correcto — activa la mesa y muestra el menú
+  setTokenActivo(token)
+  setMesaActiva(numeroMesa)
+  setVistaActiva('menu')
+
+  // Activa la mesa en Supabase
+  await supabase
+    .from('mesas')
+    .update({ estado: 'ocupada' })
+    .eq('numero', numeroMesa)
+}
 
   const cambiarVista = (nuevaVista: Vista) => {
     // Inicia la animación de salida
@@ -71,8 +98,18 @@ export default function Home() {
     }
   }
 
-  return (
-    <LayoutLateral 
+  if (errorQR) return (
+    <div className="min-h-screen bg-[#0d1f3c] flex items-center justify-center p-8">
+      <div className="bg-white rounded-2xl p-8 max-w-sm text-center">
+        <p className="text-4xl mb-4">❌</p>
+        <h2 className="text-[#0d1f3c] text-xl font-medium mb-2">QR no válido</h2>
+        <p className="text-slate-400 text-sm">{errorQR}</p>
+      </div>
+    </div>
+  )
+
+return (
+  <LayoutLateral 
       vistaActiva={vistaActiva} 
       onCambiarVista={cambiarVista}
     >

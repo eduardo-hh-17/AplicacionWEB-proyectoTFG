@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 
 export async function middleware(req: NextRequest) {
 
-  const rutasProtegidas = ['/dashboard', '/pedidos', '/menu', '/cocina']
+  const rutasProtegidas = ['/dashboard', '/pedidos', '/menu', '/cocina', '/qr']
   const esRutaProtegida = rutasProtegidas.some(ruta =>
     req.nextUrl.pathname.startsWith(ruta)
   )
@@ -26,5 +26,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/pedidos/:path*', '/menu/:path*', '/cocina/:path*', '/login']
+  matcher: ['/dashboard/:path*', '/pedidos/:path*', '/menu/:path*', '/cocina/:path*', '/qr/:path*', '/login']
 }

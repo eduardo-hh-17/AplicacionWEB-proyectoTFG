@@ -49,6 +49,7 @@ export default function AdminLayout({
       items.push({ href: '/pedidos', label: 'Pedidos' })
       items.push({ href: '/menu', label: 'Menú' })
       items.push({ href: '/cocina', label: 'Cocina' })
+      items.push({href: '/qr', label: 'QR Mesas'})
     }
     if (empleado.rol === 'camarero') {
       items.push({ href: '/pedidos', label: 'Pedidos' })
