@@ -19,22 +19,62 @@ export default function Home() {
   const [animando, setAnimando] = useState(false)
   const [mesaNoActivada, setMesaNoActivada] = useState(false)
   const [errorQR, setErrorQR] = useState<string | null>(null)
+  const [mesaId, setMesaId] = useState<number | null>(null)
 
-  useEffect(() => {
+
+
+ useEffect(() => {
   const urlParams = new URLSearchParams(window.location.search)
   const token = urlParams.get('token')
   const mesa = urlParams.get('mesa')
-  
+
   if (token && mesa) {
     verificarToken(token, parseInt(mesa))
   }
 }, [])
 
+  //UseEffect 2 - escucha cambios en la mesa para activar el modo pedido en tiempo real
+useEffect(() => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const token = urlParams.get('token')
+  const mesa = urlParams.get('mesa')
+  
+  if (!mesaId) return
+  
+  const canal = supabase
+    .channel('mesa-cliente')
+    .on('postgres_changes', { 
+      event: 'UPDATE', 
+      schema: 'public', 
+      table: 'mesas',
+      filter: `id=eq.${mesa}`
+    }, (payload) => {
+      const mesaActualizada = payload.new as any
+      if (mesaActualizada.estado === 'ocupada') {
+          setMesaActiva(parseInt(mesaActualizada.numero))
+          setSesionActiva(mesaActualizada.sesion_id)
+          setMesaNoActivada(false)
+          setVistaActiva('menu')
+      }
+
+      if (mesaActualizada.estado === 'libre') {
+        setMesaActiva(null)
+        setSesionActiva(null)
+        setMesaNoActivada(false)
+      }
+
+    })
+      .subscribe()
+
+  return () => { supabase.removeChannel(canal) }  // ← fuera del if, al nivel del useEffect
+  
+}, [mesaId])
+
 const verificarToken = async (token: string, numeroMesa: number) => {
   // Busca el QR en la base de datos
   const { data: qr, error } = await supabase
     .from('qr_mesas')
-    .select('*, mesas(numero, estado)')
+    .select('*, mesas(id,numero, estado, sesion_id)')
     .eq('codigo', token)
     .single()
 
@@ -53,16 +93,19 @@ const verificarToken = async (token: string, numeroMesa: number) => {
   if (qr.mesas.estado !== 'ocupada') {
     setMesaNoActivada(true)
     setTokenActivo(token)        // ← añade esto
-    setMesaActiva(numeroMesa)    // ← añade esto
+    setMesaActiva(null)    // ← añade esto
+    setSesionActiva(null)  // ← null porque aún no hay sesión activa
     setVistaActiva('menu')       // ← añade esto
+    setMesaId(qr.mesas.id)
     return
   }
 
   // Todo correcto — activa la mesa y muestra el menú
   setTokenActivo(token)
   setMesaActiva(numeroMesa)
-  setSesionActiva(qr.sesion_id) // o el campo que tenga el ID de sesión en tu tabla qr_mesas
+  setSesionActiva(qr.mesas.sesion_id) // o el campo que tenga el ID de sesión en tu tabla qr_mesas
   setVistaActiva('menu')
+  setMesaId(qr.mesas.id)
 
 }
 

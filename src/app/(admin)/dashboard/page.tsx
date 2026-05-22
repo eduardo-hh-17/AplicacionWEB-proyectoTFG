@@ -23,6 +23,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     cargarDatos()
+
+    const canal = supabase
+      .channel('dashboard-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => cargarDatos())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'mesas' }, () => cargarDatos())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'platos' }, () => cargarDatos())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'empleados' }, () => cargarDatos())
+      .subscribe()
+
+      return () => { supabase.removeChannel(canal) }
   }, [])
 
   const cargarDatos = async () => {

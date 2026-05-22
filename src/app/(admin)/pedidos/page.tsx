@@ -86,7 +86,7 @@ export default function Pedidos() {
       const sesionId = crypto.randomUUID()
     await supabase
       .from('mesas')
-      .update({ estado: 'ocupada', personas })
+      .update({ estado: 'ocupada', personas, sesion_id: sesionId })
       .eq('id', mesaSeleccionada.id)
     setModalMesa(false)
   }
