@@ -81,6 +81,9 @@ export default function Pedidos() {
   // Activa una mesa — la pone como ocupada
   const activarMesa = async () => {
     if (!mesaSeleccionada) return
+
+      // Genera un ID de sesión único cada vez que se activa la mesa
+      const sesionId = crypto.randomUUID()
     await supabase
       .from('mesas')
       .update({ estado: 'ocupada', personas })
@@ -93,7 +96,10 @@ export default function Pedidos() {
     if (!mesaSeleccionada) return
     await supabase
       .from('mesas')
-      .update({ estado: 'libre', personas: 0 })
+      .update({ 
+        estado: 'libre', 
+        personas: 0,
+      sesion_id: null })
       .eq('id', mesaSeleccionada.id)
     setModalMesa(false)
   }

@@ -1,0 +1,2855 @@
+{
+	"schemaVersion": "2.0",
+	"id": 0,
+	"name": "proyecto-tgf",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 1,
+			"name": "app/(admin)/cocina/page",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 51,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "app/(admin)/cocina/page.tsx",
+							"line": 23,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/cocina/page.tsx#L23"
+						}
+					],
+					"signatures": [
+						{
+							"id": 52,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "app/(admin)/cocina/page.tsx",
+									"line": 23,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/cocina/page.tsx#L23"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						51
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/(admin)/cocina/page.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/cocina/page.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 2,
+			"name": "app/(admin)/dashboard/page",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 53,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "app/(admin)/dashboard/page.tsx",
+							"line": 15,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/dashboard/page.tsx#L15"
+						}
+					],
+					"signatures": [
+						{
+							"id": 54,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "app/(admin)/dashboard/page.tsx",
+									"line": 15,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/dashboard/page.tsx#L15"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						53
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/(admin)/dashboard/page.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/dashboard/page.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 3,
+			"name": "app/(admin)/layout",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 55,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "app/(admin)/layout.tsx",
+							"line": 9,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/layout.tsx#L9"
+						}
+					],
+					"signatures": [
+						{
+							"id": 56,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "app/(admin)/layout.tsx",
+									"line": 9,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/layout.tsx#L9"
+								}
+							],
+							"parameters": [
+								{
+									"id": 57,
+									"name": "__namedParameters",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reflection",
+										"declaration": {
+											"id": 58,
+											"name": "__type",
+											"variant": "declaration",
+											"kind": 65536,
+											"flags": {},
+											"children": [
+												{
+													"id": 59,
+													"name": "children",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "app/(admin)/layout.tsx",
+															"line": 12,
+															"character": 2,
+															"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/layout.tsx#L12"
+														}
+													],
+													"type": {
+														"type": "reference",
+														"target": {
+															"packageName": "@types/react",
+															"packagePath": "index.d.ts",
+															"qualifiedName": "React.ReactNode"
+														},
+														"name": "ReactNode",
+														"package": "@types/react",
+														"qualifiedName": "React.ReactNode"
+													}
+												}
+											],
+											"groups": [
+												{
+													"title": "Properties",
+													"children": [
+														59
+													]
+												}
+											]
+										}
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						55
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/(admin)/layout.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/layout.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 4,
+			"name": "app/(admin)/login/page",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 60,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "app/(admin)/login/page.tsx",
+							"line": 6,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/login/page.tsx#L6"
+						}
+					],
+					"signatures": [
+						{
+							"id": 61,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "app/(admin)/login/page.tsx",
+									"line": 6,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/login/page.tsx#L6"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						60
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/(admin)/login/page.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/login/page.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 5,
+			"name": "app/(admin)/menu/page",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 62,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "app/(admin)/menu/page.tsx",
+							"line": 25,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/menu/page.tsx#L25"
+						}
+					],
+					"signatures": [
+						{
+							"id": 63,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "app/(admin)/menu/page.tsx",
+									"line": 25,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/menu/page.tsx#L25"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						62
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/(admin)/menu/page.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/menu/page.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 6,
+			"name": "app/(admin)/pedidos/page",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 64,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "app/(admin)/pedidos/page.tsx",
+							"line": 28,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/pedidos/page.tsx#L28"
+						}
+					],
+					"signatures": [
+						{
+							"id": 65,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "app/(admin)/pedidos/page.tsx",
+									"line": 28,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/pedidos/page.tsx#L28"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						64
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/(admin)/pedidos/page.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/pedidos/page.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 7,
+			"name": "app/(admin)/qr/page",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 66,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "app/(admin)/qr/page.tsx",
+							"line": 17,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/qr/page.tsx#L17"
+						}
+					],
+					"signatures": [
+						{
+							"id": 67,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "app/(admin)/qr/page.tsx",
+									"line": 17,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/qr/page.tsx#L17"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						66
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/(admin)/qr/page.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(admin)/qr/page.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 8,
+			"name": "app/(cliente)/page",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 68,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "app/(cliente)/page.tsx",
+							"line": 14,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(cliente)/page.tsx#L14"
+						}
+					],
+					"signatures": [
+						{
+							"id": 69,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "app/(cliente)/page.tsx",
+									"line": 14,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(cliente)/page.tsx#L14"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						68
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/(cliente)/page.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/(cliente)/page.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 9,
+			"name": "app/layout",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 10,
+					"name": "metadata",
+					"variant": "declaration",
+					"kind": 32,
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "app/layout.tsx",
+							"line": 15,
+							"character": 13,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/layout.tsx#L15"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "next",
+							"packagePath": "dist/lib/metadata/types/metadata-interface.d.ts",
+							"qualifiedName": "Metadata"
+						},
+						"name": "Metadata",
+						"package": "next"
+					},
+					"defaultValue": "..."
+				},
+				{
+					"id": 70,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "app/layout.tsx",
+							"line": 23,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/layout.tsx#L23"
+						}
+					],
+					"signatures": [
+						{
+							"id": 71,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "app/layout.tsx",
+									"line": 23,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/layout.tsx#L23"
+								}
+							],
+							"parameters": [
+								{
+									"id": 72,
+									"name": "__namedParameters",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"target": {
+											"packageName": "typescript",
+											"packagePath": "lib/lib.es5.d.ts",
+											"qualifiedName": "Readonly"
+										},
+										"typeArguments": [
+											{
+												"type": "reflection",
+												"declaration": {
+													"id": 73,
+													"name": "__type",
+													"variant": "declaration",
+													"kind": 65536,
+													"flags": {},
+													"children": [
+														{
+															"id": 74,
+															"name": "children",
+															"variant": "declaration",
+															"kind": 1024,
+															"flags": {},
+															"sources": [
+																{
+																	"fileName": "app/layout.tsx",
+																	"line": 26,
+																	"character": 2,
+																	"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/layout.tsx#L26"
+																}
+															],
+															"type": {
+																"type": "reference",
+																"target": {
+																	"packageName": "@types/react",
+																	"packagePath": "index.d.ts",
+																	"qualifiedName": "React.ReactNode"
+																},
+																"name": "React.ReactNode",
+																"package": "@types/react"
+															}
+														}
+													],
+													"groups": [
+														{
+															"title": "Properties",
+															"children": [
+																74
+															]
+														}
+													]
+												}
+											}
+										],
+										"name": "Readonly",
+										"package": "typescript"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"children": [
+						10
+					]
+				},
+				{
+					"title": "Functions",
+					"children": [
+						70
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/layout.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/app/layout.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 11,
+			"name": "components/admin/QRMesa",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 75,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "components/admin/QRMesa.tsx",
+							"line": 12,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/admin/QRMesa.tsx#L12"
+						}
+					],
+					"signatures": [
+						{
+							"id": 76,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "components/admin/QRMesa.tsx",
+									"line": 12,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/admin/QRMesa.tsx#L12"
+								}
+							],
+							"parameters": [
+								{
+									"id": 77,
+									"name": "__namedParameters",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"target": {
+											"packageName": "proyecto-tgf",
+											"packagePath": "src/components/admin/QRMesa.tsx",
+											"qualifiedName": "Props"
+										},
+										"name": "Props",
+										"package": "proyecto-tgf"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						75
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "components/admin/QRMesa.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/admin/QRMesa.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 12,
+			"name": "components/cliente/LayoutLateral",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 78,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "components/cliente/LayoutLateral.tsx",
+							"line": 13,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/LayoutLateral.tsx#L13"
+						}
+					],
+					"signatures": [
+						{
+							"id": 79,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "components/cliente/LayoutLateral.tsx",
+									"line": 13,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/LayoutLateral.tsx#L13"
+								}
+							],
+							"parameters": [
+								{
+									"id": 80,
+									"name": "__namedParameters",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reflection",
+										"declaration": {
+											"id": 81,
+											"name": "__type",
+											"variant": "declaration",
+											"kind": 65536,
+											"flags": {},
+											"children": [
+												{
+													"id": 82,
+													"name": "children",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "components/cliente/LayoutLateral.tsx",
+															"line": 18,
+															"character": 2,
+															"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/LayoutLateral.tsx#L18"
+														}
+													],
+													"type": {
+														"type": "reference",
+														"target": {
+															"packageName": "@types/react",
+															"packagePath": "index.d.ts",
+															"qualifiedName": "React.ReactNode"
+														},
+														"name": "ReactNode",
+														"package": "@types/react",
+														"qualifiedName": "React.ReactNode"
+													}
+												},
+												{
+													"id": 84,
+													"name": "onCambiarVista",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "components/cliente/LayoutLateral.tsx",
+															"line": 20,
+															"character": 2,
+															"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/LayoutLateral.tsx#L20"
+														}
+													],
+													"type": {
+														"type": "reflection",
+														"declaration": {
+															"id": 85,
+															"name": "__type",
+															"variant": "declaration",
+															"kind": 65536,
+															"flags": {},
+															"signatures": [
+																{
+																	"id": 86,
+																	"name": "__type",
+																	"variant": "signature",
+																	"kind": 4096,
+																	"flags": {},
+																	"parameters": [
+																		{
+																			"id": 87,
+																			"name": "vista",
+																			"variant": "param",
+																			"kind": 32768,
+																			"flags": {},
+																			"type": {
+																				"type": "reference",
+																				"target": {
+																					"packageName": "proyecto-tgf",
+																					"packagePath": "src/components/cliente/LayoutLateral.tsx",
+																					"qualifiedName": "Vista"
+																				},
+																				"name": "Vista",
+																				"package": "proyecto-tgf"
+																			}
+																		}
+																	],
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "void"
+																	}
+																}
+															]
+														}
+													}
+												},
+												{
+													"id": 83,
+													"name": "vistaActiva",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "components/cliente/LayoutLateral.tsx",
+															"line": 19,
+															"character": 2,
+															"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/LayoutLateral.tsx#L19"
+														}
+													],
+													"type": {
+														"type": "reference",
+														"target": {
+															"packageName": "proyecto-tgf",
+															"packagePath": "src/components/cliente/LayoutLateral.tsx",
+															"qualifiedName": "Vista"
+														},
+														"name": "Vista",
+														"package": "proyecto-tgf"
+													}
+												}
+											],
+											"groups": [
+												{
+													"title": "Properties",
+													"children": [
+														82,
+														84,
+														83
+													]
+												}
+											]
+										}
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						78
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "components/cliente/LayoutLateral.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/LayoutLateral.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 13,
+			"name": "components/cliente/PanelContacto",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 88,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "components/cliente/PanelContacto.tsx",
+							"line": 5,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelContacto.tsx#L5"
+						}
+					],
+					"signatures": [
+						{
+							"id": 89,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "components/cliente/PanelContacto.tsx",
+									"line": 5,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelContacto.tsx#L5"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						88
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "components/cliente/PanelContacto.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelContacto.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 14,
+			"name": "components/cliente/PanelInicio",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 90,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "components/cliente/PanelInicio.tsx",
+							"line": 1,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelInicio.tsx#L1"
+						}
+					],
+					"signatures": [
+						{
+							"id": 91,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "components/cliente/PanelInicio.tsx",
+									"line": 1,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelInicio.tsx#L1"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						90
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "components/cliente/PanelInicio.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelInicio.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 15,
+			"name": "components/cliente/PanelMenu",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 92,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "components/cliente/PanelMenu.tsx",
+							"line": 9,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelMenu.tsx#L9"
+						}
+					],
+					"signatures": [
+						{
+							"id": 93,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "components/cliente/PanelMenu.tsx",
+									"line": 9,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelMenu.tsx#L9"
+								}
+							],
+							"parameters": [
+								{
+									"id": 94,
+									"name": "__namedParameters",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reflection",
+										"declaration": {
+											"id": 95,
+											"name": "__type",
+											"variant": "declaration",
+											"kind": 65536,
+											"flags": {},
+											"children": [
+												{
+													"id": 97,
+													"name": "mesaActiva",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "components/cliente/PanelMenu.tsx",
+															"line": 11,
+															"character": 2,
+															"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelMenu.tsx#L11"
+														}
+													],
+													"type": {
+														"type": "union",
+														"types": [
+															{
+																"type": "intrinsic",
+																"name": "number"
+															},
+															{
+																"type": "literal",
+																"value": null
+															}
+														]
+													}
+												},
+												{
+													"id": 98,
+													"name": "sesionActiva",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "components/cliente/PanelMenu.tsx",
+															"line": 12,
+															"character": 2,
+															"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelMenu.tsx#L12"
+														}
+													],
+													"type": {
+														"type": "union",
+														"types": [
+															{
+																"type": "intrinsic",
+																"name": "string"
+															},
+															{
+																"type": "literal",
+																"value": null
+															}
+														]
+													}
+												},
+												{
+													"id": 96,
+													"name": "tokenActivo",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "components/cliente/PanelMenu.tsx",
+															"line": 10,
+															"character": 2,
+															"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelMenu.tsx#L10"
+														}
+													],
+													"type": {
+														"type": "union",
+														"types": [
+															{
+																"type": "intrinsic",
+																"name": "string"
+															},
+															{
+																"type": "literal",
+																"value": null
+															}
+														]
+													}
+												}
+											],
+											"groups": [
+												{
+													"title": "Properties",
+													"children": [
+														97,
+														98,
+														96
+													]
+												}
+											]
+										}
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						92
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "components/cliente/PanelMenu.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelMenu.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 16,
+			"name": "components/cliente/PanelReservas",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 99,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "components/cliente/PanelReservas.tsx",
+							"line": 5,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelReservas.tsx#L5"
+						}
+					],
+					"signatures": [
+						{
+							"id": 100,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "components/cliente/PanelReservas.tsx",
+									"line": 5,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelReservas.tsx#L5"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						99
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "components/cliente/PanelReservas.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelReservas.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 17,
+			"name": "components/cliente/PanelSobreNosotros",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 101,
+					"name": "default",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "components/cliente/PanelSobreNosotros.tsx",
+							"line": 1,
+							"character": 24,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelSobreNosotros.tsx#L1"
+						}
+					],
+					"signatures": [
+						{
+							"id": 102,
+							"name": "default",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "components/cliente/PanelSobreNosotros.tsx",
+									"line": 1,
+									"character": 24,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelSobreNosotros.tsx#L1"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						101
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "components/cliente/PanelSobreNosotros.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/PanelSobreNosotros.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 18,
+			"name": "components/cliente/Toast",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 19,
+					"name": "Toast",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "components/cliente/Toast.tsx",
+							"line": 12,
+							"character": 16,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/Toast.tsx#L12"
+						}
+					],
+					"signatures": [
+						{
+							"id": 20,
+							"name": "Toast",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "components/cliente/Toast.tsx",
+									"line": 12,
+									"character": 16,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/Toast.tsx#L12"
+								}
+							],
+							"parameters": [
+								{
+									"id": 21,
+									"name": "__namedParameters",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"target": {
+											"packageName": "proyecto-tgf",
+											"packagePath": "src/components/cliente/Toast.tsx",
+											"qualifiedName": "ToastProps"
+										},
+										"name": "ToastProps",
+										"package": "proyecto-tgf"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@types/react",
+									"packagePath": "jsx-runtime.d.ts",
+									"qualifiedName": "JSX.Element"
+								},
+								"name": "Element",
+								"package": "@types/react",
+								"qualifiedName": "JSX.Element"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						19
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "components/cliente/Toast.tsx",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/components/cliente/Toast.tsx#L1"
+				}
+			]
+		},
+		{
+			"id": 22,
+			"name": "hooks/useEmpleado",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 23,
+					"name": "useEmpleado",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "hooks/useEmpleado.ts",
+							"line": 14,
+							"character": 16,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useEmpleado.ts#L14"
+						}
+					],
+					"signatures": [
+						{
+							"id": 24,
+							"name": "useEmpleado",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "hooks/useEmpleado.ts",
+									"line": 14,
+									"character": 16,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useEmpleado.ts#L14"
+								}
+							],
+							"type": {
+								"type": "reflection",
+								"declaration": {
+									"id": 25,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 27,
+											"name": "cargando",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "hooks/useEmpleado.ts",
+													"line": 56,
+													"character": 21,
+													"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useEmpleado.ts#L56"
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "boolean"
+											}
+										},
+										{
+											"id": 26,
+											"name": "empleado",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "hooks/useEmpleado.ts",
+													"line": 56,
+													"character": 11,
+													"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useEmpleado.ts#L56"
+												}
+											],
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "reference",
+														"target": {
+															"packageName": "proyecto-tgf",
+															"packagePath": "src/hooks/useEmpleado.ts",
+															"qualifiedName": "Empleado"
+														},
+														"name": "Empleado",
+														"package": "proyecto-tgf"
+													},
+													{
+														"type": "literal",
+														"value": null
+													}
+												]
+											}
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												27,
+												26
+											]
+										}
+									]
+								}
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						23
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "hooks/useEmpleado.ts",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useEmpleado.ts#L1"
+				}
+			]
+		},
+		{
+			"id": 28,
+			"name": "hooks/useToast",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 29,
+					"name": "useToast",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "hooks/useToast.ts",
+							"line": 9,
+							"character": 16,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useToast.ts#L9"
+						}
+					],
+					"signatures": [
+						{
+							"id": 30,
+							"name": "useToast",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "hooks/useToast.ts",
+									"line": 9,
+									"character": 16,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useToast.ts#L9"
+								}
+							],
+							"type": {
+								"type": "reflection",
+								"declaration": {
+									"id": 31,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 38,
+											"name": "removeToast",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "hooks/useToast.ts",
+													"line": 26,
+													"character": 30,
+													"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useToast.ts#L26"
+												}
+											],
+											"type": {
+												"type": "reflection",
+												"declaration": {
+													"id": 39,
+													"name": "__type",
+													"variant": "declaration",
+													"kind": 65536,
+													"flags": {},
+													"signatures": [
+														{
+															"id": 40,
+															"name": "__type",
+															"variant": "signature",
+															"kind": 4096,
+															"flags": {},
+															"parameters": [
+																{
+																	"id": 41,
+																	"name": "id",
+																	"variant": "param",
+																	"kind": 32768,
+																	"flags": {},
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "number"
+																	}
+																}
+															],
+															"type": {
+																"type": "intrinsic",
+																"name": "void"
+															}
+														}
+													]
+												}
+											}
+										},
+										{
+											"id": 33,
+											"name": "showToast",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "hooks/useToast.ts",
+													"line": 26,
+													"character": 19,
+													"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useToast.ts#L26"
+												}
+											],
+											"type": {
+												"type": "reflection",
+												"declaration": {
+													"id": 34,
+													"name": "__type",
+													"variant": "declaration",
+													"kind": 65536,
+													"flags": {},
+													"signatures": [
+														{
+															"id": 35,
+															"name": "__type",
+															"variant": "signature",
+															"kind": 4096,
+															"flags": {},
+															"parameters": [
+																{
+																	"id": 36,
+																	"name": "message",
+																	"variant": "param",
+																	"kind": 32768,
+																	"flags": {},
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "string"
+																	}
+																},
+																{
+																	"id": 37,
+																	"name": "type",
+																	"variant": "param",
+																	"kind": 32768,
+																	"flags": {},
+																	"type": {
+																		"type": "union",
+																		"types": [
+																			{
+																				"type": "literal",
+																				"value": "error"
+																			},
+																			{
+																				"type": "literal",
+																				"value": "success"
+																			},
+																			{
+																				"type": "literal",
+																				"value": "info"
+																			}
+																		]
+																	},
+																	"defaultValue": "'info'"
+																}
+															],
+															"type": {
+																"type": "intrinsic",
+																"name": "void"
+															}
+														}
+													]
+												}
+											}
+										},
+										{
+											"id": 32,
+											"name": "toasts",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "hooks/useToast.ts",
+													"line": 26,
+													"character": 11,
+													"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useToast.ts#L26"
+												}
+											],
+											"type": {
+												"type": "array",
+												"elementType": {
+													"type": "reference",
+													"target": {
+														"packageName": "proyecto-tgf",
+														"packagePath": "src/hooks/useToast.ts",
+														"qualifiedName": "ToastType"
+													},
+													"name": "ToastType",
+													"package": "proyecto-tgf"
+												}
+											}
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												38,
+												33,
+												32
+											]
+										}
+									]
+								}
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"children": [
+						29
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "hooks/useToast.ts",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/hooks/useToast.ts#L1"
+				}
+			]
+		},
+		{
+			"id": 42,
+			"name": "lib/supabase",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 43,
+					"name": "supabase",
+					"variant": "declaration",
+					"kind": 32,
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "lib/supabase.ts",
+							"line": 3,
+							"character": 13,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/lib/supabase.ts#L3"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "@supabase/supabase-js",
+							"packagePath": "src/lib/rest/types/common/common.ts",
+							"qualifiedName": "SupabaseClient"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "any"
+							},
+							{
+								"type": "literal",
+								"value": "public"
+							},
+							{
+								"type": "literal",
+								"value": "public"
+							},
+							{
+								"type": "intrinsic",
+								"name": "any"
+							},
+							{
+								"type": "intrinsic",
+								"name": "any"
+							}
+						],
+						"name": "SupabaseClient",
+						"package": "@supabase/supabase-js"
+					},
+					"defaultValue": "..."
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"children": [
+						43
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "lib/supabase.ts",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/lib/supabase.ts#L1"
+				}
+			]
+		},
+		{
+			"id": 44,
+			"name": "middleware",
+			"variant": "declaration",
+			"kind": 2,
+			"flags": {},
+			"children": [
+				{
+					"id": 48,
+					"name": "config",
+					"variant": "declaration",
+					"kind": 32,
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "middleware.ts",
+							"line": 28,
+							"character": 13,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/middleware.ts#L28"
+						}
+					],
+					"type": {
+						"type": "reflection",
+						"declaration": {
+							"id": 49,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 50,
+									"name": "matcher",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "middleware.ts",
+											"line": 29,
+											"character": 2,
+											"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/middleware.ts#L29"
+										}
+									],
+									"type": {
+										"type": "array",
+										"elementType": {
+											"type": "intrinsic",
+											"name": "string"
+										}
+									},
+									"defaultValue": "..."
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										50
+									]
+								}
+							]
+						}
+					},
+					"defaultValue": "..."
+				},
+				{
+					"id": 45,
+					"name": "middleware",
+					"variant": "declaration",
+					"kind": 64,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "middleware.ts",
+							"line": 4,
+							"character": 22,
+							"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/middleware.ts#L4"
+						}
+					],
+					"signatures": [
+						{
+							"id": 46,
+							"name": "middleware",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "middleware.ts",
+									"line": 4,
+									"character": 22,
+									"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/middleware.ts#L4"
+								}
+							],
+							"parameters": [
+								{
+									"id": 47,
+									"name": "req",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"target": {
+											"packageName": "next",
+											"packagePath": "dist/server/web/spec-extension/request.d.ts",
+											"qualifiedName": "NextRequest"
+										},
+										"name": "NextRequest",
+										"package": "next"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": {
+											"packageName": "next",
+											"packagePath": "dist/server/web/spec-extension/response.d.ts",
+											"qualifiedName": "NextResponse"
+										},
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "unknown"
+											}
+										],
+										"name": "NextResponse",
+										"package": "next"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"children": [
+						48
+					]
+				},
+				{
+					"title": "Functions",
+					"children": [
+						45
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "middleware.ts",
+					"line": 1,
+					"character": 0,
+					"url": "https://github.com/eduardo-hh-17/proyecto-tfg/blob/0969efc26161cd0de41be2add8ce99fb2ac10545/src/middleware.ts#L1"
+				}
+			]
+		}
+	],
+	"groups": [
+		{
+			"title": "Modules",
+			"children": [
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				22,
+				28,
+				42,
+				44
+			]
+		}
+	],
+	"packageName": "proyecto-tgf",
+	"readme": [
+		{
+			"kind": "text",
+			"text": "This is a [Next.js](https://nextjs.org) project bootstrapped with ["
+		},
+		{
+			"kind": "code",
+			"text": "`create-next-app`"
+		},
+		{
+			"kind": "text",
+			"text": "](https://nextjs.org/docs/app/api-reference/cli/create-next-app).\n\n## Getting Started\n\nFirst, run the development server:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\nnpm run dev\n# or\nyarn dev\n# or\npnpm dev\n# or\nbun dev\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nOpen [http://localhost:3000](http://localhost:3000) with your browser to see the result.\n\nYou can start editing the page by modifying "
+		},
+		{
+			"kind": "code",
+			"text": "`app/page.tsx`"
+		},
+		{
+			"kind": "text",
+			"text": ". The page auto-updates as you edit the file.\n\nThis project uses ["
+		},
+		{
+			"kind": "code",
+			"text": "`next/font`"
+		},
+		{
+			"kind": "text",
+			"text": "](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.\n\n## Learn More\n\nTo learn more about Next.js, take a look at the following resources:\n\n- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.\n- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.\n\nYou can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!\n\n## Deploy on Vercel\n\nThe easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.\n\nCheck out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details."
+		}
+	],
+	"symbolIdMap": {
+		"1": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/cocina/page.tsx",
+			"qualifiedName": ""
+		},
+		"2": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/dashboard/page.tsx",
+			"qualifiedName": ""
+		},
+		"3": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/layout.tsx",
+			"qualifiedName": ""
+		},
+		"4": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/login/page.tsx",
+			"qualifiedName": ""
+		},
+		"5": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/menu/page.tsx",
+			"qualifiedName": ""
+		},
+		"6": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/pedidos/page.tsx",
+			"qualifiedName": ""
+		},
+		"7": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/qr/page.tsx",
+			"qualifiedName": ""
+		},
+		"8": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(cliente)/page.tsx",
+			"qualifiedName": ""
+		},
+		"9": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/layout.tsx",
+			"qualifiedName": ""
+		},
+		"10": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/layout.tsx",
+			"qualifiedName": "metadata"
+		},
+		"11": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/admin/QRMesa.tsx",
+			"qualifiedName": ""
+		},
+		"12": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": ""
+		},
+		"13": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelContacto.tsx",
+			"qualifiedName": ""
+		},
+		"14": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelInicio.tsx",
+			"qualifiedName": ""
+		},
+		"15": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelMenu.tsx",
+			"qualifiedName": ""
+		},
+		"16": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelReservas.tsx",
+			"qualifiedName": ""
+		},
+		"17": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelSobreNosotros.tsx",
+			"qualifiedName": ""
+		},
+		"18": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/Toast.tsx",
+			"qualifiedName": ""
+		},
+		"19": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/Toast.tsx",
+			"qualifiedName": "Toast"
+		},
+		"20": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/Toast.tsx",
+			"qualifiedName": "Toast"
+		},
+		"21": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/Toast.tsx",
+			"qualifiedName": "__0"
+		},
+		"22": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useEmpleado.ts",
+			"qualifiedName": ""
+		},
+		"23": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useEmpleado.ts",
+			"qualifiedName": "useEmpleado"
+		},
+		"24": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useEmpleado.ts",
+			"qualifiedName": "useEmpleado"
+		},
+		"25": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useEmpleado.ts",
+			"qualifiedName": "__object"
+		},
+		"26": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useEmpleado.ts",
+			"qualifiedName": "__object.empleado"
+		},
+		"27": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useEmpleado.ts",
+			"qualifiedName": "__object.cargando"
+		},
+		"28": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": ""
+		},
+		"29": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "useToast"
+		},
+		"30": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "useToast"
+		},
+		"31": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "__object"
+		},
+		"32": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "__object.toasts"
+		},
+		"33": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "__object.showToast"
+		},
+		"34": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "__function"
+		},
+		"35": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "__function"
+		},
+		"36": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "message"
+		},
+		"37": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "type"
+		},
+		"38": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "__object.removeToast"
+		},
+		"39": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "__function"
+		},
+		"40": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "__function"
+		},
+		"41": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/hooks/useToast.ts",
+			"qualifiedName": "id"
+		},
+		"42": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/lib/supabase.ts",
+			"qualifiedName": ""
+		},
+		"43": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/lib/supabase.ts",
+			"qualifiedName": "supabase"
+		},
+		"44": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/middleware.ts",
+			"qualifiedName": ""
+		},
+		"45": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/middleware.ts",
+			"qualifiedName": "middleware"
+		},
+		"46": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/middleware.ts",
+			"qualifiedName": "middleware"
+		},
+		"47": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/middleware.ts",
+			"qualifiedName": "req"
+		},
+		"48": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/middleware.ts",
+			"qualifiedName": "config"
+		},
+		"49": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/middleware.ts",
+			"qualifiedName": "__object"
+		},
+		"50": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/middleware.ts",
+			"qualifiedName": "__object.matcher"
+		},
+		"51": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/cocina/page.tsx",
+			"qualifiedName": "default"
+		},
+		"52": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/cocina/page.tsx",
+			"qualifiedName": "default"
+		},
+		"53": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/dashboard/page.tsx",
+			"qualifiedName": "default"
+		},
+		"54": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/dashboard/page.tsx",
+			"qualifiedName": "default"
+		},
+		"55": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/layout.tsx",
+			"qualifiedName": "default"
+		},
+		"56": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/layout.tsx",
+			"qualifiedName": "default"
+		},
+		"57": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/layout.tsx",
+			"qualifiedName": "__0"
+		},
+		"58": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/layout.tsx",
+			"qualifiedName": "__type"
+		},
+		"59": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/layout.tsx",
+			"qualifiedName": "__type.children"
+		},
+		"60": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/login/page.tsx",
+			"qualifiedName": "default"
+		},
+		"61": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/login/page.tsx",
+			"qualifiedName": "default"
+		},
+		"62": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/menu/page.tsx",
+			"qualifiedName": "default"
+		},
+		"63": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/menu/page.tsx",
+			"qualifiedName": "default"
+		},
+		"64": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/pedidos/page.tsx",
+			"qualifiedName": "default"
+		},
+		"65": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/pedidos/page.tsx",
+			"qualifiedName": "default"
+		},
+		"66": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/qr/page.tsx",
+			"qualifiedName": "default"
+		},
+		"67": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(admin)/qr/page.tsx",
+			"qualifiedName": "default"
+		},
+		"68": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(cliente)/page.tsx",
+			"qualifiedName": "default"
+		},
+		"69": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/(cliente)/page.tsx",
+			"qualifiedName": "default"
+		},
+		"70": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/layout.tsx",
+			"qualifiedName": "default"
+		},
+		"71": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/layout.tsx",
+			"qualifiedName": "default"
+		},
+		"72": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/layout.tsx",
+			"qualifiedName": "__0"
+		},
+		"73": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/layout.tsx",
+			"qualifiedName": "__type"
+		},
+		"74": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/app/layout.tsx",
+			"qualifiedName": "__type.children"
+		},
+		"75": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/admin/QRMesa.tsx",
+			"qualifiedName": "default"
+		},
+		"76": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/admin/QRMesa.tsx",
+			"qualifiedName": "default"
+		},
+		"77": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/admin/QRMesa.tsx",
+			"qualifiedName": "__0"
+		},
+		"78": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": "default"
+		},
+		"79": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": "default"
+		},
+		"80": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": "__0"
+		},
+		"81": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": "__type"
+		},
+		"82": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": "__type.children"
+		},
+		"83": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": "__type.vistaActiva"
+		},
+		"84": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": "__type.onCambiarVista"
+		},
+		"85": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": "__type"
+		},
+		"86": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": "__type"
+		},
+		"87": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/LayoutLateral.tsx",
+			"qualifiedName": "vista"
+		},
+		"88": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelContacto.tsx",
+			"qualifiedName": "default"
+		},
+		"89": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelContacto.tsx",
+			"qualifiedName": "default"
+		},
+		"90": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelInicio.tsx",
+			"qualifiedName": "default"
+		},
+		"91": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelInicio.tsx",
+			"qualifiedName": "default"
+		},
+		"92": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelMenu.tsx",
+			"qualifiedName": "default"
+		},
+		"93": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelMenu.tsx",
+			"qualifiedName": "default"
+		},
+		"94": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelMenu.tsx",
+			"qualifiedName": "__0"
+		},
+		"95": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelMenu.tsx",
+			"qualifiedName": "__type"
+		},
+		"96": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelMenu.tsx",
+			"qualifiedName": "__type.tokenActivo"
+		},
+		"97": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelMenu.tsx",
+			"qualifiedName": "__type.mesaActiva"
+		},
+		"98": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelMenu.tsx",
+			"qualifiedName": "__type.sesionActiva"
+		},
+		"99": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelReservas.tsx",
+			"qualifiedName": "default"
+		},
+		"100": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelReservas.tsx",
+			"qualifiedName": "default"
+		},
+		"101": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelSobreNosotros.tsx",
+			"qualifiedName": "default"
+		},
+		"102": {
+			"packageName": "proyecto-tgf",
+			"packagePath": "src/components/cliente/PanelSobreNosotros.tsx",
+			"qualifiedName": "default"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "src/app/(admin)/cocina/page.tsx",
+			"2": "src/app/(admin)/dashboard/page.tsx",
+			"3": "src/app/(admin)/layout.tsx",
+			"4": "src/app/(admin)/login/page.tsx",
+			"5": "src/app/(admin)/menu/page.tsx",
+			"6": "src/app/(admin)/pedidos/page.tsx",
+			"7": "src/app/(admin)/qr/page.tsx",
+			"8": "src/app/(cliente)/page.tsx",
+			"9": "src/app/layout.tsx",
+			"10": "src/components/admin/QRMesa.tsx",
+			"11": "src/components/cliente/LayoutLateral.tsx",
+			"12": "src/components/cliente/PanelContacto.tsx",
+			"13": "src/components/cliente/PanelInicio.tsx",
+			"14": "src/components/cliente/PanelMenu.tsx",
+			"15": "src/components/cliente/PanelReservas.tsx",
+			"16": "src/components/cliente/PanelSobreNosotros.tsx",
+			"17": "src/components/cliente/Toast.tsx",
+			"18": "src/hooks/useEmpleado.ts",
+			"19": "src/hooks/useToast.ts",
+			"20": "src/lib/supabase.ts",
+			"21": "src/middleware.ts",
+			"22": "README.md",
+			"23": ""
+		},
+		"reflections": {
+			"1": 1,
+			"2": 2,
+			"3": 3,
+			"4": 4,
+			"5": 5,
+			"6": 6,
+			"7": 7,
+			"8": 8,
+			"9": 9,
+			"10": 11,
+			"11": 12,
+			"12": 13,
+			"13": 14,
+			"14": 15,
+			"15": 16,
+			"16": 17,
+			"17": 18,
+			"18": 22,
+			"19": 28,
+			"20": 42,
+			"21": 44,
+			"22": 0,
+			"23": 0
+		}
+	}
+}

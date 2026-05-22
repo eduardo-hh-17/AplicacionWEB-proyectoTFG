@@ -1,0 +1,58 @@
+{
+	"schemaVersion": "2.0",
+	"id": 0,
+	"name": "proyecto-tgf",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"packageName": "proyecto-tgf",
+	"readme": [
+		{
+			"kind": "text",
+			"text": "This is a [Next.js](https://nextjs.org) project bootstrapped with ["
+		},
+		{
+			"kind": "code",
+			"text": "`create-next-app`"
+		},
+		{
+			"kind": "text",
+			"text": "](https://nextjs.org/docs/app/api-reference/cli/create-next-app).\n\n## Getting Started\n\nFirst, run the development server:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\nnpm run dev\n# or\nyarn dev\n# or\npnpm dev\n# or\nbun dev\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nOpen [http://localhost:3000](http://localhost:3000) with your browser to see the result.\n\nYou can start editing the page by modifying "
+		},
+		{
+			"kind": "code",
+			"text": "`app/page.tsx`"
+		},
+		{
+			"kind": "text",
+			"text": ". The page auto-updates as you edit the file.\n\nThis project uses ["
+		},
+		{
+			"kind": "code",
+			"text": "`next/font`"
+		},
+		{
+			"kind": "text",
+			"text": "](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.\n\n## Learn More\n\nTo learn more about Next.js, take a look at the following resources:\n\n- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.\n- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.\n\nYou can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!\n\n## Deploy on Vercel\n\nThe easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.\n\nCheck out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details."
+		}
+	],
+	"symbolIdMap": {},
+	"files": {
+		"entries": {
+			"1": "README.md",
+			"2": ""
+		},
+		"reflections": {
+			"1": 0,
+			"2": 0
+		}
+	}
+}

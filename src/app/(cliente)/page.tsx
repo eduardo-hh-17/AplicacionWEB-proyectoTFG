@@ -15,7 +15,9 @@ export default function Home() {
   const [vistaActiva, setVistaActiva] = useState<Vista>('inicio')
   const [tokenActivo, setTokenActivo] = useState<string | null>(null)
   const [mesaActiva, setMesaActiva] = useState<number | null>(null)
+  const [sesionActiva, setSesionActiva] = useState<string | null>(null) // ← nuevo
   const [animando, setAnimando] = useState(false)
+  const [mesaNoActivada, setMesaNoActivada] = useState(false)
   const [errorQR, setErrorQR] = useState<string | null>(null)
 
   useEffect(() => {
@@ -42,27 +44,26 @@ const verificarToken = async (token: string, numeroMesa: number) => {
   }
 
   // Comprueba que el QR corresponde a la mesa correcta
-  if (qr.mesas.numero !== numeroMesa) {
-    setErrorQR('Este QR no corresponde a esta mesa. Pide ayuda al camarero.')
+  if (!qr.activo) {
+    setErrorQR('Este QR está desactivado. Pide al camarero que active tu mesa.')
     return
   }
 
-  // Comprueba que el QR está activo
-  if (!qr.activo) {
-    setErrorQR('Este QR está desactivado. Pide al camarero que active tu mesa.')
+  // Comprueba que la mesa está ocupada (activada por el camarero)
+  if (qr.mesas.estado !== 'ocupada') {
+    setMesaNoActivada(true)
+    setTokenActivo(token)        // ← añade esto
+    setMesaActiva(numeroMesa)    // ← añade esto
+    setVistaActiva('menu')       // ← añade esto
     return
   }
 
   // Todo correcto — activa la mesa y muestra el menú
   setTokenActivo(token)
   setMesaActiva(numeroMesa)
+  setSesionActiva(qr.sesion_id) // o el campo que tenga el ID de sesión en tu tabla qr_mesas
   setVistaActiva('menu')
 
-  // Activa la mesa en Supabase
-  await supabase
-    .from('mesas')
-    .update({ estado: 'ocupada' })
-    .eq('numero', numeroMesa)
 }
 
   const cambiarVista = (nuevaVista: Vista) => {
@@ -92,13 +93,15 @@ const verificarToken = async (token: string, numeroMesa: number) => {
       case 'contacto':
         return <PanelContacto />
       case 'menu':
-        return <PanelMenu tokenActivo={tokenActivo} mesaActiva={mesaActiva} />
+        return <PanelMenu tokenActivo={tokenActivo} mesaActiva={mesaActiva} sesionActiva={sesionActiva}  mesaNoActivada={mesaNoActivada} />
       default:
         return <PanelInicio />
     }
   }
 
-  if (errorQR) return (
+
+  
+    if (errorQR) return (
     <div className="min-h-screen bg-[#0d1f3c] flex items-center justify-center p-8">
       <div className="bg-white rounded-2xl p-8 max-w-sm text-center">
         <p className="text-4xl mb-4">❌</p>
@@ -108,9 +111,9 @@ const verificarToken = async (token: string, numeroMesa: number) => {
     </div>
   )
 
-return (
-  <LayoutLateral 
-      vistaActiva={vistaActiva} 
+  return (
+    <LayoutLateral
+      vistaActiva={vistaActiva}
       onCambiarVista={cambiarVista}
     >
       <div className="min-h-[500px] p-4">
@@ -121,4 +124,7 @@ return (
       </div>
     </LayoutLateral>
   )
+
+
+
 }

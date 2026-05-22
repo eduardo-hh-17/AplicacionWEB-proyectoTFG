@@ -6,9 +6,11 @@ import { useToast } from '@/hooks/useToast'
 import { Toast } from '@/components/cliente/Toast'
 
 
-export default function PanelMenu({ tokenActivo, mesaActiva }: { 
+export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaNoActivada }: { 
   tokenActivo: string | null
-  mesaActiva: number | null 
+  mesaActiva: number | null
+  sesionActiva: string | null
+  mesaNoActivada: boolean
 }) {
   const [platos, setPlatos] = useState<any[]>([])
   const [carrito, setCarrito] = useState<any[]>([])
@@ -86,7 +88,11 @@ const abrirModal = (plato: any) => {
 
 const enviarPedido = async () => {
   console.log('Mesa activa:', mesaActiva)
-    if (!platoSeleccionado) return
+      // Sin QR escaneado
+  if (!mesaActiva) {
+    showToast('📱 Escanea el QR de tu mesa para hacer pedidos', 'error')
+    return
+  }
 
     const nuevoPedido = {
       plato_id: platoSeleccionado.id,
@@ -95,6 +101,7 @@ const enviarPedido = async () => {
       precio: platoSeleccionado.precio,
       estado: 'pendiente',
       mesa: mesaActiva || null,
+      sesion_id: sesionActiva || null,  // ← añade la sesión
       creado_en: new Date().toISOString()
     }
     
@@ -129,9 +136,11 @@ const enviarPedido = async () => {
   return (
     <div className="p-6">
       {/* Banner de estado */}
-      <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
-        <p className="text-green-800 font-medium">
-          ✅ Modo pedido activo - Selecciona un plato para personalizar
+      <div className={`border rounded-xl p-4 mb-6 ${mesaActiva ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
+        <p className={`font-medium ${mesaActiva ? 'text-green-800' : 'text-yellow-800'}`}>
+          {mesaActiva 
+            ? '✅ Modo pedido activo - Selecciona un plato para personalizar'
+            : '👀 Solo vista — Escanea el QR de tu mesa para hacer pedidos'}
         </p>
       </div>
 
