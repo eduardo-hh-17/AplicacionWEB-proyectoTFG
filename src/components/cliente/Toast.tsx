@@ -24,7 +24,7 @@ export function Toast({ message, type, duration = 3000, onClose }: ToastProps) {
   }[type]
 
   return (
-    <div className={`fixed bottom-4 right-4 z-50 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg animate-slide-up`}>
+    <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[9999] ${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl min-w-[300px] text-center`}>
       <div className="flex items-center gap-3">
         {type === 'success' && <span></span>}
         {type === 'error' && <span>❌</span>}

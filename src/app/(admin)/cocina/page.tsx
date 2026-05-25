@@ -18,12 +18,19 @@ type Pedido = {
   mesa: number | null
   ingredientes: Ingrediente[]
   fecha: string
+  creado_en: string
 }
 
 export default function Cocina() {
 
   const [pedidos, setPedidos] = useState<Pedido[]>([])
   const [cargando, setCargando] = useState(true)
+  const [ahora, setAhora] = useState(new Date().getTime())
+
+useEffect(() => {
+  const intervalo = setInterval(() => setAhora(new Date().getTime()), 60000)
+  return () => clearInterval(intervalo)
+}, [])
 
   useEffect(() => {
     cargarPedidos()
@@ -41,12 +48,14 @@ export default function Cocina() {
     return () => { supabase.removeChannel(canal) }
   }, [])
 
+
+
   const cargarPedidos = async () => {
     const { data } = await supabase
       .from('pedidos')
       .select('*')
-      .eq('estado', 'pendiente')
-      .order('fecha', { ascending: true })
+      .in('estado', ['listo','pendiente'])
+      .order('creado_en', { ascending: true })
     if (data) setPedidos(data)
     setCargando(false)
   }
@@ -55,7 +64,7 @@ export default function Cocina() {
   const completarPedido = async (id: number) => {
     await supabase
       .from('pedidos')
-      .update({ estado: 'completado' })
+      .update({ estado: 'listo' })
       .eq('id', id)
   }
 
@@ -70,15 +79,19 @@ export default function Cocina() {
   // Color según el estado
   const colorTarjeta = (estado: string) => {
     if (estado === 'preparando') return 'border-blue-400 bg-blue-50'
+    if (estado === 'listo') return 'border-green-400 bg-green-50'
     return 'border-slate-200 bg-white'
   }
 
   // Tiempo desde que se hizo el pedido
   const tiempoTranscurrido = (fecha: string) => {
-    const minutos = Math.floor((Date.now() - new Date(fecha).getTime()) / 60000)
+    const fechaUTC = fecha.endsWith('Z') ? fecha : fecha + 'Z'
+    const minutos = Math.floor((Date.now() - new Date(fechaUTC).getTime()) / 60000)
     if (minutos < 1) return 'Ahora mismo'
-    if (minutos === 1) return 'Hace 1 minuto'
-    return `Hace ${minutos} minutos`
+    if (minutos < 60) return `Hace ${minutos} min`
+    const horas = Math.floor(minutos / 60)
+    const mins = minutos % 60
+    return `${horas}h ${mins}min`
   }
 
   if (cargando) return (
@@ -90,24 +103,7 @@ export default function Cocina() {
   return (
     <div>
 
-      {/* ── CABECERA ── */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-medium text-[#0d1f3c]">Pantalla de cocina</h1>
-          <p className="text-slate-400 text-sm mt-1">Los pedidos se actualizan en tiempo real</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-2 text-sm text-slate-400">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse inline-block"/>
-            En vivo
-          </span>
-          {pedidos.length > 0 && (
-            <span className="bg-blue-500 text-white text-sm px-3 py-1 rounded-full font-medium">
-              {pedidos.length} pendiente{pedidos.length > 1 ? 's' : ''}
-            </span>
-          )}
-        </div>
-      </div>
+
 
       {/* ── PEDIDOS ── */}
       {pedidos.length === 0 ? (
@@ -128,7 +124,7 @@ export default function Cocina() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <p className="text-[#0d1f3c] text-lg font-medium">{pedido.plato_nombre}</p>
-                  <p className="text-slate-400 text-xs mt-1">{tiempoTranscurrido(pedido.fecha)}</p>
+                  <p className="text-slate-400 text-xs mt-1">{tiempoTranscurrido(pedido.creado_en)}</p>
                 </div>
                 <div className="text-right">
                   {pedido.mesa && (
@@ -175,14 +171,6 @@ export default function Cocina() {
 
               {/* Botones */}
               <div className="flex flex-col gap-2">
-                {pedido.estado === 'pendiente' && (
-                  <button
-                    onClick={() => prepararPedido(pedido.id)}
-                    className="w-full bg-blue-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-blue-600 transition-colors"
-                  >
-                    👨‍🍳 Empezar a preparar
-                  </button>
-                )}
                 <button
                   onClick={() => completarPedido(pedido.id)}
                   className="w-full bg-[#0d1f3c] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors"

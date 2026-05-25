@@ -66,7 +66,7 @@ export default function Pedidos() {
     const { data } = await supabase
       .from('pedidos')
       .select('*')
-      .eq('estado', 'pendiente')
+      .eq('estado', ['listo', 'preparando'])
       .order('fecha', { ascending: false })
     if (data) setPedidos(data)
   }
@@ -82,33 +82,95 @@ export default function Pedidos() {
   const activarMesa = async () => {
     if (!mesaSeleccionada) return
 
-      // Genera un ID de sesión único cada vez que se activa la mesa
-      const sesionId = crypto.randomUUID()
+    const sesionId = crypto.randomUUID()
+
+    // 1. Crea la sesión en la tabla sesiones
+    await supabase
+      .from('sesiones')
+      .insert([{
+        id: sesionId,
+        mesa_id: mesaSeleccionada.id,
+        mesa_numero: mesaSeleccionada.numero,
+        personas: personas,
+        iniciada_en: new Date().toISOString(),
+        estado: 'activa'
+      }])
+
+    // 2. Actualiza la mesa con el nuevo sesion_id
     await supabase
       .from('mesas')
       .update({ estado: 'ocupada', personas, sesion_id: sesionId })
       .eq('id', mesaSeleccionada.id)
+
     setModalMesa(false)
   }
 
   // Libera una mesa — la pone como libre
   const liberarMesa = async () => {
     if (!mesaSeleccionada) return
+
+    // 1. Obtener la sesión activa de la mesa
+    const { data: mesa } = await supabase
+      .from('mesas')
+      .select('sesion_id')
+      .eq('id', mesaSeleccionada.id)
+      .single()
+
+    if (mesa?.sesion_id) {
+      // 2. Obtener todos los pedidos de esa sesión
+      const { data: pedidosSesion } = await supabase
+        .from('pedidos')
+        .select('*')
+        .eq('sesion_id', mesa.sesion_id)
+
+      // 3. Calcular total y tiempo
+      const total = pedidosSesion?.reduce((sum, p) => sum + (p.precio || 0), 0) || 0
+
+      const { data: sesion } = await supabase
+        .from('sesiones')
+        .select('iniciada_en')
+        .eq('id', mesa.sesion_id)
+        .single()
+
+      const tiempoMinutos = sesion
+        ? Math.floor((Date.now() - new Date(sesion.iniciada_en).getTime()) / 60000)
+        : 0
+
+      // 4. Guardar factura
+      await supabase.from('facturas').insert([{
+        sesion_id: mesa.sesion_id,
+        mesa_numero: mesaSeleccionada.numero,
+        personas: mesaSeleccionada.personas,
+        pedidos: pedidosSesion,
+        total,
+        tiempo_minutos: tiempoMinutos,
+        creada_en: new Date().toISOString()
+      }])
+
+      // 5. Cerrar sesión
+      await supabase
+        .from('sesiones')
+        .update({ estado: 'cerrada', cerrada_en: new Date().toISOString(), total })
+        .eq('id', mesa.sesion_id)
+    }
+
+    // 6. Liberar la mesa
     await supabase
       .from('mesas')
-      .update({ 
-        estado: 'libre', 
-        personas: 0,
-      sesion_id: null })
+      .update({ estado: 'libre', personas: 0, sesion_id: null })
       .eq('id', mesaSeleccionada.id)
+
     setModalMesa(false)
   }
 
   // Marca un pedido como completado
-  const completarPedido = async (id: number) => {
+  const entregarPedido = async (id: number) => {
     await supabase
       .from('pedidos')
-      .update({ estado: 'completado' })
+      .update({ 
+        estado: 'entregado',
+        completado_en: new Date().toISOString()
+      })
       .eq('id', id)
   }
 
@@ -169,12 +231,12 @@ export default function Pedidos() {
         {/* ── COLUMNA DERECHA — PEDIDOS PENDIENTES (CON SCROLL INDEPENDIENTE) ── */}
         <div className="w-80 flex-shrink-0 flex flex-col h-full">
         <h2 className="text-xl font-medium text-[#0d1f3c] mb-6 flex-shrink-0">
-            Pedidos pendientes
-            {pedidos.length > 0 && (
-            <span className="ml-2 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {pedidos.length}
+          🍽️ Listos para entregar
+          {pedidos.length > 0 && (
+            <span className="ml-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+              {pedidos.length}
             </span>
-            )}
+          )}
         </h2>
 
         {/* Scroll SOLO para pedidos */}
@@ -186,38 +248,57 @@ export default function Pedidos() {
             </div>
             ) : (
             pedidos.map((pedido) => (
-                <div key={pedido.id} className="bg-white rounded-2xl border border-slate-200 p-4">
-                <div className="flex items-start justify-between mb-2">
-                    <div>
-                    <p className="text-[#0d1f3c] text-sm font-medium">{pedido.plato_nombre}</p>
-                    <p className="text-slate-400 text-xs mt-0.5">
-                        {pedido.mesa ? `Mesa ${pedido.mesa}` : 'Sin mesa'}
-                    </p>
-                    </div>
-                    <p className="text-blue-600 text-sm font-medium">{pedido.precio}€</p>
+            <div key={pedido.id} className={`rounded-2xl border p-4 transition-all ${
+              pedido.estado === 'listo' 
+                ? 'bg-white border-green-300' 
+                : 'bg-slate-50 border-slate-200 opacity-60'  // ← gris si está preparando
+            }`}>
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <p className="text-[#0d1f3c] text-sm font-medium">{pedido.plato_nombre}</p>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    {pedido.mesa ? `Mesa ${pedido.mesa}` : 'Sin mesa'}
+                  </p>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium mt-1 inline-block ${
+                    pedido.estado === 'listo' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'bg-slate-100 text-slate-500'
+                  }`}>
+                    {pedido.estado === 'listo' ? '✅ Listo' : '👨‍🍳 Preparando'}
+                  </span>
                 </div>
+                <p className="text-blue-600 text-sm font-medium">{pedido.precio}€</p>
+              </div>
 
-                {/* Ingredientes */}
-                {pedido.ingredientes && pedido.ingredientes.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
-                    {pedido.ingredientes.map((ing: any, i: number) => (
-                        <span
-                        key={i}
-                        className={`text-xs px-2 py-0.5 rounded-full ${ing.activo ? 'bg-slate-100 text-slate-600' : 'bg-red-100 text-red-500 line-through'}`}
-                        >
-                        {ing.emoji} {ing.nombre}
-                        </span>
-                    ))}
-                    </div>
-                )}
+              {/* Ingredientes */}
+              {pedido.ingredientes && pedido.ingredientes.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {pedido.ingredientes.map((ing: any, i: number) => (
+                    <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${
+                      ing.activo ? 'bg-slate-100 text-slate-600' : 'bg-red-100 text-red-500 line-through'
+                    }`}>
+                      {ing.emoji} {ing.nombre}
+                    </span>
+                  ))}
+                </div>
+              )}
 
+              {/* Botón solo visible si está listo */}
+              {pedido.estado === 'listo' && (
                 <button
-                    onClick={() => completarPedido(pedido.id)}
-                    className="w-full bg-[#0d1f3c] text-white py-2 rounded-xl text-xs font-medium hover:bg-[#1e3a6e] transition-colors"
+                  onClick={() => entregarPedido(pedido.id)}
+                  className="w-full bg-green-600 text-white py-2 rounded-xl text-xs font-medium hover:bg-green-700 transition-colors"
                 >
-                    ✓ Marcar como completado
+                  🛎️ Marcar como entregado
                 </button>
-                </div>
+              )}
+
+              {pedido.estado === 'preparando' && (
+                <p className="text-center text-xs text-slate-400 py-2">
+                  ⏳ Esperando que cocina termine...
+                </p>
+              )}
+            </div>
             ))
             )}
         </div>

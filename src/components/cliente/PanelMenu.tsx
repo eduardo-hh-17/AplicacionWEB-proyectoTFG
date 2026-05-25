@@ -21,6 +21,10 @@ export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaN
 
   const { toasts, showToast, removeToast } = useToast()
 
+  // 👇 AÑADE ESTO después de los otros useState
+  const [mesaEstado, setMesaEstado] = useState<string | null>(null)
+  const [misPedidos, setMisPedidos] = useState<any[]>([])
+  const [totalGastado, setTotalGastado] = useState(0)
 
   // Cargar platos desde Supabase
   useEffect(() => {
@@ -39,7 +43,22 @@ export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaN
     return () => { supabase.removeChannel(canal) }
   }, [])
 
-  const cargarPlatos = async () => {
+  // 👇 AÑADE ESTO después del useEffect que carga platos
+// Consultar estado de la mesa en Supabase
+useEffect(() => {
+    if (mesaActiva) {
+      supabase
+        .from('mesas')
+        .select('estado')
+        .eq('numero', mesaActiva)
+        .single()
+        .then(({ data }) => setMesaEstado(data?.estado || null))
+    } else {
+      setMesaEstado(null)
+  }
+}, [mesaActiva])
+
+const cargarPlatos = async () => {
     setCargando(true)
     try {
       const { data, error } = await supabase
@@ -59,6 +78,31 @@ export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaN
       setCargando(false)
     }
   }
+
+// 👇 AÑADE ESTO después de cargarPlatos
+const cargarMisPedidos = async () => {
+  if (!mesaActiva) return
+
+  const { data } = await supabase
+    .from('pedidos')
+    .select('*')
+    .eq('mesa', mesaActiva)
+    .eq('sesion_id', sesionActiva)  // ← filtra por sesión activa 
+    .order('creado_en', { ascending: false })
+
+  if (data) {
+    setMisPedidos(data)
+    const total = data.reduce((sum, p) => sum + (p.precio || 0), 0)
+    setTotalGastado(total)
+  }
+}
+
+// Cargar pedidos cuando cambia la mesa o se envía un pedido
+useEffect(() => {
+  if (mesaActiva) {
+    cargarMisPedidos()
+  }
+}, [mesaActiva, carrito.length])
 
 const abrirModal = (plato: any) => {
   setPlatoSeleccionado(plato)
@@ -88,11 +132,20 @@ const abrirModal = (plato: any) => {
 
 const enviarPedido = async () => {
   console.log('Mesa activa:', mesaActiva)
-      // Sin QR escaneado
-  if (!mesaActiva) {
-    showToast('📱 Escanea el QR de tu mesa para hacer pedidos', 'error')
+  // 📱 Caso 1: No escaneó QR
+  if (!tokenActivo) {
+    setModalAbierto(false)
+    showToast('📱 Escanea el código QR de tu mesa para hacer pedidos', 'error')
     return
   }
+
+  if (!mesaActiva || mesaEstado !== 'ocupada') {
+    setModalAbierto(false)
+    showToast('⏳ Solicita al camarero que active tu mesa', 'error')
+    return
+  }
+
+  if (!platoSeleccionado) return
 
     const nuevoPedido = {
       plato_id: platoSeleccionado.id,
@@ -136,13 +189,42 @@ const enviarPedido = async () => {
   return (
     <div className="p-6">
       {/* Banner de estado */}
-      <div className={`border rounded-xl p-4 mb-6 ${mesaActiva ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
-        <p className={`font-medium ${mesaActiva ? 'text-green-800' : 'text-yellow-800'}`}>
-          {mesaActiva 
-            ? '✅ Modo pedido activo - Selecciona un plato para personalizar'
-            : '👀 Solo vista — Escanea el QR de tu mesa para hacer pedidos'}
+      <div className={`border rounded-xl p-4 mb-6 ${
+        mesaActiva && mesaEstado === 'ocupada' ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'
+      }`}>
+        <p className={`font-medium ${
+          mesaActiva && mesaEstado === 'ocupada' ? 'text-green-800' : 'text-yellow-800'
+        }`}>
+          {!mesaActiva && '👀 Solo vista — Escanea el QR de tu mesa para hacer pedidos'}
+          {mesaActiva && mesaEstado !== 'ocupada' && '⏳ Mesa detectada — Esperando activación del camarero'}
+          {mesaActiva && mesaEstado === 'ocupada' && '✅ Mesa activa — Puedes hacer tu pedido'}
         </p>
       </div>
+
+      {/* Mis pedidos - solo visible si hay mesa activa */}
+      {mesaActiva && (
+        <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6">
+          <div className="flex justify-between items-center mb-3">
+            <p className="text-[#0d1f3c] font-medium">📋 Mis pedidos</p>
+            <p className="text-orange-600 font-bold">Total: {totalGastado}€</p>
+          </div>
+          {misPedidos.length === 0 ? (
+            <p className="text-slate-400 text-sm text-center py-4">No has pedido nada aún</p>
+          ) : (
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {misPedidos.map((pedido, idx) => (
+                <div key={pedido.id} className="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
+                  <div>
+                    <p className="font-medium">{pedido.plato_nombre}</p>
+                    <p className="text-xs text-slate-400">{new Date(pedido.creado_en).toLocaleTimeString()}</p>
+                  </div>
+                  <p className="text-orange-600 font-medium">{pedido.precio}€</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Mostrar carrito */}
       {carrito.length > 0 && (
