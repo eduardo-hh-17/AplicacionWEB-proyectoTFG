@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 export default function Login() {
-
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -14,24 +15,67 @@ export default function Login() {
     setCargando(true)
     setError('')
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    // 1. Autenticar en Supabase
+    const { error: authError } = await supabase.auth.signInWithPassword({ 
+      email, 
+      password 
     })
-
-    if (error) {
+    
+    if (authError) {
       setError('Email o contraseña incorrectos')
       setCargando(false)
       return
     }
 
-    window.location.href = '/dashboard'
+    // 2. Obtener el empleado por email para saber su rol
+    const { data: empleado, error: empError } = await supabase
+      .from('empleados')
+      .select('id, rol')
+      .eq('email', email)
+      .single()
+
+    if (empError || !empleado) {
+      console.error('Empleado no encontrado:', empError)
+      setError('Usuario no autorizado como empleado')
+      await supabase.auth.signOut()
+      setCargando(false)
+      return
+    }
+
+    // 3. Registrar entrada en fichajes
+    const ahora = new Date()
+    const fechaActual = ahora.toISOString().split('T')[0]
+    const timestamp = ahora.toISOString()
+
+    const { error: fichajeError } = await supabase
+      .from('fichajes')
+      .insert({
+        empleado_id: empleado.id,
+        fecha: fechaActual,
+        entrada: timestamp
+      })
+
+    if (fichajeError) {
+      console.error('Error al registrar entrada:', fichajeError)
+    }
+
+    // 4. Redirigir según el rol
+    if (empleado.rol === 'admin') {
+      window.location.href = '/dashboard'
+    } else if (empleado.rol === 'cocinero') {
+      window.location.href = '/cocina'
+    } else if (empleado.rol === 'camarero') {
+      window.location.href = '/pedidos'
+    } else {
+      window.location.href = '/dashboard'
+    }
+
+    setCargando(false)
   }
 
   return (
     <div className="min-h-screen bg-[#0d1f3c] flex items-center justify-center">
       <div className="bg-white rounded-2xl p-8 w-96 shadow-2xl">
-
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center text-2xl mx-auto mb-4">
             🍽️

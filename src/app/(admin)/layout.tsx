@@ -1,55 +1,25 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'  // ← añade useEffect aquí
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { supabase } from '@/lib/supabase'  // ← IMPORTAR SUPABASE AQUÍ
+import { supabase } from '@/lib/supabase'
 import { useEmpleado } from '@/hooks/useEmpleado'
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
   const { empleado, cargando } = useEmpleado()
-  console.log('Empleado cargado:', empleado)
-  console.log('Rol:', empleado?.rol)
-
-  // Función de cierre - AHORA supabase SÍ está definido
-  const handleLogout = async () => {
-    try {
-      // Cerrar sesión en Supabase
-      await supabase.auth.signOut()
-    } catch (e) {
-      console.error('Error:', e)
-    }
-    
-    // Limpiar TODOS los datos del navegador relacionados con la sesión
-    localStorage.clear()
-    sessionStorage.clear()
-    
-    // Eliminar cookies específicas de Supabase
-    document.cookie.split(';').forEach(cookie => {
-      const [name] = cookie.split('=')
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
-    })
-    
-    // Redirigir
-    window.location.href = '/login'
-  }
 
   const menuItems = () => {
     if (!empleado) return []
     const items: { href: string; label: string }[] = []
-
     if (empleado.rol === 'admin') {
       items.push({ href: '/dashboard', label: 'Dashboard' })
       items.push({ href: '/pedidos', label: 'Pedidos' })
       items.push({ href: '/menu', label: 'Menú' })
       items.push({ href: '/cocina', label: 'Cocina' })
-      items.push({href: '/qr', label: 'QR Mesas'})
+      items.push({ href: '/qr', label: 'QR Mesas' })
     }
     if (empleado.rol === 'camarero') {
       items.push({ href: '/pedidos', label: 'Pedidos' })
@@ -60,12 +30,56 @@ export default function AdminLayout({
     return items
   }
 
+  // ← useEffect ANTES de cualquier return condicional
+  useEffect(() => {
+    if (cargando) return
+    if (!empleado) {
+      router.replace('/login')
+      return
+    }
+    const rutasPermitidas = menuItems().map(i => i.href)
+    if (!rutasPermitidas.includes(pathname)) {
+      router.replace(menuItems()[0]?.href || '/login')
+    }
+  }, [cargando, empleado, pathname])
+
+  // Returns condicionales DESPUÉS de los hooks
   if (cargando) {
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center">
         <p className="text-slate-400">Cargando...</p>
       </div>
     )
+  }
+
+  // handleLogout aquí también, antes del return principal
+  const handleLogout = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (user) {
+      const hoy = new Date().toISOString().split('T')[0]
+      const ahora = new Date().toISOString()
+
+      // Buscar el empleado por email
+      const { data: empleado } = await supabase
+        .from('empleados')
+        .select('id')
+        .eq('email', user.email)
+        .single()
+
+      if (empleado) {
+        // Registrar salida
+        await supabase
+          .from('fichajes')
+          .update({ salida: ahora })
+          .eq('empleado_id', empleado.id)
+          .eq('fecha', hoy)
+          .is('salida', null)
+      }
+    }
+
+    await supabase.auth.signOut()
+    window.location.href = '/login'
   }
 
   return (
@@ -79,7 +93,6 @@ export default function AdminLayout({
             Restaurante Lempira — {empleado?.nombre} ({empleado?.rol})
           </span>
         </div>
-
         <div className="flex items-center gap-6">
           {menuItems().map((item) => (
             <Link

@@ -74,7 +74,7 @@ export default function Pedidos() {
   // Abre el modal de una mesa
   const abrirMesa = (mesa: Mesa) => {
     setMesaSeleccionada(mesa)
-    setPersonas(mesa.personas)
+    setPersonas(mesa.personas || 1)
     setModalMesa(true)
   }
 
@@ -331,7 +331,7 @@ export default function Pedidos() {
                 <p className="text-[#0d1f3c] text-sm font-medium mb-3">Número de personas</p>
                 <div className="flex items-center gap-4">
                     <button
-                    onClick={() => setPersonas(Math.max(0, personas - 1))}
+                    onClick={() => setPersonas(Math.max(1, personas - 1))}
                     className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-[#0d1f3c] hover:bg-slate-50 transition-colors text-lg"
                     >
                     −
