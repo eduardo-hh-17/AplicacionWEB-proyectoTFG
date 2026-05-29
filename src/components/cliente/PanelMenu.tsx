@@ -4,7 +4,43 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/hooks/useToast'
 import { Toast } from '@/components/cliente/Toast'
+import Image from 'next/image'
 
+function CarruselImagenes({ imagenes, nombre, emoji }: { imagenes: string[]; nombre: string; emoji?: string }) {
+  const [indice, setIndice] = useState(0)
+
+  if (imagenes.length === 0) {
+    return (
+      <div className="relative w-full max-w-[220px] aspect-square rounded-2xl overflow-hidden shadow mb-4 bg-white flex items-center justify-center">
+        <span className="text-6xl">{emoji || '🍽️'}</span>
+      </div>
+    )
+  }
+
+  const anterior = () => setIndice(i => (i === 0 ? imagenes.length - 1 : i - 1))
+  const siguiente = () => setIndice(i => (i === imagenes.length - 1 ? 0 : i + 1))
+
+  return (
+    <div className="relative w-full max-w-[220px] aspect-square rounded-2xl overflow-hidden shadow mb-4">
+      <Image
+        src={imagenes[indice]}
+        alt={`${nombre} ${indice + 1}`}
+        fill
+        className="object-cover"
+        sizes="220px"
+      />
+      {imagenes.length > 1 && (
+        <>
+          <button type="button" onClick={anterior} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full w-8 h-8 text-lg">‹</button>
+          <button type="button" onClick={siguiente} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full w-8 h-8 text-lg">›</button>
+          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full">
+            {indice + 1} / {imagenes.length}
+          </span>
+        </>
+      )}
+    </div>
+  )
+}
 
 export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaNoActivada }: { 
   tokenActivo: string | null
@@ -65,6 +101,7 @@ const cargarPlatos = async () => {
         .from('platos')
         .select('*')
         .eq('activo', true)
+        .order('id', { ascending: true })
       
       if (!error && data && data.length > 0) {
         setPlatos(data)
@@ -109,13 +146,7 @@ const abrirModal = (plato: any) => {
   
   let ingredientes = plato?.ingredientes || []
   
-  if (!ingredientes.length) {
-    ingredientes = [
-      { id: 1, nombre: 'Lechuga', emoji: '🥬', activo: true },
-      { id: 2, nombre: 'Tomate', emoji: '🍅', activo: true },
-      { id: 3, nombre: 'Cebolla', emoji: '🧅', activo: true },
-    ]
-  }
+
   
   setIngredientesSeleccionados([...ingredientes])
   setModalAbierto(true)
@@ -249,8 +280,21 @@ const enviarPedido = async () => {
             onClick={() => abrirModal(plato)}
             className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105 overflow-hidden"
           >
-            <div className="h-32 bg-gradient-to-r from-orange-100 to-red-100 flex items-center justify-center">
-              <span className="text-6xl">{plato.emoji || '🍽️'}</span>
+            <div className="h-32 relative bg-gradient-to-r from-orange-100 to-red-100">
+              {plato.imagen_url ? (
+                <Image
+                  src={plato.imagen_url}
+                  alt={plato.nombre}
+                  fill
+                  className="object-cover rounded-t-xl"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority={false}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="text-6xl">{plato.emoji || '🍽️'}</span>
+                </div>
+              )}
             </div>
             <div className="p-4">
               <h3 className="font-bold text-lg">{plato.nombre}</h3>
@@ -271,8 +315,19 @@ const enviarPedido = async () => {
             {/* Cabecera */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-orange-500 to-red-600 text-white">
               <div className="flex items-center gap-3">
-                <span className="text-3xl">{platoSeleccionado.emoji || '🍽️'}</span>
-                <p className="text-gray-500 text-sm mt-1">{platoSeleccionado.descripcion || 'Deliciosa opción'}</p>
+                {platoSeleccionado.imagen_url ? (
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden bg-white flex-shrink-0">
+                    <Image
+                      src={platoSeleccionado.imagen_url}
+                      alt={platoSeleccionado.nombre}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <span className="text-3xl">{platoSeleccionado.emoji || '🍽️'}</span>
+                )}
+                <h2 className="text-white font-semibold text-lg">{platoSeleccionado.nombre}</h2>
               </div>
               <button 
                 onClick={() => setModalAbierto(false)}
@@ -287,11 +342,19 @@ const enviarPedido = async () => {
               <div className="grid grid-cols-2">
                 {/* Columna izquierda - info del plato */}
                 <div className="p-6 bg-orange-50 flex flex-col items-center text-center">
-                  <div className="w-32 h-32 bg-white rounded-2xl flex items-center justify-center mb-4 shadow">
-                    <span className="text-6xl">{platoSeleccionado.emoji || '🍽️'}</span>
-                  </div>
+                  <CarruselImagenes
+                    imagenes={
+                      platoSeleccionado.imagenes?.length
+                        ? platoSeleccionado.imagenes
+                        : platoSeleccionado.imagen_url
+                          ? [platoSeleccionado.imagen_url]
+                          : []
+                    }
+                    nombre={platoSeleccionado.nombre}
+                    emoji={platoSeleccionado.emoji}
+                  />
                   <h3 className="font-bold text-lg">{platoSeleccionado.nombre}</h3>
-                  <p className="text-gray-500 text-sm mt-1">{platoSeleccionado.desc || 'Deliciosa opción'}</p>
+                  <p className="text-gray-500 text-sm mt-1">{platoSeleccionado.descripcion || 'Deliciosa opción'}</p>
                   <p className="text-orange-600 font-bold text-2xl mt-3">{platoSeleccionado.precio}€</p>
                 </div>
 
@@ -309,9 +372,21 @@ const enviarPedido = async () => {
                               : 'bg-gray-50 border border-gray-200'
                             }`}
                         >
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">{ing?.emoji || '🥬'}</span>
-                            <span className={`text-sm ${ing?.activo ? 'text-gray-800 font-medium' : 'text-gray-400'}`}>
+                          <div className="flex items-center gap-4 flex-1 min-w-0">
+                            {ing?.imagen_url ? (
+                              <img
+                                src={ing.imagen_url}
+                                alt={ing.nombre}
+                                className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                              />
+                            ) : (
+                              <span className="w-14 h-14 rounded-lg bg-gray-100 flex-shrink-0" />
+                            )}
+                            <span
+                              className={`text-base font-semibold truncate ${
+                                ing?.activo ? 'text-gray-900' : 'text-gray-400 line-through'
+                              }`}
+                            >
                               {ing?.nombre || 'Ingrediente'}
                             </span>
                           </div>
@@ -324,7 +399,7 @@ const enviarPedido = async () => {
                         </label>
                       ))
                     ) : (
-                      <p className="text-gray-500 text-center py-4">Cargando ingredientes...</p>
+                      <p className="text-gray-500 text-center py-4">Este plato no tiene ingredientes opcionales</p>
                     )}
                   </div>
                 </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase} from '@/lib/supabase'
+import  MesaVisual  from '@/components/admin/MesaVisual'
 
 // Conexión a Supabase
 
@@ -25,6 +26,16 @@ type Pedido = {
   fecha: string
 }
 
+
+type Plato = {
+  id: number
+  nombre: string
+  precio: number
+  emoji: string
+  descripcion: string
+  ingredientes: any[]
+}
+
 export default function Pedidos() {
 
   // Estados — como variables de instancia en Java
@@ -35,10 +46,17 @@ export default function Pedidos() {
   const [personas, setPersonas] = useState(0)
   const [cargando, setCargando] = useState(true)
 
+  //Nuevos estados
+  const [modalPedidoManual, setModalPedidoManual] = useState(false)
+  const [platos, setPlatos] = useState<Plato[]>([])
+  const [platoSeleccionado, setPlatoSeleccionado] = useState<Plato | null>(null)
+  const [ingredientesSeleccionados, setIngredientesSeleccionados] = useState<any[]>([])
+
   // Carga inicial — como el constructor en Java
   useEffect(() => {
     cargarMesas()
     cargarPedidos()
+    cargarPlatos()
 
     // Suscripción en tiempo real — escucha cambios en la base de datos
     const canal = supabase
@@ -69,6 +87,15 @@ export default function Pedidos() {
       .eq('estado', ['listo', 'preparando'])
       .order('fecha', { ascending: false })
     if (data) setPedidos(data)
+  }
+
+  const cargarPlatos = async () => {
+    const { data } = await supabase
+      .from('platos')
+      .select('*')
+      .eq('activo', true)
+      .order('nombre')
+    if (data) setPlatos(data)
   }
 
   // Abre el modal de una mesa
@@ -174,6 +201,40 @@ export default function Pedidos() {
       .eq('id', id)
   }
 
+  const enviarPedidoManual = async () => {
+    if (!mesaSeleccionada || !platoSeleccionado) return
+
+    // Obtener sesion_id de la mesa
+    const { data: mesaData } = await supabase
+      .from('mesas')
+      .select('sesion_id')
+      .eq('id', mesaSeleccionada.id)
+      .single()
+
+    const { error } = await supabase
+      .from('pedidos')
+      .insert([{
+        plato_id: platoSeleccionado.id,
+        plato_nombre: platoSeleccionado.nombre,
+        ingredientes: ingredientesSeleccionados.filter(i => i.activo),
+        precio: platoSeleccionado.precio,
+        estado: 'pendiente',
+        mesa: mesaSeleccionada.numero,
+        sesion_id: mesaData?.sesion_id || null,
+        creado_en: new Date().toISOString()
+      }])
+
+    if (error) {
+      alert('Error al enviar pedido: ' + error.message)
+      return
+    }
+
+    setPlatoSeleccionado(null)
+    setModalPedidoManual(false)
+    setModalMesa(false)
+    alert(`✅ Pedido de ${platoSeleccionado.nombre} enviado a cocina`)
+  }
+
   // Color según el estado de la mesa
   const colorMesa = (estado: string) => {
     if (estado === 'ocupada') return 'bg-blue-50 border-blue-300'
@@ -199,32 +260,30 @@ export default function Pedidos() {
         <div className="flex-1 overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-medium text-[#0d1f3c]">Mesas</h1>
-            <div className="flex items-center gap-3 text-xs">
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-slate-300 inline-block"/> Libre</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-blue-400 inline-block"/> Ocupada</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-orange-400 inline-block"/> Esperando</span>
-            </div>
+              <div className="flex items-center gap-3 text-xs">
+                <span className="flex items-center gap-1 text-slate-700">
+                  <span className="w-3 h-3 rounded-full bg-green-500 inline-block"/>
+                  Libre
+                </span>
+                <span className="flex items-center gap-1 text-slate-700">
+                  <span className="w-3 h-3 rounded-full bg-red-500 inline-block"/>
+                  Ocupada
+                </span>
+              </div>
         </div>
 
         {/* Grid de mesas (sin altura fija, fluye normalmente) */}
         <div className="grid grid-cols-4 gap-4">
-            {mesas.map((mesa) => (
-            <button
-                key={mesa.id}
-                onClick={() => abrirMesa(mesa)}
-                className={`rounded-2xl border p-4 text-left transition-all hover:shadow-md ${colorMesa(mesa.estado)}`}
-            >
-                <div className="flex items-center justify-between mb-3">
-                <span className="text-[#0d1f3c] font-medium text-sm">Mesa {mesa.numero}</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${colorBadge(mesa.estado)}`}>
-                    {mesa.estado}
-                </span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-400 text-xs">
-                <span>👥 {mesa.personas}/{mesa.capacidad}</span>
-                </div>
-            </button>
-            ))}
+          {mesas.map((mesa) => (
+            <MesaVisual
+              key={mesa.id}
+              numero={mesa.numero}
+              capacidad={mesa.capacidad}
+              personas={mesa.personas}
+              estado={mesa.estado}
+              onClick={() => abrirMesa(mesa)}
+            />
+          ))}
         </div>
         </div>
 
@@ -277,7 +336,10 @@ export default function Pedidos() {
                     <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${
                       ing.activo ? 'bg-slate-100 text-slate-600' : 'bg-red-100 text-red-500 line-through'
                     }`}>
-                      {ing.emoji} {ing.nombre}
+                     {ing.imagen_url && (
+                        <img src={ing.imagen_url} alt="" className="w-6 h-6 rounded object-cover inline mr-1" />
+                      )}
+                    {ing.nombre}
                     </span>
                   ))}
                 </div>
@@ -356,12 +418,20 @@ export default function Pedidos() {
                     ✓ Activar mesa
                     </button>
                 ) : (
+                  <>
+                    <button
+                      onClick={() => { setModalMesa(false); setModalPedidoManual(true) }}
+                      className="w-full bg-orange-500 text-white py-3 rounded-xl text-sm font-medium hover:bg-orange-600 transition-colors"
+                    >
+                      🍽️ Añadir pedido
+                    </button>
                     <button
                     onClick={liberarMesa}
                     className="w-full bg-red-500 text-white py-3 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors"
                     >
                     Liberar mesa
                     </button>
+                    </>
                 )}
                 <button
                     onClick={() => setModalMesa(false)}
@@ -373,6 +443,71 @@ export default function Pedidos() {
             </div>
             </div>
         </div>
+        )}
+
+        {/* MODAL — Pedido manual del camarero */}
+        {modalPedidoManual && mesaSeleccionada && (
+          <div
+            onClick={() => setModalPedidoManual(false)}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
+            >
+              {/* Cabecera */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-orange-500 text-white">
+                <div>
+                  <h2 className="font-medium text-lg">Pedido manual</h2>
+                  <p className="text-orange-100 text-sm">Mesa {mesaSeleccionada.numero}</p>
+                </div>
+                <button onClick={() => setModalPedidoManual(false)} className="text-white/80 hover:text-white text-2xl">✕</button>
+              </div>
+
+              {/* Lista de platos */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                {platos.map((plato) => (
+                  <button
+                    key={plato.id}
+                    onClick={() => {
+                      setPlatoSeleccionado(plato)
+                      setIngredientesSeleccionados(plato.ingredientes || [])
+                    }}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
+                      platoSeleccionado?.id === plato.id
+                        ? 'border-orange-400 bg-orange-50'
+                        : 'border-slate-200 hover:border-orange-300'
+                    }`}
+                  >
+                    <span className="text-3xl">{plato.emoji || '🍽️'}</span>
+                    <div className="flex-1">
+                      <p className="font-medium text-[#0d1f3c]">{plato.nombre}</p>
+                      <p className="text-slate-400 text-xs">{plato.descripcion}</p>
+                    </div>
+                    <span className="text-orange-600 font-bold">{plato.precio}€</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end bg-slate-50">
+                <button
+                  onClick={() => setModalPedidoManual(false)}
+                  className="px-4 py-2 border border-slate-200 text-slate-500 rounded-xl text-sm hover:bg-slate-100 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={enviarPedidoManual}
+                  disabled={!platoSeleccionado}
+                  className="px-4 py-2 bg-orange-500 text-white rounded-xl text-sm font-medium hover:bg-orange-600 transition disabled:opacity-40"
+                >
+                  🍳 Enviar a cocina
+                  {platoSeleccionado && ` — ${platoSeleccionado.precio}€`}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
     </div>
     )

@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase'
 type Ingrediente = {
   id: number
   nombre: string
-  emoji: string
+  imagen_url: string | null
   activo: boolean
 }
 
@@ -20,7 +20,10 @@ type Plato = {
   ingredientes: Ingrediente[]
   activo: boolean
   categoria_id:number | null
+    imagen_url: string | null
+  imagenes?: string[]
 }
+
 
 export default function Menu() {
 
@@ -40,12 +43,19 @@ export default function Menu() {
   // --Nuevos componentes
   const [modalNuevo, setModalNuevo] = useState(false)
   const [nuevoNombre, setNuevoNombre] = useState('')
-  const [nuevoEmoji, setNuevoEmoji] = useState('')
+
   const [nuevaDesc, setNuevaDesc] = useState('')
   const [nuevoPrecio, setNuevoPrecio] = useState('')
   const [categorias, setCategorias] = useState<{id: number, nombre: string, emoji: string}[]>([])
   const [nuevaCategoria, setNuevaCategoria] = useState<number | null>(null)
   const [categoriaEditar, setCategoriaEditar] = useState<number | null>(null)
+
+  const [imagenUrl, setImagenUrl] = useState('')
+  const [subiendoImagen, setSubiendoImagen] = useState(false)
+  const [nuevaImagenUrl, setNuevaImagenUrl] = useState('')
+  const [nuevosIngredientes, setNuevosIngredientes] = useState<Ingrediente[]>([])
+  const [nuevasImagenes, setNuevasImagenes] = useState<string[]>([])
+  const [imagenesEditar, setImagenesEditar] = useState<string[]>([])
 
   // ── CARGA INICIAL ──
   useEffect(() => {
@@ -86,12 +96,24 @@ export default function Menu() {
     setDescripcion(plato.descripcion)
     setPrecio(plato.precio.toString())
     setCategoriaEditar(plato.categoria_id ?? null)
+    setImagenUrl(plato.imagen_url || '')
+    setImagenesEditar(
+      Array.isArray(plato.imagenes) && plato.imagenes.length > 0
+        ? plato.imagenes
+        : plato.imagen_url
+          ? [plato.imagen_url]
+          : []
+    )
     setIngredientes(
       Array.isArray(plato.ingredientes)
         ? plato.ingredientes.map(ing =>
             typeof ing === 'string'
-              ? { id: 0, nombre: ing, emoji: '🍽️', activo: true }
-              : ing
+                            ? { id: 0, nombre: ing, imagen_url: null, activo: true }
+              : {
+                  ...ing,
+                  imagen_url: ing.imagen_url ?? null,
+                  nombre: ing.nombre ?? '',
+                }
           )
         : []
     )
@@ -110,6 +132,8 @@ export default function Menu() {
         precio: parseFloat(precio),
         categoria_id: categoriaEditar,
         ingredientes,
+        imagen_url: imagenesEditar[0] || null,
+        imagenes: imagenesEditar,
       })
       .eq('id', platoSeleccionado.id)
     setGuardando(false)
@@ -117,7 +141,7 @@ export default function Menu() {
   }
 
   // Desactiva el plato — desaparece de la web del cliente
-  const desactivarPlato = async () => {
+  const toggleActivoPlato = async () => {
     if (!platoSeleccionado) return
     await supabase
       .from('platos')
@@ -154,12 +178,14 @@ const crearPlato = async () => {
     .from('platos')
     .insert({
       nombre: nuevoNombre,
-      emoji: nuevoEmoji || '🍽️',
+      emoji: '',
       descripcion: nuevaDesc,
       precio: parseFloat(nuevoPrecio),
       categoria_id: nuevaCategoria,
-      ingredientes: [],
+      ingredientes: nuevosIngredientes.filter((i) => i.nombre.trim()), 
       activo: true,
+      imagen_url: nuevasImagenes[0] || nuevaImagenUrl || null,
+      imagenes: nuevasImagenes.length > 0 ? nuevasImagenes : [],
     })
     .select()
 
@@ -173,34 +199,104 @@ const crearPlato = async () => {
 
   setModalNuevo(false)
   setNuevoNombre('')
-  setNuevoEmoji('')
+  setNuevaImagenUrl('')
+  setNuevasImagenes([])
   setNuevaDesc('')
   setNuevoPrecio('')
   setNuevaCategoria(null)
+  setNuevosIngredientes([])
 }
+  
 
   // Envía el plato a cocina — crea un pedido en Supabase
-  const enviarACocina = async () => {
-    if (!platoSeleccionado) return
-    await supabase
-      .from('pedidos')
-      .insert({
-        plato_nombre: platoSeleccionado.nombre,
-        plato_id: platoSeleccionado.id,
-        precio: platoSeleccionado.precio,
-        ingredientes,
-        estado: 'pendiente',
-        fecha: new Date().toISOString(),
-      })
-    setModalAbierto(false)
+
+
+    const agregarIngrediente = (lista: 'editar' | 'nuevo') => {
+    const nuevo: Ingrediente = {
+      id: Date.now(),
+      nombre: '',
+      imagen_url: null,
+      activo: true,
+    }
+    if (lista === 'editar') {
+      setIngredientes([...ingredientes, nuevo])
+    } else {
+      setNuevosIngredientes([...nuevosIngredientes, nuevo])
+    }
   }
 
+  const actualizarIngrediente = (
+    index: number,
+    campo: 'nombre' | 'imagen_url',
+    valor: string,
+    lista: 'editar' | 'nuevo'
+  ) => {
+        if (lista === 'editar') {
+      setIngredientes(
+        ingredientes.map((ing, i) =>
+          i === index
+            ? {
+                ...ing,
+                [campo]: campo === 'nombre' ? valor : (valor || null),
+              }
+            : ing
+        )
+      )
+    } else {
+      setNuevosIngredientes(
+        nuevosIngredientes.map((ing, i) =>
+          i === index
+            ? {
+                ...ing,
+                [campo]: campo === 'nombre' ? valor : (valor || null),
+              }
+            : ing
+        )
+      )
+    }
+  }
+
+  const quitarIngrediente = (index: number, lista: 'editar' | 'nuevo') => {
+    if (lista === 'editar') {
+      setIngredientes(ingredientes.filter((_, i) => i !== index))
+    } else {
+      setNuevosIngredientes(nuevosIngredientes.filter((_, i) => i !== index))
+    }
+  }
+
+  const subirImagenIngrediente = async (
+    index: number,
+    file: File,
+    lista: 'editar' | 'nuevo'
+  ) => {
+    const url = await subirImagen(file)
+    if (url) actualizarIngrediente(index, 'imagen_url', url, lista)
+  }
+
+  
   // Activa o desactiva un ingrediente
   const toggleIngrediente = (index: number) => {
     setIngredientes(ingredientes.map((ing, i) =>
       i === index ? { ...ing, activo: !ing.activo } : ing
     ))
   }
+
+
+  // Subir imagen a Supabase Storage
+  const subirImagen = async (file: File): Promise<string | null> => {
+    setSubiendoImagen(true)
+    const fileName = `${Date.now()}-${file.name}`
+    const { error } = await supabase.storage.from('platos').upload(fileName, file)
+    if (error) {
+      console.error('Error subiendo imagen:', error)
+      setSubiendoImagen(false)
+      return null
+    }
+    const { data } = supabase.storage.from('platos').getPublicUrl(fileName)
+    setSubiendoImagen(false)
+    return data.publicUrl
+  }
+
 
   if (cargando) return (
     <div className="flex items-center justify-center h-64">
@@ -225,28 +321,65 @@ const crearPlato = async () => {
       {/* ── GRID DE PLATOS ── */}
       <div className="grid grid-cols-4 gap-4">
         {platos.map((plato) => (
-          <button
+          <div
             key={plato.id}
-            onClick={() => abrirModal(plato)}
-            className={`bg-white rounded-2xl border text-left overflow-hidden hover:shadow-md transition-all ${plato.activo ? 'border-slate-200' : 'border-red-200 opacity-60'}`}
+            className={`rounded-2xl border text-left overflow-hidden transition-all relative ${
+              plato.activo
+                ? 'bg-white border-slate-200 hover:shadow-md'
+                : 'bg-slate-100 border-slate-300 opacity-70 grayscale'
+            }`}
           >
-            {/* Imagen / Emoji */}
-            <div className="h-24 bg-[#f8faff] flex items-center justify-center text-5xl border-b border-slate-100">
-              {plato.emoji}
-            </div>
-
-            {/* Info */}
-            <div className="p-4">
-              <p className="text-[#0d1f3c] text-sm font-medium mb-1">{plato.nombre}</p>
-              <p className="text-slate-400 text-xs mb-3 line-clamp-2 leading-relaxed">{plato.descripcion}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-blue-600 text-sm font-medium">{plato.precio.toFixed(2)}€</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${plato.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-500'}`}>
-                  {plato.activo ? 'Activo' : 'Inactivo'}
-                </span>
+            {/* Zona clicable → abre editar */}
+            <button
+              type="button"
+              onClick={() => abrirModal(plato)}
+              className="w-full text-left"
+            >
+              <div className="relative h-24 bg-[#f8faff] flex items-center justify-center border-b border-slate-100 overflow-hidden">
+                {plato.imagen_url ? (
+                  <img src={plato.imagen_url} alt={plato.nombre} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-slate-300 text-xs">Sin imagen</span>
+                )}
+                {!plato.activo && (
+                  <div className="absolute inset-0 bg-slate-500/30 flex items-center justify-center">
+                    <span className="bg-slate-700 text-white text-xs px-2 py-1 rounded-full">Inactivo</span>
+                  </div>
+                )}
               </div>
-            </div>
-          </button>
+
+              <div className="p-4">
+                <p className="text-[#0d1f3c] text-sm font-medium mb-1">{plato.nombre}</p>
+                <p className="text-slate-400 text-xs mb-3 line-clamp-2 leading-relaxed">{plato.descripcion}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-blue-600 text-sm font-medium">{plato.precio.toFixed(2)}€</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${plato.activo ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-500'}`}>
+                    {plato.activo ? 'Activo' : 'Inactivo'}
+                  </span>
+                </div>
+              </div>
+            </button>
+
+            {/* Botón activar/desactivar — esquina superior derecha */}
+            <button
+              type="button"
+              onClick={async (e) => {
+                e.stopPropagation()
+                await supabase
+                  .from('platos')
+                  .update({ activo: !plato.activo })
+                  .eq('id', plato.id)
+              }}
+              title={plato.activo ? 'Desactivar' : 'Activar'}
+              className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-md z-10 ${
+                plato.activo
+                  ? 'bg-white hover:bg-red-50'
+                  : 'bg-green-500 hover:bg-green-600 text-white'
+              }`}
+            >
+              {plato.activo ? '🚫' : '✅'}
+            </button>
+          </div>
         ))}
       </div>
 
@@ -263,9 +396,12 @@ const crearPlato = async () => {
 
             {/* Cabecera modal */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <h2 className="text-[#0d1f3c] font-medium">
-                {platoSeleccionado.emoji} {platoSeleccionado.nombre}
-              </h2>
+              <div className="flex items-center gap-2">
+                {platoSeleccionado.imagen_url && (
+                  <img src={platoSeleccionado.imagen_url} alt="" className="w-8 h-8 rounded-lg object-cover" />
+                )}
+                <h2 className="text-[#0d1f3c] font-medium">{platoSeleccionado.nombre}</h2>
+              </div>
               <button
                 onClick={() => setModalAbierto(false)}
                 className="text-slate-400 hover:text-slate-600 text-xl"
@@ -303,14 +439,14 @@ const crearPlato = async () => {
                 <div>
                   <label className="text-slate-400 text-xs block mb-1">Categoría</label>
                   <select
-                    value={nuevaCategoria ?? ''}
-                    onChange={(e) => setNuevaCategoria(Number(e.target.value))}
+                    value={categoriaEditar ?? ''}
+                    onChange={(e) => setCategoriaEditar(e.target.value ? Number(e.target.value) : null)}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
                   >
                     <option value="">Selecciona una categoría</option>
                     {categorias.map((cat) => (
                       <option key={cat.id} value={cat.id}>
-                        {cat.emoji} {cat.nombre}
+                        {cat.nombre}
                       </option>
                     ))}
                   </select>
@@ -326,33 +462,98 @@ const crearPlato = async () => {
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
                   />
                 </div>
+
+
+                
+                <div>
+                  <label className="text-slate-400 text-xs block mb-1">Imágenes del plato</label>
+
+                  {imagenesEditar.length > 0 && (
+                    <div className="flex gap-2 flex-wrap mb-2">
+                      {imagenesEditar.map((url, i) => (
+                        <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden">
+                          <img src={url} alt="" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => setImagenesEditar(imagenesEditar.filter((_, idx) => idx !== i))}
+                            className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 rounded-bl"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 transition-colors">
+                    <span className="text-slate-400 text-xs">+ Añadir foto</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const url = await subirImagen(file)
+                          if (url) setImagenesEditar(prev => [...prev, url])
+                        }
+                      }}
+                    />
+                  </label>
+                  {subiendoImagen && <p className="text-xs text-gray-400 mt-1">Subiendo...</p>}
+                </div>
               </div>
 
               {/* Columna derecha — ingredientes */}
-              <div className="p-6 flex flex-col gap-3">
-                <p className="text-[#0d1f3c] text-sm font-medium">Ingredientes</p>
+              {/* Columna derecha — ingredientes (empleado) */}
+              <div className="p-6 flex flex-col gap-3 max-h-[420px] overflow-y-auto">
+                <div className="flex items-center justify-between">
+                  <p className="text-[#0d1f3c] text-sm font-medium">Ingredientes</p>
+                  <button
+                    type="button"
+                    onClick={() => agregarIngrediente('editar')}
+                    className="text-xs px-2 py-1 rounded-lg border border-slate-200 hover:bg-slate-50"
+                  >
+                    + Añadir
+                  </button>
+                </div>
+
                 {ingredientes.length === 0 ? (
-                  <p className="text-slate-400 text-xs">Sin ingredientes</p>
+                  <p className="text-slate-400 text-xs">Pulsa + para añadir ingredientes</p>
                 ) : (
                   ingredientes.map((ing, index) => (
-                    <div
-                      key={index}
-                      onClick={() => toggleIngrediente(index)}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-xl border cursor-pointer transition-all
-                        ${ing.activo
-                          ? 'border-slate-200 hover:border-blue-300 hover:bg-blue-50'
-                          : 'border-red-200 bg-red-50'
-                        }`}
-                    >
-                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all
-                        ${ing.activo ? 'bg-[#0d1f3c] border-[#0d1f3c] text-white' : 'bg-white border-slate-300'}`}
+                    <div key={ing.id ?? index} className="border border-slate-200 rounded-xl p-3 flex flex-col gap-2">
+                      <input
+                        value={ing.nombre ?? ''}
+                        onChange={(e) => actualizarIngrediente(index, 'nombre', e.target.value, 'editar')}
+                        placeholder="Nombre del ingrediente"
+                        className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs"
+                      />
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        {ing.imagen_url ? (
+                          <img src={ing.imagen_url} alt="" className="w-10 h-10 rounded object-cover" />
+                        ) : (
+                          <span className="w-10 h-10 rounded bg-slate-100 flex items-center justify-center text-[10px] text-slate-400">
+                            Foto
+                          </span>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="text-xs"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) subirImagenIngrediente(index, file, 'editar')
+                          }}
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => quitarIngrediente(index, 'editar')}
+                        className="text-xs text-red-500 self-end"
                       >
-                        {ing.activo && <span className="text-[10px]">✓</span>}
-                      </div>
-                      <span className="text-base">{ing.emoji}</span>
-                      <span className={`text-xs flex-1 ${ing.activo ? 'text-[#0d1f3c]' : 'text-red-400 line-through'}`}>
-                        {ing.nombre}
-                      </span>
+                        Quitar
+                      </button>
                     </div>
                   ))
                 )}
@@ -371,20 +572,18 @@ const crearPlato = async () => {
                 {guardando ? 'Guardando...' : '💾 Guardar cambios'}
               </button>
 
-              {/* Enviar a cocina */}
-              <button
-                onClick={enviarACocina}
-                className="flex-1 bg-green-600 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-green-700 transition-colors"
-              >
-                🍳 Enviar a cocina
-              </button>
 
-              {/* Desactivar */}
+              {/* Activar / Desactivar */}
               <button
-                onClick={desactivarPlato}
-                className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
+                onClick={toggleActivoPlato}
+                title={platoSeleccionado.activo ? 'Desactivar plato' : 'Activar plato'}
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  platoSeleccionado.activo
+                    ? 'border border-slate-200 text-slate-500 hover:bg-red-50 hover:border-red-200'
+                    : 'border border-green-300 bg-green-50 text-green-700 hover:bg-green-100'
+                }`}
               >
-                🚫
+                {platoSeleccionado.activo ? '🚫' : '✅'}
               </button>
 
               {/* Eliminar */}
@@ -457,14 +656,45 @@ const crearPlato = async () => {
             </div>
             <div className="p-6 flex flex-col gap-4">
               <div>
-                <label className="text-slate-400 text-xs block mb-1">Emoji</label>
-                <input
-                  value={nuevoEmoji}
-                  onChange={(e) => setNuevoEmoji(e.target.value)}
-                  placeholder="🍽️"
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition-colors"
-                />
+                <label className="text-slate-400 text-xs block mb-1">Imágenes del plato</label>
+
+                {/* Miniaturas ya subidas */}
+                {nuevasImagenes.length > 0 && (
+                  <div className="flex gap-2 flex-wrap mb-2">
+                    {nuevasImagenes.map((url, i) => (
+                      <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden">
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setNuevasImagenes(nuevasImagenes.filter((_, idx) => idx !== i))}
+                          className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 rounded-bl"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Subir otra foto */}
+                <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 transition-colors">
+                  <span className="text-slate-400 text-xs">+ Añadir foto</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        const url = await subirImagen(file)
+                        if (url) setNuevasImagenes(prev => [...prev, url])
+                      }
+                    }}
+                  />
+                </label>
+                {subiendoImagen && <p className="text-xs text-gray-400 mt-1">Subiendo...</p>}
               </div>
+
               <div>
                 <label className="text-slate-400 text-xs block mb-1">Nombre</label>
                 <input
@@ -489,17 +719,70 @@ const crearPlato = async () => {
               <div>
                 <label className="text-slate-400 text-xs block mb-1">Categoría</label>
                 <select
-                  value={categoriaEditar ?? ''}
-                  onChange={(e) => setCategoriaEditar(Number(e.target.value))}
+                  value={nuevaCategoria ?? ''}
+                  onChange={(e) => setNuevaCategoria(e.target.value ? Number(e.target.value) : null)}
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
                 >
                   <option value="">Sin categoría</option>
                   {categorias.map((cat) => (
                     <option key={cat.id} value={cat.id}>
-                      {cat.emoji} {cat.nombre}
+                      {cat.nombre}
                     </option>
                   ))}
                 </select>
+              </div>
+
+                            <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-slate-400 text-xs">Ingredientes</label>
+                  <button
+                    type="button"
+                    onClick={() => agregarIngrediente('nuevo')}
+                    className="text-xs px-2 py-1 rounded-lg border border-slate-200 hover:bg-slate-50"
+                  >
+                    + Añadir ingrediente
+                  </button>
+                </div>
+
+                {nuevosIngredientes.length === 0 ? (
+                  <p className="text-slate-400 text-xs">Opcional: añade ingredientes para que el cliente elija</p>
+                ) : (
+                  nuevosIngredientes.map((ing, index) => (
+                    <div key={ing.id} className="border border-slate-200 rounded-xl p-3 mb-2 flex flex-col gap-2">
+                      <input
+                        value={ing.nombre}
+                        onChange={(e) => actualizarIngrediente(index, 'nombre', e.target.value, 'nuevo')}
+                        placeholder="Ej: Carne Whopper"
+                        className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm"
+                      />
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        {ing.imagen_url ? (
+                          <img src={ing.imagen_url} alt="" className="w-12 h-12 rounded object-cover" />
+                        ) : (
+                          <span className="w-12 h-12 rounded bg-slate-100 flex items-center justify-center text-[10px] text-slate-400">
+                            Foto
+                          </span>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="text-xs flex-1"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) subirImagenIngrediente(index, file, 'nuevo')
+                          }}
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => quitarIngrediente(index, 'nuevo')}
+                        className="text-xs text-red-500 self-end"
+                      >
+                        Quitar
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
               <div>
                 <label className="text-slate-400 text-xs block mb-1">Precio (€)</label>

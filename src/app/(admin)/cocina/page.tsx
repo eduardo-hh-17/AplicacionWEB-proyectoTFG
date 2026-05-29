@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 type Ingrediente = {
   id: number
   nombre: string
-  emoji: string
+  imagen_url: string | null
   activo: boolean
 }
 
@@ -151,7 +151,10 @@ useEffect(() => {
                             : 'bg-red-100 text-red-500 line-through'
                         }`}
                       >
-                        {ing.emoji} {ing.nombre}
+                        {ing.imagen_url && (
+                            <img src={ing.imagen_url} alt="" className="w-6 h-6 rounded object-cover inline mr-1" />
+                        )}
+                        {ing.nombre}
                       </span>
                     ))}
                   </div>
