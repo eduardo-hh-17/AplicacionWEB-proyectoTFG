@@ -257,19 +257,7 @@ const enviarPedido = async () => {
         </div>
       )}
 
-      {/* Mostrar carrito */}
-      {carrito.length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-          <p className="text-blue-800 font-medium">📋 Pedidos realizados:</p>
-          <ul className="mt-2 space-y-1">
-            {carrito.map((item, idx) => (
-              <li key={idx} className="text-sm text-blue-700">
-                {item.plato_nombre} - {item.precio}€ ({item.ingredientes?.length || 0} ingredientes)
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+
 
       {/* Grid de platos */}
       <h2 className="text-2xl font-bold mb-6">🍽️ Nuestro Menú</h2>

@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { supabase} from '@/lib/supabase'
-import  MesaVisual  from '@/components/admin/MesaVisual'
+import MesaVisual from '@/components/admin/MesaVisual'
+import { useToast } from '@/hooks/useToast'
+import { Toast } from '@/components/cliente/Toast'
 
 // Conexión a Supabase
 
@@ -34,6 +36,7 @@ type Plato = {
   emoji: string
   descripcion: string
   ingredientes: any[]
+  imagen_url: string | null
 }
 
 export default function Pedidos() {
@@ -51,6 +54,8 @@ export default function Pedidos() {
   const [platos, setPlatos] = useState<Plato[]>([])
   const [platoSeleccionado, setPlatoSeleccionado] = useState<Plato | null>(null)
   const [ingredientesSeleccionados, setIngredientesSeleccionados] = useState<any[]>([])
+
+  const { toasts, showToast, removeToast } = useToast()
 
   // Carga inicial — como el constructor en Java
   useEffect(() => {
@@ -84,8 +89,8 @@ export default function Pedidos() {
     const { data } = await supabase
       .from('pedidos')
       .select('*')
-      .eq('estado', ['listo', 'preparando'])
-      .order('fecha', { ascending: false })
+      .in('estado', ['listo', 'preparando'])
+      .order('creado_en', { ascending: false })
     if (data) setPedidos(data)
   }
 
@@ -225,14 +230,14 @@ export default function Pedidos() {
       }])
 
     if (error) {
-      alert('Error al enviar pedido: ' + error.message)
+      showToast('❌ Error al enviar pedido: ' + error.message, 'error')
       return
     }
 
     setPlatoSeleccionado(null)
     setModalPedidoManual(false)
     setModalMesa(false)
-    alert(`✅ Pedido de ${platoSeleccionado.nombre} enviado a cocina`)
+    showToast(`✅ Pedido de ${platoSeleccionado.nombre} enviado a cocina`, 'success')
   }
 
   // Color según el estado de la mesa
@@ -479,12 +484,22 @@ export default function Pedidos() {
                         : 'border-slate-200 hover:border-orange-300'
                     }`}
                   >
-                    <span className="text-3xl">{plato.emoji || '🍽️'}</span>
-                    <div className="flex-1">
-                      <p className="font-medium text-[#0d1f3c]">{plato.nombre}</p>
-                      <p className="text-slate-400 text-xs">{plato.descripcion}</p>
+                    <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center">
+                      {plato.imagen_url ? (
+                        <img
+                          src={plato.imagen_url}
+                          alt={plato.nombre}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-2xl">{plato.emoji || '🍽️'}</span>
+                      )}
                     </div>
-                    <span className="text-orange-600 font-bold">{plato.precio}€</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-[#0d1f3c] truncate">{plato.nombre}</p>
+                      <p className="text-slate-400 text-xs line-clamp-2">{plato.descripcion}</p>
+                    </div>
+                    <span className="text-orange-600 font-bold flex-shrink-0">{plato.precio}€</span>
                   </button>
                 ))}
               </div>
@@ -509,6 +524,16 @@ export default function Pedidos() {
             </div>
           </div>
         )}
+
+        {/* Toasts */}
+        {toasts.map(toast => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
     </div>
     )
 }
