@@ -423,31 +423,31 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-medium text-[#0d1f3c] mb-8">Panel de administración</h1>
+      <h1 className="text-2xl font-bold text-gradient-anim mb-8">Panel de administración</h1>
 
       {/* Tarjetas de resumen */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-2xl p-6 border border-slate-200">
           <p className="text-slate-400 text-sm mb-1">Pedidos hoy</p>
-          <p className="text-[#0d1f3c] text-3xl font-medium">{pedidosHoy}</p>
+          <p className="text-white text-3xl font-medium">{pedidosHoy}</p>
           <p className="text-blue-500 text-xs mt-2">📋 Totales</p>
         </div>
 
         <div className="bg-white rounded-2xl p-6 border border-slate-200">
           <p className="text-slate-400 text-sm mb-1">Ingresos hoy</p>
-          <p className="text-[#0d1f3c] text-3xl font-medium">{ingresosHoy}€</p>
+          <p className="text-white text-3xl font-medium">{ingresosHoy}€</p>
           <p className="text-green-500 text-xs mt-2">💰 Ventas</p>
         </div>
 
         <div className="bg-white rounded-2xl p-6 border border-slate-200">
           <p className="text-slate-400 text-sm mb-1">Platos en menú</p>
-          <p className="text-[#0d1f3c] text-3xl font-medium">{totalPlatos}</p>
+          <p className="text-white text-3xl font-medium">{totalPlatos}</p>
           <p className="text-blue-500 text-xs mt-2">🍽️ Activos</p>
         </div>
 
         <div className="bg-white rounded-2xl p-6 border border-slate-200">
           <p className="text-slate-400 text-sm mb-1">Mesas ocupadas</p>
-          <p className="text-[#0d1f3c] text-3xl font-medium">{mesasOcupadas}</p>
+          <p className="text-white text-3xl font-medium">{mesasOcupadas}</p>
           <p className="text-orange-500 text-xs mt-2">🪑 Ahora mismo</p>
         </div>
       </div>
@@ -461,14 +461,14 @@ export default function Dashboard() {
           className="bg-white rounded-2xl p-6 border border-slate-200 text-left hover:shadow-md hover:border-blue-300 transition-all"
         >
           <p className="text-slate-400 text-sm mb-1">Empleados activos</p>
-          <p className="text-[#0d1f3c] text-3xl font-medium">{empleados.length}</p>
+          <p className="text-white text-3xl font-medium">{empleados.length}</p>
           <p className="text-blue-500 text-xs mt-2">👥 Ver empleados →</p>
         </button>
 
         {/* Ticket promedio */}
         <div className="bg-white rounded-2xl p-6 border border-slate-200">
           <p className="text-slate-400 text-sm mb-1">Ticket promedio</p>
-          <p className="text-[#0d1f3c] text-3xl font-medium">
+          <p className="text-white text-3xl font-medium">
             {pedidosHoy > 0 ? (ingresosHoy / pedidosHoy).toFixed(2) : 0}€
           </p>
           <p className="text-blue-500 text-xs mt-2">🧾 Por pedido</p>
@@ -477,14 +477,14 @@ export default function Dashboard() {
         {/* Clientes hoy */}
         <div className="bg-white rounded-2xl p-6 border border-slate-200">
           <p className="text-slate-400 text-sm mb-1">Clientes hoy</p>
-          <p className="text-[#0d1f3c] text-3xl font-medium">{clientesHoy}</p>
+          <p className="text-white text-3xl font-medium">{clientesHoy}</p>
           <p className="text-purple-500 text-xs mt-2">🚶 Han pasado hoy</p>
         </div>
 
         {/* Mesas activas ahora */}
         <div className="bg-white rounded-2xl p-6 border border-slate-200">
           <p className="text-slate-400 text-sm mb-1">Sesiones activas</p>
-          <p className="text-[#0d1f3c] text-3xl font-medium">{sesionesActivas.length}</p>
+          <p className="text-white text-3xl font-medium">{sesionesActivas.length}</p>
           <p className="text-orange-500 text-xs mt-2">🪑 Mesas en uso</p>
         </div>
 
@@ -493,17 +493,21 @@ export default function Dashboard() {
       {/* Gráfica de ingresos */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-[#0d1f3c] text-base font-medium">Ingresos</h2>
+          <h2 className="text-base font-bold text-gradient-anim">Ingresos</h2>
           <div className="flex gap-2">
             {(['dia', 'semana', 'mes'] as const).map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriodoGrafica(p)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                   periodoGrafica === p
-                    ? 'bg-[#0d1f3c] text-white'
-                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                    ? 'text-white'
+                    : 'text-slate-400 hover:text-white'
                 }`}
+                style={periodoGrafica === p
+                  ? { background: 'linear-gradient(135deg,#d4a040,#c47a28)', boxShadow: '0 2px 8px rgba(212,160,64,0.4)' }
+                  : { background: 'rgba(255,255,255,0.07)' }
+                }
               >
                 {p === 'dia' ? 'Hoy' : p === 'semana' ? 'Semana' : 'Mes'}
               </button>
@@ -519,10 +523,21 @@ export default function Dashboard() {
         ) : (
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={datosGrafica} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-              <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${v}€`} />
-              <Tooltip formatter={(value) => [`${value}€`, 'Ingresos']} />
-              <Bar dataKey="total" fill="#0d1f3c" radius={[6, 6, 0, 0]} />
+              <defs>
+                <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stopColor="#d4a040" stopOpacity={1}/>
+                  <stop offset="100%" stopColor="#c47a28" stopOpacity={0.85}/>
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#98bce0' }} axisLine={{ stroke: 'rgba(255,255,255,0.12)' }} tickLine={false}/>
+              <YAxis tick={{ fontSize: 11, fill: '#98bce0' }} tickFormatter={(v) => `${v}€`} axisLine={false} tickLine={false}/>
+              <Tooltip
+                formatter={(value) => [`${value}€`, 'Ingresos']}
+                contentStyle={{ background: '#0a1628', border: '1px solid rgba(212,160,64,0.3)', borderRadius: 10, color: '#e0f0ff' }}
+                labelStyle={{ color: '#d4a040', fontWeight: 600 }}
+                cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+              />
+              <Bar dataKey="total" fill="url(#barGrad)" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}
@@ -530,7 +545,7 @@ export default function Dashboard() {
 
       {/* Sección de pedidos recientes */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
-        <h2 className="text-[#0d1f3c] text-base font-medium mb-4">Últimos pedidos</h2>
+        <h2 className="text-base font-bold text-gradient-anim mb-4">Últimos pedidos</h2>
         
         {pedidosRecientes.length === 0 ? (
           <div className="text-center py-12">
@@ -584,25 +599,24 @@ export default function Dashboard() {
       {modalEmpleados && (
         <div
           onClick={() => setModalEmpleados(false)}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden shadow-2xl"
+            className="bg-white rounded-2xl w-full max-w-2xl flex flex-col max-h-[90vh] shadow-2xl"
           >
-            {/* Cabecera */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <h2 className="text-[#0d1f3c] font-medium text-lg">Empleados activos</h2>
+            {/* Cabecera — fija */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
+              <h2 className="text-white font-medium text-lg">Empleados activos</h2>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => { setModalEmpleados(false); setModalAltaEmpleado(true) }}
-                  className="bg-[#0d1f3c] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition"
+                  className="text-white px-4 py-2 rounded-xl text-sm font-semibold transition"
+                  style={{ background: 'linear-gradient(135deg,#1e5c2e,#2d8a44)' }}
                 >
                   + Nuevo empleado
                 </button>
-
-
-                <button onClick={() => setModalEmpleados(false)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+                <button onClick={() => setModalEmpleados(false)} className="text-slate-400 hover:text-white text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">✕</button>
               </div>
             </div>
 
@@ -626,7 +640,7 @@ export default function Dashboard() {
 
                     {/* Datos */}
                     <div className="flex-1">
-                      <p className="text-[#0d1f3c] font-medium">{emp.nombre} {emp.apellido}</p>
+                      <p className="text-white font-medium">{emp.nombre} {emp.apellido}</p>
                       <p className="text-slate-400 text-xs mt-0.5">{emp.rol} · {emp.telefono}</p>
                       <p className="text-slate-400 text-xs">
                         Turno: {emp.turno_inicio} — {emp.turno_cierre}
@@ -689,21 +703,20 @@ export default function Dashboard() {
       {modalAltaEmpleado && (
         <div
           onClick={() => setModalAltaEmpleado(false)}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+            className="bg-white rounded-2xl w-full max-w-md flex flex-col max-h-[90vh] shadow-2xl"
           >
-            {/* Cabecera */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <h2 className="text-[#0d1f3c] font-medium text-lg">Nuevo empleado</h2>
-              <button onClick={() => setModalAltaEmpleado(false)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+            {/* Cabecera — fija */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
+              <h2 className="text-white font-medium text-lg">Nuevo empleado</h2>
+              <button onClick={() => setModalAltaEmpleado(false)} className="text-slate-400 hover:text-white text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">✕</button>
             </div>
 
-
-            {/* Formulario */}
-            <div className="p-6 space-y-4">
+            {/* Formulario — scrollable */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-slate-400 mb-1 block">Nombre *</label>
@@ -817,19 +830,25 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end">
+            {/* Footer — fijo */}
+            <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end shrink-0">
               <button
                 onClick={() => setModalAltaEmpleado(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-500 rounded-xl text-sm hover:bg-slate-50 transition"
+                className="px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.45)', color: '#fca5a5' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.22)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)' }}
               >
                 Cancelar
               </button>
               <button
                 onClick={darDeAltaEmpleado}
-                className="px-4 py-2 bg-[#0d1f3c] text-white rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition"
+                className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all"
+                style={{ background: 'linear-gradient(135deg,#1e5c2e,#2d8a44)', boxShadow: '0 2px 10px rgba(30,92,46,0.4)' }}
+                onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.1)' }}
+                onMouseLeave={e => { e.currentTarget.style.filter = '' }}
               >
-                Dar de alta
+                ✓ Dar de alta
               </button>
             </div>
           </div>
@@ -847,7 +866,7 @@ export default function Dashboard() {
             className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl"
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <h2 className="text-[#0d1f3c] font-medium">Historial de {historialEmpleado.nombre}</h2>
+              <h2 className="text-white font-medium">Historial de {historialEmpleado.nombre}</h2>
               <button onClick={() => setHistorialEmpleado(null)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
             </div>
             <div className="p-6 max-h-96 overflow-y-auto">

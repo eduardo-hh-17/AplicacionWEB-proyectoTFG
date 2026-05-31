@@ -80,13 +80,13 @@ export default function Login() {
           <div className="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center text-2xl mx-auto mb-4">
             🍽️
           </div>
-          <h1 className="text-[#0d1f3c] text-xl font-medium">Restaurante Lempira</h1>
+          <h1 className="text-white text-xl font-medium">Restaurante Lempira</h1>
           <p className="text-slate-400 text-sm mt-1">Panel de administración</p>
         </div>
 
         <div className="flex flex-col gap-4">
           <div>
-            <label className="text-[#0d1f3c] text-sm font-medium block mb-1">Email</label>
+            <label className="text-white text-sm font-medium block mb-1">Email</label>
             <input
               type="email"
               value={email}
@@ -97,7 +97,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="text-[#0d1f3c] text-sm font-medium block mb-1">Contraseña</label>
+            <label className="text-white text-sm font-medium block mb-1">Contraseña</label>
             <input
               type="password"
               value={password}

@@ -12,123 +12,98 @@ export default function PanelReservas() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!fecha || !nombre || !telefono) {
-      alert('Por favor, completa todos los campos obligatorios')
-      return
-    }
-    
-    // Aquí puedes enviar los datos a tu backend
-    console.log({
-      fecha,
-      personas,
-      nombre,
-      telefono,
-      mensaje
-    })
-    
+    if (!fecha || !nombre || !telefono) return
     setEnviado(true)
-    setTimeout(() => setEnviado(false), 3000)
-    
-    // Limpiar formulario
-    setFecha('')
-    setPersonas(2)
-    setNombre('')
-    setTelefono('')
-    setMensaje('')
+    setTimeout(() => setEnviado(false), 4000)
+    setFecha(''); setPersonas(2); setNombre(''); setTelefono(''); setMensaje('')
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">📅 Reservas</h1>
-      
+    <div className="p-6 max-w-2xl mx-auto space-y-5">
+
+      {/* Cabecera */}
+      <div className="animate-slide-up">
+        <p className="text-sm font-semibold uppercase tracking-widest mb-1" style={{ color: '#d4a040' }}>
+          Mesa para ti
+        </p>
+        <h1 className="text-2xl font-bold text-gradient-anim">Reservar mesa</h1>
+        <p className="text-sm mt-1" style={{ color: '#7aaa82' }}>
+          Completa el formulario y te confirmamos disponibilidad.
+        </p>
+      </div>
+
+      {/* Success */}
       {enviado && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          ✅ ¡Reserva enviada! Te contactaremos para confirmar.
+        <div className="flex items-center gap-3 px-4 py-3 rounded-2xl animate-scale-in"
+          style={{ background: 'rgba(45,144,80,0.2)', border: '1px solid rgba(45,144,80,0.4)', color: '#9adab4' }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 shrink-0">
+            <circle cx="12" cy="12" r="10" /><path d="M9 12l2 2 4-4" />
+          </svg>
+          <span className="text-sm font-medium">¡Reserva enviada! Te contactaremos para confirmar.</span>
         </div>
       )}
-      
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-        <div className="bg-gradient-to-r from-orange-500 to-red-600 px-6 py-4">
-          <h2 className="text-white text-xl font-bold">Solicitar Reserva</h2>
-          <p className="text-orange-100 text-sm">Completa el formulario y te confirmamos disponibilidad</p>
+
+      {/* Formulario */}
+      <div className="glass-panel overflow-hidden animate-slide-up delay-100">
+        <div className="px-6 py-4" style={{ borderBottom: '1px solid rgba(45,112,60,0.15)' }}>
+          <p className="font-semibold text-[15px]" style={{ color: '#0a2214' }}>Datos de la reserva</p>
         </div>
-        
-        <form onSubmit={handleSubmit} className="p-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Nombre completo *</label>
-              <input
-                type="text"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                placeholder="Tu nombre"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                required
-              />
+            <div>
+              <label className="block mb-1.5 text-[13px] font-medium" style={{ color: '#1a3a22' }}>Nombre completo *</label>
+              <input type="text" value={nombre} onChange={e => setNombre(e.target.value)}
+                placeholder="Tu nombre" className="input-modern" required />
             </div>
-            
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Teléfono *</label>
-              <input
-                type="tel"
-                value={telefono}
-                onChange={(e) => setTelefono(e.target.value)}
-                placeholder="+504 XXXX-XXXX"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                required
-              />
+            <div>
+              <label className="block mb-1.5 text-[13px] font-medium" style={{ color: '#1a3a22' }}>Teléfono *</label>
+              <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)}
+                placeholder="+504 XXXX-XXXX" className="input-modern" required />
             </div>
           </div>
-          
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Fecha y hora *</label>
-              <input
-                type="datetime-local"
-                value={fecha}
-                onChange={(e) => setFecha(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                required
-              />
+            <div>
+              <label className="block mb-1.5 text-[13px] font-medium" style={{ color: '#1a3a22' }}>Fecha y hora *</label>
+              <input type="datetime-local" value={fecha} onChange={e => setFecha(e.target.value)}
+                className="input-modern" required />
             </div>
-            
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Número de personas</label>
-              <input
-                type="number"
-                min="1"
-                max="20"
-                value={personas}
-                onChange={(e) => setPersonas(parseInt(e.target.value))}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
+            <div>
+              <label className="block mb-1.5 text-[13px] font-medium" style={{ color: '#1a3a22' }}>Número de personas</label>
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={() => setPersonas(p => Math.max(1, p - 1))}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center font-bold shrink-0 transition-colors input-modern"
+                  style={{ width: 36, height: 36, padding: 0, textAlign: 'center' }}>−</button>
+                <span className="flex-1 text-center font-semibold" style={{ color: '#0a2214' }}>{personas}</span>
+                <button type="button" onClick={() => setPersonas(p => Math.min(20, p + 1))}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center font-bold shrink-0 transition-colors input-modern"
+                  style={{ width: 36, height: 36, padding: 0, textAlign: 'center' }}>+</button>
+              </div>
             </div>
           </div>
-          
-          <div className="mb-6">
-            <label className="block text-gray-700 font-medium mb-2">Mensaje adicional</label>
-            <textarea
-              value={mensaje}
-              onChange={(e) => setMensaje(e.target.value)}
-              placeholder="Alergias, ocasión especial (cumpleaños, aniversario), preferencia de mesa..."
-              rows={3}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
+          <div>
+            <label className="block mb-1.5 text-[13px] font-medium" style={{ color: '#1a3a22' }}>Mensaje adicional</label>
+            <textarea value={mensaje} onChange={e => setMensaje(e.target.value)}
+              placeholder="Alergias, ocasión especial, preferencia de mesa…"
+              rows={3} className="input-modern resize-none" />
           </div>
-          
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 rounded-lg font-semibold hover:from-orange-600 hover:to-red-700 transition-all"
-          >
-            📅 Solicitar Reserva
+          <button type="submit" className="btn-primary w-full py-3 text-[15px]">
+            Solicitar reserva
           </button>
         </form>
       </div>
-      
-      <div className="mt-6 bg-gray-50 rounded-xl p-4 text-center">
-        <p className="text-gray-600 text-sm">
-          📞 También puedes llamarnos al <strong className="text-orange-600">+504 1234-5678</strong> para reservar directamente
+
+      {/* Info */}
+      <div className="glass-panel rounded-2xl p-5 flex items-center gap-4 animate-slide-up delay-200">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
+          style={{ background: 'rgba(212,160,64,0.15)' }}>
+          📞
+        </div>
+        <p className="text-sm" style={{ color: '#1a3a22' }}>
+          También puedes llamarnos al{' '}
+          <a href="tel:+50412345678" className="font-semibold hover:underline" style={{ color: '#c47a28' }}>
+            +504 1234-5678
+          </a>{' '}
+          para reservar directamente.
         </p>
       </div>
     </div>

@@ -309,7 +309,7 @@ const crearPlato = async () => {
 
       {/* ── CABECERA ── */}
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-medium text-[#0d1f3c]">Menú</h1>
+        <h1 className="text-2xl font-bold text-gradient-anim">Menú</h1>
         <button
           onClick={() => setModalNuevo(true)}
           className="bg-[#0d1f3c] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors flex items-center gap-2"
@@ -349,7 +349,7 @@ const crearPlato = async () => {
               </div>
 
               <div className="p-4">
-                <p className="text-[#0d1f3c] text-sm font-medium mb-1">{plato.nombre}</p>
+                <p className="text-white text-sm font-medium mb-1">{plato.nombre}</p>
                 <p className="text-slate-400 text-xs mb-3 line-clamp-2 leading-relaxed">{plato.descripcion}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-blue-600 text-sm font-medium">{plato.precio.toFixed(2)}€</span>
@@ -387,42 +387,43 @@ const crearPlato = async () => {
       {modalAbierto && platoSeleccionado && (
         <div
           onClick={() => setModalAbierto(false)}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl w-[560px] overflow-hidden shadow-2xl"
+            className="bg-white rounded-2xl w-full max-w-[560px] flex flex-col max-h-[90vh] shadow-2xl"
           >
 
-            {/* Cabecera modal */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+            {/* Cabecera — fija */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
               <div className="flex items-center gap-2">
                 {platoSeleccionado.imagen_url && (
                   <img src={platoSeleccionado.imagen_url} alt="" className="w-8 h-8 rounded-lg object-cover" />
                 )}
-                <h2 className="text-[#0d1f3c] font-medium">{platoSeleccionado.nombre}</h2>
+                <h2 className="text-white font-medium">{platoSeleccionado.nombre}</h2>
               </div>
               <button
                 onClick={() => setModalAbierto(false)}
-                className="text-slate-400 hover:text-slate-600 text-xl"
+                className="text-slate-400 hover:text-white text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
               >
                 ✕
               </button>
             </div>
 
-            {/* Cuerpo modal — dos columnas */}
+            {/* Cuerpo modal — scrollable, dos columnas */}
+            <div className="flex-1 overflow-y-auto">
             <div className="grid grid-cols-2 gap-0">
 
               {/* Columna izquierda — campos editables */}
               <div className="p-6 border-r border-slate-200 flex flex-col gap-4">
-                <p className="text-[#0d1f3c] text-sm font-medium">Editar plato</p>
+                <p className="text-white text-sm font-medium">Editar plato</p>
 
                 <div>
                   <label className="text-slate-400 text-xs block mb-1">Nombre</label>
                   <input
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors"
                   />
                 </div>
 
@@ -432,7 +433,7 @@ const crearPlato = async () => {
                     value={descripcion}
                     onChange={(e) => setDescripcion(e.target.value)}
                     rows={3}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors resize-none"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors resize-none"
                   />
                 </div>
 
@@ -441,7 +442,7 @@ const crearPlato = async () => {
                   <select
                     value={categoriaEditar ?? ''}
                     onChange={(e) => setCategoriaEditar(e.target.value ? Number(e.target.value) : null)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors"
                   >
                     <option value="">Selecciona una categoría</option>
                     {categorias.map((cat) => (
@@ -459,7 +460,7 @@ const crearPlato = async () => {
                     onChange={(e) => setPrecio(e.target.value)}
                     type="number"
                     step="0.01"
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors"
                   />
                 </div>
 
@@ -508,7 +509,7 @@ const crearPlato = async () => {
               {/* Columna derecha — ingredientes (empleado) */}
               <div className="p-6 flex flex-col gap-3 max-h-[420px] overflow-y-auto">
                 <div className="flex items-center justify-between">
-                  <p className="text-[#0d1f3c] text-sm font-medium">Ingredientes</p>
+                  <p className="text-white text-sm font-medium">Ingredientes</p>
                   <button
                     type="button"
                     onClick={() => agregarIngrediente('editar')}
@@ -560,14 +561,19 @@ const crearPlato = async () => {
               </div>
             </div>
 
-            {/* Pie modal — botones */}
-            <div className="px-6 py-4 border-t border-slate-200 flex items-center gap-2">
+            </div>{/* cierre scroll wrapper */}
+
+            {/* Pie modal — fijo */}
+            <div className="px-6 py-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
 
               {/* Guardar */}
               <button
                 onClick={guardarCambios}
                 disabled={guardando}
-                className="flex-1 bg-[#0d1f3c] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg,#1e5c2e,#2d8a44)', boxShadow: '0 2px 10px rgba(30,92,46,0.4)' }}
+                onMouseEnter={e => { if (!guardando) e.currentTarget.style.filter = 'brightness(1.1)' }}
+                onMouseLeave={e => { e.currentTarget.style.filter = '' }}
               >
                 {guardando ? 'Guardando...' : '💾 Guardar cambios'}
               </button>
@@ -611,7 +617,7 @@ const crearPlato = async () => {
           >
             <div className="text-center mb-6">
               <p className="text-4xl mb-3">🗑️</p>
-              <h3 className="text-[#0d1f3c] font-medium text-base mb-2">¿Eliminar plato?</h3>
+              <h3 className="text-white font-medium text-base mb-2">¿Eliminar plato?</h3>
               <p className="text-slate-400 text-sm">
                 Vas a eliminar <strong>{platoSeleccionado?.nombre}</strong> de la base de datos. Esta acción no se puede deshacer.
               </p>
@@ -625,7 +631,10 @@ const crearPlato = async () => {
               </button>
               <button
                 onClick={() => setModalEliminar(false)}
-                className="w-full border border-slate-200 text-slate-500 py-3 rounded-xl text-sm hover:bg-slate-50 transition-colors"
+                className="w-full py-3 rounded-xl text-sm font-medium transition-all"
+                style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.42)', color: '#fca5a5' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.20)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.10)' }}
               >
                 Cancelar
               </button>
@@ -639,22 +648,24 @@ const crearPlato = async () => {
       {modalNuevo && (
         <div
           onClick={() => setModalNuevo(false)}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl w-96 overflow-hidden shadow-2xl"
+            className="bg-white rounded-2xl w-full max-w-sm flex flex-col max-h-[90vh] shadow-2xl"
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <h2 className="text-[#0d1f3c] font-medium">Nuevo plato</h2>
+            {/* Cabecera — fija */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
+              <h2 className="text-white font-medium">Nuevo plato</h2>
               <button
                 onClick={() => setModalNuevo(false)}
-                className="text-slate-400 hover:text-slate-600 text-xl"
+                className="text-slate-400 hover:text-white text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
               >
                 ✕
               </button>
             </div>
-            <div className="p-6 flex flex-col gap-4">
+            {/* Cuerpo — scrollable */}
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
               <div>
                 <label className="text-slate-400 text-xs block mb-1">Imágenes del plato</label>
 
@@ -721,7 +732,7 @@ const crearPlato = async () => {
                 <select
                   value={nuevaCategoria ?? ''}
                   onChange={(e) => setNuevaCategoria(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-[#0d1f3c] outline-none focus:border-blue-400 transition-colors"
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors"
                 >
                   <option value="">Sin categoría</option>
                   {categorias.map((cat) => (
@@ -795,11 +806,15 @@ const crearPlato = async () => {
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition-colors"
                 />
               </div>
-            </div>
-            <div className="px-6 py-4 border-t border-slate-200">
+            </div>{/* cierre cuerpo scrollable */}
+            {/* Footer — fijo */}
+            <div className="px-6 py-4 border-t border-slate-200 shrink-0">
               <button
                 onClick={crearPlato}
-                className="w-full bg-[#0d1f3c] text-white py-3 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors"
+                className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all"
+                style={{ background: 'linear-gradient(135deg,#1e5c2e,#2d8a44)', boxShadow: '0 2px 10px rgba(30,92,46,0.4)' }}
+                onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.1)' }}
+                onMouseLeave={e => { e.currentTarget.style.filter = '' }}
               >
                 ✓ Crear plato
               </button>

@@ -264,7 +264,7 @@ export default function Pedidos() {
         {/* ── COLUMNA IZQUIERDA — MESAS (FIJAS, SIN SCROLL INTERNO) ── */}
         <div className="flex-1 overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-medium text-[#0d1f3c]">Mesas</h1>
+            <h1 className="text-2xl font-bold text-gradient-anim">Mesas</h1>
               <div className="flex items-center gap-3 text-xs">
                 <span className="flex items-center gap-1 text-slate-700">
                   <span className="w-3 h-3 rounded-full bg-green-500 inline-block"/>
@@ -294,7 +294,7 @@ export default function Pedidos() {
 
         {/* ── COLUMNA DERECHA — PEDIDOS PENDIENTES (CON SCROLL INDEPENDIENTE) ── */}
         <div className="w-80 flex-shrink-0 flex flex-col h-full">
-        <h2 className="text-xl font-medium text-[#0d1f3c] mb-6 flex-shrink-0">
+        <h2 className="text-xl font-bold text-gradient-anim mb-6 flex-shrink-0">
           🍽️ Listos para entregar
           {pedidos.length > 0 && (
             <span className="ml-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
@@ -319,7 +319,7 @@ export default function Pedidos() {
             }`}>
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <p className="text-[#0d1f3c] text-sm font-medium">{pedido.plato_nombre}</p>
+                  <p className="text-white text-sm font-medium">{pedido.plato_nombre}</p>
                   <p className="text-slate-400 text-xs mt-0.5">
                     {pedido.mesa ? `Mesa ${pedido.mesa}` : 'Sin mesa'}
                   </p>
@@ -375,18 +375,20 @@ export default function Pedidos() {
         {modalMesa && mesaSeleccionada && (
         <div
             onClick={() => setModalMesa(false)}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
         >
             <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl w-80 overflow-hidden shadow-2xl"
+            className="bg-white rounded-2xl w-full max-w-xs flex flex-col max-h-[90vh] shadow-2xl"
             >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-                <h2 className="text-[#0d1f3c] font-medium">Mesa {mesaSeleccionada.numero}</h2>
-                <button onClick={() => setModalMesa(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+            {/* Cabecera — fija */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
+                <h2 className="text-white font-medium">Mesa {mesaSeleccionada.numero}</h2>
+                <button onClick={() => setModalMesa(false)} className="text-slate-400 hover:text-white text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">✕</button>
             </div>
 
-            <div className="p-6">
+            {/* Cuerpo — scrollable */}
+            <div className="flex-1 overflow-y-auto p-6">
                 <div className="flex items-center gap-2 mb-6">
                 <span className="text-slate-400 text-sm">Estado:</span>
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${colorBadge(mesaSeleccionada.estado)}`}>
@@ -395,18 +397,18 @@ export default function Pedidos() {
                 </div>
 
                 <div className="mb-6">
-                <p className="text-[#0d1f3c] text-sm font-medium mb-3">Número de personas</p>
+                <p className="text-white text-sm font-medium mb-3">Número de personas</p>
                 <div className="flex items-center gap-4">
                     <button
                     onClick={() => setPersonas(Math.max(1, personas - 1))}
-                    className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-[#0d1f3c] hover:bg-slate-50 transition-colors text-lg"
+                    className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-white hover:bg-slate-50 transition-colors text-lg"
                     >
                     −
                     </button>
-                    <span className="text-[#0d1f3c] text-2xl font-medium w-8 text-center">{personas}</span>
+                    <span className="text-white text-2xl font-medium w-8 text-center">{personas}</span>
                     <button
                     onClick={() => setPersonas(Math.min(mesaSeleccionada.capacidad, personas + 1))}
-                    className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-[#0d1f3c] hover:bg-slate-50 transition-colors text-lg"
+                    className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-white hover:bg-slate-50 transition-colors text-lg"
                     >
                     +
                     </button>
@@ -418,7 +420,10 @@ export default function Pedidos() {
                 {mesaSeleccionada.estado === 'libre' ? (
                     <button
                     onClick={activarMesa}
-                    className="w-full bg-[#0d1f3c] text-white py-3 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors"
+                    className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all"
+                    style={{ background: 'linear-gradient(135deg,#1e5c2e,#2d8a44)', boxShadow: '0 2px 10px rgba(30,92,46,0.4)' }}
+                    onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.1)' }}
+                    onMouseLeave={e => { e.currentTarget.style.filter = '' }}
                     >
                     ✓ Activar mesa
                     </button>
@@ -440,7 +445,10 @@ export default function Pedidos() {
                 )}
                 <button
                     onClick={() => setModalMesa(false)}
-                    className="w-full border border-slate-200 text-slate-500 py-3 rounded-xl text-sm hover:bg-slate-50 transition-colors"
+                    className="w-full py-3 rounded-xl text-sm font-medium transition-all"
+                    style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.42)', color: '#fca5a5' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.20)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.10)' }}
                 >
                     Cancelar
                 </button>
@@ -454,22 +462,23 @@ export default function Pedidos() {
         {modalPedidoManual && mesaSeleccionada && (
           <div
             onClick={() => setModalPedidoManual(false)}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
+              className="bg-white rounded-2xl w-full max-w-lg flex flex-col max-h-[90vh] shadow-2xl"
             >
-              {/* Cabecera */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-orange-500 text-white">
+              {/* Cabecera — fija */}
+              <div className="flex items-center justify-between px-6 py-4 shrink-0 text-white"
+                style={{ background: 'linear-gradient(135deg,#1a2a1e,#2d5a32)', borderBottom: '1px solid rgba(212,160,64,0.25)' }}>
                 <div>
                   <h2 className="font-medium text-lg">Pedido manual</h2>
                   <p className="text-orange-100 text-sm">Mesa {mesaSeleccionada.numero}</p>
                 </div>
-                <button onClick={() => setModalPedidoManual(false)} className="text-white/80 hover:text-white text-2xl">✕</button>
+                <button onClick={() => setModalPedidoManual(false)} className="text-white/70 hover:text-white text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">✕</button>
               </div>
 
-              {/* Lista de platos */}
+              {/* Lista de platos — scrollable */}
               <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 {platos.map((plato) => (
                   <button
@@ -496,7 +505,7 @@ export default function Pedidos() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-[#0d1f3c] truncate">{plato.nombre}</p>
+                      <p className="font-medium text-white truncate">{plato.nombre}</p>
                       <p className="text-slate-400 text-xs line-clamp-2">{plato.descripcion}</p>
                     </div>
                     <span className="text-orange-600 font-bold flex-shrink-0">{plato.precio}€</span>
@@ -504,18 +513,22 @@ export default function Pedidos() {
                 ))}
               </div>
 
-              {/* Footer */}
-              <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end bg-slate-50">
+              {/* Footer — fijo */}
+              <div className="px-6 py-4 flex gap-3 justify-end shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.10)' }}>
                 <button
                   onClick={() => setModalPedidoManual(false)}
-                  className="px-4 py-2 border border-slate-200 text-slate-500 rounded-xl text-sm hover:bg-slate-100 transition"
+                  className="px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                  style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.42)', color: '#fca5a5' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.20)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.10)' }}
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={enviarPedidoManual}
                   disabled={!platoSeleccionado}
-                  className="px-4 py-2 bg-orange-500 text-white rounded-xl text-sm font-medium hover:bg-orange-600 transition disabled:opacity-40"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40"
+                  style={{ background: 'linear-gradient(135deg,#d4a040,#c47a28)', boxShadow: '0 2px 10px rgba(212,160,64,0.35)' }}
                 >
                   🍳 Enviar a cocina
                   {platoSeleccionado && ` — ${platoSeleccionado.precio}€`}

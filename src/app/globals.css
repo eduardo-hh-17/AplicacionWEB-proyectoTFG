@@ -1,42 +1,366 @@
 @import "tailwindcss";
 
+/* ── TOKENS ─────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #061420;
+  --foreground: #e8f4e8;
+  --sidebar-bg: #040e0a;
+  /* Acento principal: ámbar cálido (sin azul) */
+  --accent: #d4a040;
+  --accent2: #c47a28;
+  /* Madera / café */
+  --coffee: #8b5e3c;
+  --coffee-dark: #5c3010;
+  /* Tropical green */
+  --jungle: #1e5c2e;
+  --leaf: #2d8a44;
+  /* Edison */
+  --bulb: #fbbf24;
+  --card-radius: 20px;
+  --font-inter: 'Inter', sans-serif;
 }
 
-theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ── FUENTE ─────────────────────────────────────────── */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── SCROLLBAR (cliente) ─────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(212,160,64,0.4); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212,160,64,0.7); }
 
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ── GLASS PANEL (cliente — fondo oscuro tropical) ───── */
+.glass-panel {
+  background: rgba(240, 255, 245, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 160, 64, 0.20);
+  box-shadow: 0 8px 32px rgba(4, 14, 10, 0.30),
+              inset 0 1px 0 rgba(255, 255, 255, 0.50);
+  border-radius: var(--card-radius);
 }
 
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
+/* Glass oscuro (hero / banners cliente) */
+.glass-dark {
+  background: rgba(4, 14, 10, 0.58);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 160, 64, 0.16);
+  border-radius: var(--card-radius);
+}
+
+/* ── BOTÓN PRIMARIO (cliente) ────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, #d4a040, #c47a28);
+  color: #0a1a08;
+  border-radius: 12px;
+  font-weight: 700;
+  transition: filter .2s ease, transform .15s ease, box-shadow .2s ease;
+  box-shadow: 0 4px 14px rgba(212,160,64,.40);
+}
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(212,160,64,.55);
+}
+.btn-primary:active { transform: scale(.97); }
+
+/* ── INPUT (cliente) ─────────────────────────────────── */
+.input-modern {
+  border: 1.5px solid rgba(212,160,64,0.28);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  transition: border-color .2s, box-shadow .2s;
+  background: rgba(240,255,245,0.72);
+  width: 100%;
+  outline: none;
+  color: #0a2010;
+}
+.input-modern:focus {
+  border-color: #d4a040;
+  box-shadow: 0 0 0 3px rgba(212,160,64,0.18);
+}
+.input-modern::placeholder { color: #5a8a6a; }
+
+/* ────────────────────────────────────────────────────── */
+/* ── ADMIN THEME (fondo navy oscuro + glass cards) ───── */
+/* ────────────────────────────────────────────────────── */
+.admin-theme {
+  min-height: 100vh;
+  color: #d0e8f0;
+}
+
+/* Fondo principal del contenido */
+.admin-theme > div {
+  background: transparent;
+}
+
+/* ── Cards: bg-white → glass ─── */
+.admin-theme .bg-white {
+  background: rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+.admin-theme .bg-slate-50,
+.admin-theme .bg-gray-50  { background: rgba(255,255,255,0.04) !important; }
+.admin-theme .bg-slate-100,
+.admin-theme .bg-gray-100 { background: rgba(255,255,255,0.06) !important; }
+.admin-theme .bg-slate-200,
+.admin-theme .bg-gray-200 { background: rgba(255,255,255,0.09) !important; }
+.admin-theme .bg-slate-800,
+.admin-theme .bg-gray-800 { background: rgba(255,255,255,0.12) !important; }
+
+/* ── Texto hardcoded navy → blanco (mayor especificidad) ─── */
+.admin-theme [class*="text-\\[\\#0d1f3c\\]"],
+.admin-theme [class*="text-[#0d1f3c]"] { color: #f0f8ff !important; }
+
+/* ── Fondos hardcoded navy → verde admin ─── */
+.admin-theme [class*="bg-[#0d1f3c]"],
+.admin-theme [class*="bg-[#1e3a6e]"] {
+  background: linear-gradient(135deg, #1e5c2e, #2d8a44) !important;
+  box-shadow: 0 2px 10px rgba(30,92,46,0.35) !important;
+}
+.admin-theme [class*="bg-[#0d1f3c]"]:hover,
+.admin-theme [class*="bg-[#1e3a6e]"]:hover {
+  filter: brightness(1.12) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ── Botones CANCELAR (border-slate-200 + text-slate-500) → rojo ─── */
+.admin-theme button[class*="border-slate-200"][class*="text-slate-500"],
+.admin-theme button[class*="border-slate-200"][class*="text-white"][class*="slate"] {
+  border-color: rgba(239,68,68,0.50) !important;
+  color: #fca5a5 !important;
+  background: rgba(239,68,68,0.10) !important;
+}
+.admin-theme button[class*="border-slate-200"][class*="text-slate-500"]:hover {
+  background: rgba(239,68,68,0.20) !important;
+  border-color: rgba(239,68,68,0.70) !important;
+}
+
+/* ── Botones ACTIVAR MESA (bg-[#0d1f3c]) → ya verde por la regla anterior ─── */
+/* ── Botón LIBERAR MESA ya es bg-red-500, lo dejamos así ─── */
+
+/* ── Activar/Desactivar toggle en menú → colores visibles ─── */
+.admin-theme button[class*="border-green-300"] {
+  background: rgba(34,197,94,0.16) !important;
+  border-color: rgba(34,197,94,0.55) !important;
+  color: #86efac !important;
+}
+.admin-theme button[class*="hover:bg-red-50"] {
+  border-color: rgba(239,68,68,0.35) !important;
+  color: #fca5a5 !important;
+}
+
+/* ── Texto Tailwind → colores claros ─── */
+.admin-theme .text-gray-900, .admin-theme .text-slate-900 { color: #ffffff !important; }
+.admin-theme .text-gray-800, .admin-theme .text-slate-800 { color: #f5f9ff !important; }
+.admin-theme .text-gray-700, .admin-theme .text-slate-700 { color: #e8f2ff !important; }
+.admin-theme .text-gray-600, .admin-theme .text-slate-600 { color: #cce0f8 !important; }
+.admin-theme .text-gray-500, .admin-theme .text-slate-500 { color: #b4d0f0 !important; }
+.admin-theme .text-gray-400, .admin-theme .text-slate-400 { color: #98bce0 !important; }
+.admin-theme .text-gray-300, .admin-theme .text-slate-300 { color: #c0d8f0 !important; }
+
+/* ── Bordes ─── */
+.admin-theme .border-gray-100, .admin-theme .border-slate-100 { border-color: rgba(255,255,255,0.06) !important; }
+.admin-theme .border-gray-200, .admin-theme .border-slate-200 { border-color: rgba(255,255,255,0.10) !important; }
+.admin-theme .border-gray-300, .admin-theme .border-slate-300 { border-color: rgba(255,255,255,0.16) !important; }
+.admin-theme .divide-gray-200 > * + *, .admin-theme .divide-slate-200 > * + * {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.admin-theme .divide-gray-100 > * + *, .admin-theme .divide-slate-100 > * + * {
+  border-color: rgba(255,255,255,0.05) !important;
+}
+
+/* ── Hover states ─── */
+.admin-theme .hover\:bg-gray-50:hover, .admin-theme .hover\:bg-slate-50:hover {
+  background: rgba(255,255,255,0.08) !important;
+}
+.admin-theme .hover\:bg-gray-100:hover, .admin-theme .hover\:bg-slate-100:hover {
+  background: rgba(255,255,255,0.10) !important;
+}
+
+/* ── Inputs / selects / textareas admin ─── */
+.admin-theme input:not([type=checkbox]):not([type=radio]),
+.admin-theme textarea,
+.admin-theme select {
+  background: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.18) !important;
+  color: #e0f0ff !important;
+}
+.admin-theme input::placeholder,
+.admin-theme textarea::placeholder { color: #5a84a8 !important; }
+.admin-theme input:focus,
+.admin-theme textarea:focus,
+.admin-theme select:focus {
+  border-color: rgba(30,92,46,0.7) !important;
+  box-shadow: 0 0 0 3px rgba(30,92,46,0.20) !important;
+  outline: none !important;
+}
+
+/* ── Shadow → glass shadow ─── */
+.admin-theme .shadow,
+.admin-theme .shadow-md,
+.admin-theme .shadow-lg,
+.admin-theme .shadow-xl {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+/* ── Badge / pill colors ─── */
+.admin-theme .bg-green-100  { background: rgba(34,197,94,0.18)  !important; }
+.admin-theme .bg-yellow-100 { background: rgba(234,179,8,0.18)  !important; }
+.admin-theme .bg-red-100    { background: rgba(239,68,68,0.18)  !important; }
+.admin-theme .bg-blue-100   { background: rgba(59,130,246,0.18) !important; }
+.admin-theme .bg-orange-100 { background: rgba(249,115,22,0.18) !important; }
+.admin-theme .bg-purple-100 { background: rgba(168,85,247,0.18) !important; }
+.admin-theme .text-green-700  { color: #6ee7a0 !important; }
+.admin-theme .text-yellow-700 { color: #fde68a !important; }
+.admin-theme .text-red-700    { color: #fca5a5 !important; }
+.admin-theme .text-blue-700   { color: #93c5fd !important; }
+.admin-theme .text-orange-700 { color: #fdba74 !important; }
+.admin-theme .text-green-600  { color: #4ade80 !important; }
+.admin-theme .text-red-600    { color: #f87171 !important; }
+.admin-theme .text-orange-600 { color: #fb923c !important; }
+.admin-theme .text-blue-600   { color: #60a5fa !important; }
+.admin-theme .text-purple-600 { color: #c084fc !important; }
+.admin-theme .bg-green-500  { background: rgba(34,197,94,0.85)  !important; }
+.admin-theme .bg-blue-600   { background: rgba(37,99,235,0.85)  !important; }
+.admin-theme .bg-orange-500 { background: rgba(249,115,22,0.85) !important; }
+
+/* ── Grayscale override para platos inactivos ─── */
+.admin-theme .grayscale { filter: grayscale(1) brightness(0.7) !important; }
+
+/* ────────────────────────────────────────────────────── */
+/* ── ANIMACIONES ─────────────────────────────────────── */
+/* ────────────────────────────────────────────────────── */
+@keyframes fade-in    { from { opacity: 0; }                                to { opacity: 1; } }
+@keyframes slide-up   { from { opacity: 0; transform: translateY(24px); }  to { opacity: 1; transform: translateY(0); } }
+@keyframes slide-right{ from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes scale-in   { from { opacity: 0; transform: scale(0.92); }       to { opacity: 1; transform: scale(1); } }
+@keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes float      { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* Palmeras */
+@keyframes palm-sway  { 0%,100% { transform: rotate(0deg); } 30% { transform: rotate(2.5deg); } 70% { transform: rotate(-1.5deg); } }
+@keyframes palm-enter { from { opacity: 0; transform: scale(0.8) rotate(10deg); } to { opacity: 1; transform: scale(1) rotate(0deg); } }
+.palm-sway      { animation: palm-sway 6s ease-in-out infinite; transform-origin: top right; }
+.palm-sway-left { animation: palm-sway 7s ease-in-out infinite reverse; transform-origin: bottom left; }
+.palm-enter     { animation: palm-enter 0.8s cubic-bezier(.16,1,.3,1) forwards; }
+
+/* Enredaderas */
+@keyframes vine-sway  { 0%,100% { transform: rotate(0deg); } 35% { transform: rotate(2deg); } 70% { transform: rotate(-1.5deg); } }
+.vine-sway { animation: vine-sway 5s ease-in-out infinite; }
+
+/* Bombillas Edison */
+@keyframes bulb-flicker {
+  0%,85%,100% { opacity: 1;    filter: brightness(1); }
+  88%          { opacity: 0.78; filter: brightness(0.75); }
+  91%          { opacity: 1;    filter: brightness(1.15); }
+  95%          { opacity: 0.88; filter: brightness(0.88); }
+}
+.bulb-flicker { animation: bulb-flicker 5s ease-in-out infinite; }
+.bulb-d1 { animation-delay: 0.4s;  }
+.bulb-d2 { animation-delay: 1.1s;  }
+.bulb-d3 { animation-delay: 0.8s;  }
+.bulb-d4 { animation-delay: 1.7s;  }
+.bulb-d5 { animation-delay: 0.2s;  }
+
+/* Helpers */
+.animate-fade-in      { animation: fade-in 0.4s ease-out both; }
+.animate-slide-up     { animation: slide-up 0.45s cubic-bezier(.16,1,.3,1) both; }
+.animate-slide-right  { animation: slide-right 0.4s cubic-bezier(.16,1,.3,1) both; }
+.animate-scale-in     { animation: scale-in 0.35s cubic-bezier(.16,1,.3,1) both; }
+.animate-pulse-soft   { animation: pulse-soft 2s ease-in-out infinite; }
+.animate-float        { animation: float 3s ease-in-out infinite; }
+
+.delay-75  { animation-delay: 75ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* ── GRADIENT ARCOÍRIS (títulos) ─────────────────────── */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.text-gradient-anim {
+  background: linear-gradient(
+    90deg,
+    #d4a040,   /* ámbar */
+    #2d8a44,   /* verde selva */
+    #4ade80,   /* verde suave */
+    #06b6d4,   /* teal caribeño */
+    #fbbf24,   /* dorado Edison */
+    #c47a28,   /* café/madera */
+    #2d8a44,   /* verde selva */
+    #d4a040    /* ámbar (cierre) */
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 6s ease infinite;
+  display: inline-block;
+}
+
+/* ── MODALES ADMIN — fondo sólido con contraste ─────── */
+/* El elemento modal (bg-white + shadow-2xl) debe ser sólido, no transparente */
+.admin-theme .shadow-2xl.bg-white,
+.admin-theme .shadow-xl.bg-white {
+  background: #0d1f3c !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  color: #e0f0ff !important;
+}
+/* Header del modal (primer hijo directo con border-b) → más claro */
+.admin-theme .shadow-2xl.bg-white > div:first-child,
+.admin-theme .shadow-xl.bg-white > div:first-child {
+  background: #152d52 !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+/* Cuerpo / scroll area → un poco más oscuro para diferenciarlo */
+.admin-theme .shadow-2xl.bg-white .overflow-y-auto,
+.admin-theme .shadow-xl.bg-white .overflow-y-auto {
+  background: #0a1a2e !important;
+}
+/* Filas/cards dentro de modales → glass suave */
+.admin-theme .shadow-2xl.bg-white .bg-slate-50,
+.admin-theme .shadow-2xl.bg-white .rounded-xl.bg-slate-50,
+.admin-theme .shadow-xl.bg-white .bg-slate-50 {
+  background: rgba(255,255,255,0.07) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+/* ── BANDERA HONDURAS ────────────────────────────────── */
+@keyframes flagWave {
+  0%   { opacity: 0; transform: scale(0.5) translateY(20px) rotate(-8deg); }
+  18%  { opacity: 1; transform: scale(1.1) translateY(-5px) rotate(3deg); }
+  35%  { transform: scale(1.0) translateY(0) rotate(-2deg); }
+  55%  { transform: scale(1.0) translateY(-3px) rotate(2deg); }
+  70%  { opacity: 1; transform: scale(1.0) translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: scale(0.85) translateY(-12px); }
+}
+
+/* Sidebar active line */
+.sidebar-item-active { position: relative; overflow: hidden; }
+.sidebar-item-active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, #d4a040, #c47a28);
+  border-radius: 0 3px 3px 0;
 }

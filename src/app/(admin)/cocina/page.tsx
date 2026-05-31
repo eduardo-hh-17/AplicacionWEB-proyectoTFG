@@ -109,7 +109,7 @@ useEffect(() => {
       {pedidos.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-16 text-center">
           <p className="text-5xl mb-4">✅</p>
-          <p className="text-[#0d1f3c] text-lg font-medium mb-2">Todo al día</p>
+          <p className="text-white text-lg font-medium mb-2">Todo al día</p>
           <p className="text-slate-400 text-sm">No hay pedidos pendientes ahora mismo</p>
         </div>
       ) : (
@@ -123,7 +123,7 @@ useEffect(() => {
               {/* Cabecera tarjeta */}
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <p className="text-[#0d1f3c] text-lg font-medium">{pedido.plato_nombre}</p>
+                  <p className="text-white text-lg font-medium">{pedido.plato_nombre}</p>
                   <p className="text-slate-400 text-xs mt-1">{tiempoTranscurrido(pedido.creado_en)}</p>
                 </div>
                 <div className="text-right">
@@ -176,7 +176,7 @@ useEffect(() => {
               <div className="flex flex-col gap-2">
                 <button
                   onClick={() => completarPedido(pedido.id)}
-                  className="w-full bg-[#0d1f3c] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors"
+                  className="w-full bg-[#1e5c2e] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#2d8a44] transition-colors"
                 >
                   ✅ Listo — entregar
                 </button>

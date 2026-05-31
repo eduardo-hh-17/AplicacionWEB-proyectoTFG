@@ -44,7 +44,7 @@ export default function QRPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-medium text-[#0d1f3c]">Códigos QR</h1>
+          <h1 className="text-2xl font-bold text-gradient-anim">Códigos QR</h1>
           <p className="text-slate-400 text-sm mt-1">
             Imprime o descarga el QR de cada mesa para que los clientes puedan pedir
           </p>
