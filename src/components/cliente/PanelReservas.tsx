@@ -290,7 +290,7 @@ export default function PanelReservas() {
   const renderDiaDetalle = () => {
     if (!diaDetalle) return null
     const d = new Date(diaDetalle+'T12:00')
-    const mesasActivas = mesas.filter(m => m.activa)
+    const mesasActivas = mesas.filter(m => m.estado !== 'inactiva')
 
     return (
       <div className="rounded-2xl overflow-hidden animate-slide-up" style={{border:'1px solid rgba(45,112,60,0.20)'}}>
