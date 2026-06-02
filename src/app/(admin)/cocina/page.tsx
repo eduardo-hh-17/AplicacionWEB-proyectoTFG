@@ -15,10 +15,10 @@ type Pedido = {
   plato_nombre: string
   precio: number
   estado: string
-  mesa: number | null
+  mesa_id: number | null
   ingredientes: Ingrediente[]
-  fecha: string
   creado_en: string
+  notas: string | null
 }
 
 export default function Cocina() {
@@ -127,9 +127,9 @@ useEffect(() => {
                   <p className="text-slate-400 text-xs mt-1">{tiempoTranscurrido(pedido.creado_en)}</p>
                 </div>
                 <div className="text-right">
-                  {pedido.mesa && (
+                  {pedido.mesa_id && (
                     <span className="bg-[#0d1f3c] text-white text-xs px-2 py-1 rounded-lg">
-                      Mesa {pedido.mesa}
+                      Mesa {pedido.mesa_id}
                     </span>
                   )}
                 </div>
@@ -158,6 +158,14 @@ useEffect(() => {
                       </span>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Notas del cliente */}
+              {pedido.notas && (
+                <div className="mb-4 px-3 py-2 rounded-xl text-sm"
+                  style={{ background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.35)', color: '#854d0e' }}>
+                  💬 <span className="font-semibold">Nota:</span> {pedido.notas}
                 </div>
               )}
 

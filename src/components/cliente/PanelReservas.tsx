@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
+import HorarioInput from '@/components/ui/HorarioInput'
+import { addHoras, HORA_CIERRE_ENTRADA, HORA_CIERRE_SALIDA } from '@/lib/horario'
 
 /* ─── Types ─── */
 type TipoEvento = 'standard' | 'cumpleanos' | 'pedida' | 'evento' | 'empresa'
@@ -145,7 +147,7 @@ export default function PanelReservas() {
   }, [horaEntrada, horaSalida])
 
   const onHoraEntradaChange = (v: string) => {
-    setHoraEntrada(v); if (v) setHoraSalida(addHorasStr(v, 1.5))
+    setHoraEntrada(v); if (v) setHoraSalida(addHoras(v, 1.5))
   }
 
   /* ── Calendar nav ── */
@@ -550,14 +552,23 @@ export default function PanelReservas() {
             <div className="flex items-end gap-3">
               <div className="flex-1">
                 <p className="text-[11px] mb-1" style={{color:'#5a8a6a'}}>Hora de llegada</p>
-                <input type="time" value={horaEntrada} onChange={e=>onHoraEntradaChange(e.target.value)}
-                  className="input-modern w-full" required min="11:00" max="22:00"/>
+                <HorarioInput
+                  value={horaEntrada}
+                  onChange={onHoraEntradaChange}
+                  tema="cliente"
+                  maxHora={HORA_CIERRE_ENTRADA}
+                />
               </div>
-              <span className="text-[#5a8a6a] text-xl mb-2">→</span>
+              <span className="text-[#5a8a6a] text-xl mb-2 pb-5">→</span>
               <div className="flex-1">
                 <p className="text-[11px] mb-1" style={{color:'#5a8a6a'}}>Hora de salida</p>
-                <input type="time" value={horaSalida} onChange={e=>setHoraSalida(e.target.value)}
-                  className="input-modern w-full" required min="12:00" max="23:00"/>
+                <HorarioInput
+                  value={horaSalida}
+                  onChange={setHoraSalida}
+                  tema="cliente"
+                  minHora={horaEntrada}
+                  maxHora={HORA_CIERRE_SALIDA}
+                />
               </div>
             </div>
             <div className="mt-2 min-h-[24px]">

@@ -53,6 +53,7 @@ export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaN
   const [modalAbierto, setModalAbierto] = useState(false)
   const [platoSeleccionado, setPlatoSeleccionado] = useState<any>(null)
   const [ingredientesSeleccionados, setIngredientesSeleccionados] = useState<any[]>([])
+  const [notasPedido, setNotasPedido] = useState('')
   const [cargando, setCargando] = useState(true)
 
   const { toasts, showToast, removeToast } = useToast()
@@ -143,12 +144,8 @@ useEffect(() => {
 
 const abrirModal = (plato: any) => {
   setPlatoSeleccionado(plato)
-  
-  let ingredientes = plato?.ingredientes || []
-  
-
-  
-  setIngredientesSeleccionados([...ingredientes])
+  setIngredientesSeleccionados([...(plato?.ingredientes || [])])
+  setNotasPedido('')
   setModalAbierto(true)
 }
 
@@ -184,8 +181,9 @@ const enviarPedido = async () => {
       ingredientes: ingredientesSeleccionados.filter(i => i.activo),
       precio: platoSeleccionado.precio,
       estado: 'pendiente',
-      mesa: mesaActiva || null,
-      sesion_id: sesionActiva || null,  // ← añade la sesión
+      mesa_id: mesaActiva || null,
+      sesion_id: sesionActiva || null,
+      notas: notasPedido.trim() || null,
       creado_en: new Date().toISOString()
     }
     
@@ -412,41 +410,68 @@ const enviarPedido = async () => {
                   <p className="font-bold text-2xl mt-3" style={{ color: '#c47a28' }}>{platoSeleccionado.precio}€</p>
                 </div>
 
-                {/* Columna derecha — ingredientes */}
-                <div className="p-6">
-                  <p className="font-semibold mb-3 text-[13px]" style={{ color: '#0a2010' }}>Elige tus ingredientes:</p>
-                  <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                    {Array.isArray(ingredientesSeleccionados) && ingredientesSeleccionados.length > 0 ? (
-                      ingredientesSeleccionados.map((ing, idx) => (
-                        <label
-                          key={ing?.id ?? idx}
-                          className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all"
-                          style={ing?.activo
-                            ? { background: 'rgba(45,138,68,0.12)', border: '1px solid rgba(45,138,68,0.35)' }
-                            : { background: 'rgba(212,160,64,0.06)', border: '1px solid rgba(212,160,64,0.18)' }}
-                        >
-                          <div className="flex items-center gap-4 flex-1 min-w-0">
-                            {ing?.imagen_url ? (
-                              <img src={ing.imagen_url} alt={ing.nombre} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
-                            ) : (
-                              <span className="w-14 h-14 rounded-lg flex-shrink-0" style={{ background: 'rgba(212,160,64,0.12)' }} />
-                            )}
-                            <span className="text-base font-semibold truncate"
-                              style={{ color: ing?.activo ? '#0a2010' : '#8aaa8a', textDecoration: ing?.activo ? 'none' : 'line-through' }}>
-                              {ing?.nombre || 'Ingrediente'}
-                            </span>
-                          </div>
-                          <input
-                            type="checkbox"
-                            checked={ing?.activo || false}
-                            onChange={() => toggleIngrediente(ing?.id ?? idx)}
-                            className="w-5 h-5 rounded cursor-pointer"
-                            style={{ accentColor: '#2d8a44' }}
-                          />
-                        </label>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 text-center py-4">Este plato no tiene ingredientes opcionales</p>
+                {/* Columna derecha — ingredientes + notas */}
+                <div className="p-6 flex flex-col gap-4">
+                  <div>
+                    <p className="font-semibold mb-3 text-[13px]" style={{ color: '#0a2010' }}>Elige tus ingredientes:</p>
+                    <div className="space-y-2 max-h-[280px] overflow-y-auto pr-2">
+                      {Array.isArray(ingredientesSeleccionados) && ingredientesSeleccionados.length > 0 ? (
+                        ingredientesSeleccionados.map((ing, idx) => (
+                          <label
+                            key={ing?.id ?? idx}
+                            className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all"
+                            style={ing?.activo
+                              ? { background: 'rgba(45,138,68,0.12)', border: '1px solid rgba(45,138,68,0.35)' }
+                              : { background: 'rgba(212,160,64,0.06)', border: '1px solid rgba(212,160,64,0.18)' }}
+                          >
+                            <div className="flex items-center gap-4 flex-1 min-w-0">
+                              {ing?.imagen_url ? (
+                                <img src={ing.imagen_url} alt={ing.nombre} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
+                              ) : (
+                                <span className="w-14 h-14 rounded-lg flex-shrink-0" style={{ background: 'rgba(212,160,64,0.12)' }} />
+                              )}
+                              <span className="text-base font-semibold truncate"
+                                style={{ color: ing?.activo ? '#0a2010' : '#8aaa8a', textDecoration: ing?.activo ? 'none' : 'line-through' }}>
+                                {ing?.nombre || 'Ingrediente'}
+                              </span>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={ing?.activo || false}
+                              onChange={() => toggleIngrediente(ing?.id ?? idx)}
+                              className="w-5 h-5 rounded cursor-pointer"
+                              style={{ accentColor: '#2d8a44' }}
+                            />
+                          </label>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-4">Este plato no tiene ingredientes opcionales</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Notas para cocina */}
+                  <div>
+                    <label className="font-semibold text-[13px] block mb-1.5" style={{ color: '#0a2010' }}>
+                      💬 Nota para cocina <span className="font-normal text-[11px]" style={{ color: '#5a9a6a' }}>(opcional)</span>
+                    </label>
+                    <textarea
+                      value={notasPedido}
+                      onChange={e => setNotasPedido(e.target.value)}
+                      rows={2}
+                      maxLength={200}
+                      placeholder="Ej: poco hecho, sin sal, alergia al gluten…"
+                      className="w-full rounded-xl px-3 py-2 text-sm resize-none outline-none transition-all"
+                      style={{
+                        background: 'rgba(45,138,68,0.07)',
+                        border: '1px solid rgba(45,138,68,0.25)',
+                        color: '#0a2010',
+                      }}
+                      onFocus={e => { e.currentTarget.style.border = '1px solid rgba(45,138,68,0.6)' }}
+                      onBlur={e => { e.currentTarget.style.border = '1px solid rgba(45,138,68,0.25)' }}
+                    />
+                    {notasPedido.length > 0 && (
+                      <p className="text-[10px] mt-0.5 text-right" style={{ color: '#5a9a6a' }}>{notasPedido.length}/200</p>
                     )}
                   </div>
                 </div>

@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
+import HorarioInput from '@/components/ui/HorarioInput'
+import { HORA_CIERRE_ENTRADA, HORA_CIERRE_SALIDA } from '@/lib/horario'
 
 /* ─── Types ─── */
 type Estado     = 'confirmada' | 'pendiente' | 'cancelada'
@@ -624,19 +626,23 @@ export default function AdminReservas() {
                 <div className="flex items-end gap-2">
                   <div className="flex-1">
                     <p className="text-[10px] text-slate-500 mb-1">Hora llegada</p>
-                    <input type="time" value={form.hora_entrada}
-                      onChange={e => {
-                        const v = e.target.value
-                        setForm({...form, hora_entrada: v, hora_salida: addHorasStr(v, 1.5)})
-                      }}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-400 transition-colors"/>
+                    <HorarioInput
+                      value={form.hora_entrada}
+                      onChange={v => setForm({...form, hora_entrada: v, hora_salida: addHorasStr(v, 1.5)})}
+                      tema="admin"
+                      maxHora={HORA_CIERRE_ENTRADA}
+                    />
                   </div>
-                  <span className="text-slate-400 text-lg mb-2">→</span>
+                  <span className="text-slate-400 text-lg mb-5">→</span>
                   <div className="flex-1">
                     <p className="text-[10px] text-slate-500 mb-1">Hora salida</p>
-                    <input type="time" value={form.hora_salida}
-                      onChange={e => setForm({...form, hora_salida: e.target.value})}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-400 transition-colors"/>
+                    <HorarioInput
+                      value={form.hora_salida}
+                      onChange={v => setForm({...form, hora_salida: v})}
+                      tema="admin"
+                      minHora={form.hora_entrada}
+                      maxHora={HORA_CIERRE_SALIDA}
+                    />
                   </div>
                 </div>
                 {/* Badge duración */}

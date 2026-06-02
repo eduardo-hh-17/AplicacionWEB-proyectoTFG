@@ -3,43 +3,52 @@ import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   try {
-    const { nombre, apellido, telefono, rol, turno_inicio, turno_cierre, fecha_inicio, email, password } = await request.json()
+    const { nombre, apellido, telefono, rol, fecha_inicio, email, password, foto_url } = await request.json()
 
-    // Cliente con service_role — solo existe en el servidor
+    if (!nombre || !email || !password || !rol) {
+      return NextResponse.json({ error: 'Nombre, email, contraseña y rol son obligatorios' }, { status: 400 })
+    }
+
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // 1. Crea el usuario en Supabase Auth
+    // 1. Crear usuario en Auth con copia informativa en user_metadata
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
-      email_confirm: true
+      email_confirm: true,
+      user_metadata: {
+        nombre,
+        apellido,
+        rol,
+        display_name: `${nombre}${apellido ? ' ' + apellido : ''}`,
+      },
     })
 
     if (authError) {
       return NextResponse.json({ error: authError.message }, { status: 400 })
     }
 
-    // 2. Inserta en la tabla empleados con el mismo id
+    // 2. Insertar en empleados con el mismo id que Auth
     const { error: dbError } = await supabaseAdmin
       .from('empleados')
       .insert([{
-        id: authData.user.id,
+        id:           authData.user.id,
         nombre,
-        apellido,
-        telefono: telefono || null,
+        apellido:     apellido     || null,
+        telefono:     telefono     || null,
         rol,
-        turno_inicio: turno_inicio || null,
-        turno_cierre: turno_cierre || null,
+        email,                            // sincronizado con Auth
+        foto_url:     foto_url     || null,
         fecha_inicio: fecha_inicio || null,
-        activo: true,
-        created_at: new Date().toISOString()
+        activo:       true,
+        created_at:   new Date().toISOString(),
       }])
 
     if (dbError) {
-      // Si falla la BD, borra el usuario de Auth para no dejar basura
+      // Revertir: si la BD falla, eliminar el usuario de Auth
       await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
       return NextResponse.json({ error: dbError.message }, { status: 400 })
     }
@@ -47,6 +56,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true })
 
   } catch (err) {
-    return NextResponse.json({ error: 'Error interno' }, { status: 500 })
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

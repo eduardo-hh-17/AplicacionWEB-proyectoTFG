@@ -27,6 +27,7 @@ type Empleado = {
   email?: string
   password?: string
   trabajandoAhora?: boolean
+  entradaHoy?: string | null
 }
 
 type Sesion = {
@@ -53,6 +54,8 @@ export default function Dashboard() {
   const[periodoGrafica, setPeriodoGrafica] = useState<'dia' | 'semana' | 'mes'>('dia')
   const[datosGrafica, setDatosGrafica] = useState<{ label: string, total: number }[]>([])
   const [historialEmpleado, setHistorialEmpleado] = useState<{ id: string; nombre: string; fichajes: any[] } | null>(null)
+  const [tabEmpleados, setTabEmpleados]   = useState<'activos' | 'todos'>('activos')
+  const [todosEmpleados, setTodosEmpleados] = useState<Empleado[]>([])
 
 
 
@@ -162,12 +165,11 @@ export default function Dashboard() {
   }
 
   const cargarEmpleados = async () => {
-    console.log('🔄 Actualizando empleados activos...')
     const hoy = new Date().toISOString().split('T')[0]
 
     const { data: fichajesActivos, error } = await supabase
       .from('fichajes')
-      .select('empleado_id')
+      .select('empleado_id, entrada')
       .eq('fecha', hoy)
       .is('salida', null)
 
@@ -185,36 +187,70 @@ export default function Dashboard() {
       .in('id', ids)
 
     if (empleadosData) {
-      const empleadosConEstado = empleadosData.map(emp => ({
-        ...emp,
-        trabajandoAhora: true
-      }))
+      const empleadosConEstado = empleadosData.map(emp => {
+        const fichaje = fichajesActivos.find(f => f.empleado_id === emp.id)
+        return { ...emp, trabajandoAhora: true, entradaHoy: fichaje?.entrada ?? null }
+      })
       setEmpleados(empleadosConEstado)
       setTotalEmpleados(empleadosConEstado.length)
     }
   }
 
-  
+  const cargarTodosEmpleados = async () => {
+    const { data } = await supabase
+      .from('empleados')
+      .select('*')
+      .order('nombre')
+    if (data) setTodosEmpleados(data as Empleado[])
+  }
+
+  const darDeBaja = async (id: string) => {
+    if (!confirm('¿Dar de baja a este empleado? No podrá acceder hasta que lo reactives.')) return
+    await supabase.from('empleados').update({ activo: false }).eq('id', id)
+    cargarTodosEmpleados()
+    cargarEmpleados()
+  }
+
+  const reactivar = async (id: string) => {
+    await supabase.from('empleados').update({ activo: true }).eq('id', id)
+    cargarTodosEmpleados()
+    cargarEmpleados()
+  }
+
+  const eliminarEmpleadoCompleto = async (id: string) => {
+    if (!confirm('⚠️ Esto eliminará al empleado de forma permanente (BD + acceso). ¿Estás seguro?')) return
+    const res = await fetch('/api/eliminar-empleado', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+    const data = await res.json()
+    if (!res.ok) { alert('Error: ' + data.error); return }
+    cargarTodosEmpleados()
+    cargarEmpleados()
+  }
+
   // Fichar entrada
   const ficharEntrada = async (empleadoId: string) => {
     const ahora = new Date()
+    const hoy   = ahora.toISOString().split('T')[0]
 
     const { data: fichajeHoy } = await supabase
       .from('fichajes')
       .select('*')
       .eq('empleado_id', empleadoId)
-      .gte('entrada', ahora.toISOString().split('T')[0] + 'T00:00:00')
+      .eq('fecha', hoy)
       .is('salida', null)
       .maybeSingle()
 
     if (fichajeHoy) {
-      alert('Ya tienes una entrada activa.')
+      alert('Ya hay una entrada activa para hoy.')
       return
     }
 
     const { error } = await supabase
       .from('fichajes')
-      .insert({ empleado_id: empleadoId, entrada: ahora.toISOString() })
+      .insert({ empleado_id: empleadoId, fecha: hoy, entrada: ahora.toISOString() })
 
     if (error) {
       alert('Error al fichar entrada: ' + error.message)
@@ -227,29 +263,35 @@ export default function Dashboard() {
   // Fichar salida
   const ficharSalida = async (empleadoId: string) => {
     const ahora = new Date()
+    const hoy   = ahora.toISOString().split('T')[0]
 
     const { data: fichajeHoy } = await supabase
       .from('fichajes')
       .select('*')
       .eq('empleado_id', empleadoId)
-      .gte('entrada', ahora.toISOString().split('T')[0] + 'T00:00:00')
+      .eq('fecha', hoy)
       .is('salida', null)
       .maybeSingle()
 
     if (!fichajeHoy) {
-      alert('No hay entrada activa.')
+      alert('No hay entrada activa para hoy.')
       return
     }
 
+    const horasTrabajadas = (ahora.getTime() - new Date(fichajeHoy.entrada).getTime()) / 3_600_000
+
     const { error } = await supabase
       .from('fichajes')
-      .update({ salida: ahora.toISOString() })
+      .update({
+        salida: ahora.toISOString(),
+        horas_trabajadas: Math.round(horasTrabajadas * 100) / 100,
+      })
       .eq('id', fichajeHoy.id)
 
     if (error) {
       alert('Error al fichar salida: ' + error.message)
     } else {
-      alert(`✅ Salida fichada a las ${ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`)
+      alert(`✅ Salida fichada a las ${ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} · ${horasTrabajadas.toFixed(1)}h trabajadas`)
       cargarEmpleados()
     }
   }
@@ -359,8 +401,8 @@ export default function Dashboard() {
   }
 
   const darDeAltaEmpleado = async () => {
-    if (!nuevoEmpleado.nombre || !nuevoEmpleado.apellido || !nuevoEmpleado.rol) {
-      alert('Nombre, apellido y rol son obligatorios')
+    if (!nuevoEmpleado.nombre || !nuevoEmpleado.rol) {
+      alert('Nombre y rol son obligatorios')
       return
     }
     if (!nuevoEmpleado.email || !nuevoEmpleado.password) {
@@ -368,10 +410,32 @@ export default function Dashboard() {
       return
     }
 
+    let foto_url = nuevoEmpleado.foto_url || null
+
+    // Subir foto si se seleccionó un archivo
+    if (fotoFile) {
+      setSubiendoFoto(true)
+      const ext      = fotoFile.name.split('.').pop()
+      const fileName = `${Date.now()}.${ext}`
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('empleados')
+        .upload(fileName, fotoFile, { upsert: true })
+
+      setSubiendoFoto(false)
+
+      if (uploadError) {
+        alert('Error al subir la foto: ' + uploadError.message)
+        return
+      }
+
+      const { data: urlData } = supabase.storage.from('empleados').getPublicUrl(uploadData.path)
+      foto_url = urlData.publicUrl
+    }
+
     const res = await fetch('/api/crear-empleado', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(nuevoEmpleado)
+      body: JSON.stringify({ ...nuevoEmpleado, foto_url })
     })
 
     const data = await res.json()
@@ -382,35 +446,29 @@ export default function Dashboard() {
     }
 
     setNuevoEmpleado({
-      nombre: '',
-      apellido: '',
-      telefono: '',
-      rol: 'camarero',
-      turno_inicio: '',
-      turno_cierre: '',
+      nombre: '', apellido: '', telefono: '', rol: 'camarero',
       fecha_inicio: new Date().toISOString().split('T')[0],
-      foto_url: '',
-      email: '',
-      password: ''
-      
+      foto_url: '', email: '', password: '',
     })
-
+    setFotoFile(null)
+    setFotoPreview(null)
     setModalAltaEmpleado(false)
     cargarEmpleados()
   }
+
+  const [fotoFile, setFotoFile] = useState<File | null>(null)
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null)
+  const [subiendoFoto, setSubiendoFoto] = useState(false)
 
   const[nuevoEmpleado, setNuevoEmpleado] = useState({
     nombre:'',
     apellido:'',
     telefono:'',
     rol: 'camarero',
-    turno_inicio: '',
-    turno_cierre: '',
     fecha_inicio: new Date().toISOString().split('T')[0],
     foto_url: '',
     email: '',
-    password: ''
-    
+    password: '',
   })
 
   if (cargando) {
@@ -457,7 +515,7 @@ export default function Dashboard() {
         
         {/* Empleados — clickable */}
         <button
-          onClick={() => setModalEmpleados(true)}
+          onClick={() => { setModalEmpleados(true); setTabEmpleados('activos'); cargarTodosEmpleados() }}
           className="bg-white rounded-2xl p-6 border border-slate-200 text-left hover:shadow-md hover:border-blue-300 transition-all"
         >
           <p className="text-slate-400 text-sm mb-1">Empleados activos</p>
@@ -605,9 +663,9 @@ export default function Dashboard() {
             onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-2xl w-full max-w-2xl flex flex-col max-h-[90vh] shadow-2xl"
           >
-            {/* Cabecera — fija */}
+            {/* Cabecera */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
-              <h2 className="text-white font-medium text-lg">Empleados activos</h2>
+              <h2 className="text-white font-medium text-lg">Empleados</h2>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => { setModalEmpleados(false); setModalAltaEmpleado(true) }}
@@ -620,79 +678,104 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Lista de empleados */}
+            {/* Pestañas */}
+            <div className="flex px-6 pt-4 gap-2 shrink-0">
+              {(['activos','todos'] as const).map(tab => (
+                <button key={tab} onClick={() => setTabEmpleados(tab)}
+                  className="px-4 py-1.5 rounded-xl text-sm font-semibold transition-all"
+                  style={tabEmpleados === tab
+                    ? { background:'linear-gradient(135deg,#1e5c2e,#2d8a44)', color:'#fff' }
+                    : { background:'rgba(255,255,255,0.07)', color:'#94a3b8' }}>
+                  {tab === 'activos' ? `🟢 Trabajando ahora (${empleados.length})` : `👥 Todos los empleados (${todosEmpleados.length})`}
+                </button>
+              ))}
+            </div>
+
+            {/* Contenido */}
             <div className="flex-1 overflow-y-auto p-6 space-y-3">
-              {empleados.length === 0 ? (
-                <p className="text-slate-400 text-center py-8">No hay empleados activos</p>
-              ) : (
-                empleados.map((emp) => (
-                  <div key={String(emp.id)} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    {/* Foto o inicial */}
-                    <div className="w-12 h-12 rounded-full bg-[#0d1f3c] flex items-center justify-center flex-shrink-0 overflow-hidden">
-                      {emp.foto_url ? (
-                        <img src={emp.foto_url} alt={emp.nombre} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-white font-bold text-lg">
-                          {emp.nombre.charAt(0).toUpperCase()}
-                        </span>
-                      )}
-                    </div>
 
-                    {/* Datos */}
-                    <div className="flex-1">
-                      <p className="text-white font-medium">{emp.nombre} {emp.apellido}</p>
-                      <p className="text-slate-400 text-xs mt-0.5">{emp.rol} · {emp.telefono}</p>
-                      <p className="text-slate-400 text-xs">
-                        Turno: {emp.turno_inicio} — {emp.turno_cierre}
-                      </p>
+              {/* ── PESTAÑA: trabajando ahora ── */}
+              {tabEmpleados === 'activos' && (
+                empleados.length === 0
+                  ? <p className="text-slate-400 text-center py-8">No hay empleados trabajando ahora mismo</p>
+                  : empleados.map((emp) => (
+                    <div key={String(emp.id)} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                      <div className="w-12 h-12 rounded-full bg-[#0d1f3c] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {emp.foto_url
+                          ? <img src={emp.foto_url} alt={emp.nombre} className="w-full h-full object-cover" />
+                          : <span className="text-white font-bold text-lg">{emp.nombre.charAt(0).toUpperCase()}</span>}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white font-medium">{emp.nombre} {emp.apellido}</p>
+                        <p className="text-slate-400 text-xs mt-0.5">{emp.rol} · {emp.telefono}</p>
+                        {emp.entradaHoy && (() => {
+                          const raw = emp.entradaHoy as string
+                          const d   = raw.endsWith('Z') || raw.includes('+') ? new Date(raw) : new Date(raw + 'Z')
+                          const mins = Math.round((Date.now() - d.getTime()) / 60_000)
+                          const dur  = mins < 60 ? `${mins} min` : `${Math.floor(mins/60)}h ${mins%60>0?` ${mins%60}min`:''}`
+                          return <p className="text-green-400 text-xs mt-0.5">⏱ Desde {d.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', timeZone:'Europe/Madrid' })} · {dur} trabajados</p>
+                        })()}
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${emp.rol==='admin'?'bg-purple-100 text-purple-700':emp.rol==='cocinero'?'bg-orange-100 text-orange-700':'bg-blue-100 text-blue-700'}`}>{emp.rol}</span>
+                      <button onClick={() => verHistorial(emp.id, emp.nombre)} className="text-blue-500 hover:text-blue-700 text-sm px-2 py-1 rounded hover:bg-blue-50" title="Ver historial">📋</button>
+                      <button onClick={() => ficharSalida(emp.id)} className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg transition font-medium">Fichar salida</button>
                     </div>
+                  ))
+              )}
 
-                    {/* Badge rol */}
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      emp.rol === 'admin' ? 'bg-purple-100 text-purple-700' :
-                      emp.rol === 'cocinero' ? 'bg-orange-100 text-orange-700' :
-                      'bg-blue-100 text-blue-700'
-                    }`}>
-                      {emp.rol}
-                    </span>
-
-                    {/* Botones de acción */}
-                    <div className="flex gap-2 ml-2">
-                      <button
-                        onClick={() => verHistorial(emp.id, emp.nombre)}
-                        className="text-blue-500 hover:text-blue-700 text-sm px-2 py-1 rounded hover:bg-blue-50"
-                        title="Ver historial"
-                      >
-                        📋
-                      </button>
-                      <button
-                        onClick={() => eliminarEmpleado(emp.id)}
-                        className="text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded hover:bg-red-50"
-                        title="Eliminar empleado"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                    {/* Botones de fichaje */}
-                    <div className="flex gap-2">
-                      {emp.trabajandoAhora ? (
-                        <button
-                          onClick={() => ficharSalida(emp.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-lg transition"
-                        >
-                          Fichar salida
+              {/* ── PESTAÑA: todos los empleados ── */}
+              {tabEmpleados === 'todos' && (
+                todosEmpleados.length === 0
+                  ? <p className="text-slate-400 text-center py-8">No hay empleados registrados</p>
+                  : todosEmpleados.map((emp) => (
+                    <div key={String(emp.id)} className="flex items-center gap-4 p-4 rounded-xl border transition-all"
+                      style={emp.activo
+                        ? { background:'rgba(255,255,255,0.04)', borderColor:'rgba(255,255,255,0.1)' }
+                        : { background:'rgba(239,68,68,0.06)', borderColor:'rgba(239,68,68,0.2)' }}>
+                      {/* Avatar */}
+                      <div className="w-12 h-12 rounded-full bg-[#0d1f3c] flex items-center justify-center flex-shrink-0 overflow-hidden"
+                        style={!emp.activo ? { opacity: 0.5 } : {}}>
+                        {emp.foto_url
+                          ? <img src={emp.foto_url} alt={emp.nombre} className="w-full h-full object-cover" />
+                          : <span className="text-white font-bold text-lg">{emp.nombre.charAt(0).toUpperCase()}</span>}
+                      </div>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-white font-medium truncate">{emp.nombre} {emp.apellido}</p>
+                          {!emp.activo && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold" style={{ background:'rgba(239,68,68,0.2)', color:'#fca5a5' }}>Inactivo</span>}
+                        </div>
+                        <p className="text-slate-400 text-xs mt-0.5 truncate">{emp.email} · {emp.rol}</p>
+                        {emp.telefono && <p className="text-slate-500 text-xs">{emp.telefono}</p>}
+                      </div>
+                      {/* Badge rol */}
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium shrink-0 ${emp.rol==='admin'?'bg-purple-100 text-purple-700':emp.rol==='cocinero'?'bg-orange-100 text-orange-700':'bg-blue-100 text-blue-700'}`}>{emp.rol}</span>
+                      {/* Acciones */}
+                      <div className="flex gap-1.5 shrink-0">
+                        <button onClick={() => verHistorial(emp.id, emp.nombre)}
+                          className="text-xs px-2.5 py-1.5 rounded-lg transition font-medium"
+                          style={{ background:'rgba(59,130,246,0.15)', color:'#93c5fd', border:'1px solid rgba(59,130,246,0.25)' }}
+                          title="Ver historial de fichajes">📋</button>
+                        {emp.activo
+                          ? <button onClick={() => darDeBaja(emp.id)}
+                              className="text-xs px-2.5 py-1.5 rounded-lg transition font-medium"
+                              style={{ background:'rgba(234,179,8,0.15)', color:'#fde047', border:'1px solid rgba(234,179,8,0.3)' }}>
+                              ⏸ Dar de baja
+                            </button>
+                          : <button onClick={() => reactivar(emp.id)}
+                              className="text-xs px-2.5 py-1.5 rounded-lg transition font-medium"
+                              style={{ background:'rgba(34,197,94,0.15)', color:'#86efac', border:'1px solid rgba(34,197,94,0.3)' }}>
+                              ▶ Reactivar
+                            </button>
+                        }
+                        <button onClick={() => eliminarEmpleadoCompleto(emp.id)}
+                          className="text-xs px-2.5 py-1.5 rounded-lg transition font-medium"
+                          style={{ background:'rgba(239,68,68,0.15)', color:'#fca5a5', border:'1px solid rgba(239,68,68,0.3)' }}>
+                          🗑 Eliminar
                         </button>
-                      ) : (
-                        <button
-                          onClick={() => ficharEntrada(emp.id)}
-                          className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-lg transition"
-                        >
-                          Fichar entrada
-                        </button>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ))
               )}
             </div>
           </div>
@@ -765,27 +848,6 @@ export default function Dashboard() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs text-slate-400 mb-1 block">Turno inicio</label>
-                  <input
-                    type="time"
-                    value={nuevoEmpleado.turno_inicio}
-                    onChange={(e) => setNuevoEmpleado({...nuevoEmpleado, turno_inicio: e.target.value})}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 mb-1 block">Turno cierre</label>
-                  <input
-                    type="time"
-                    value={nuevoEmpleado.turno_cierre}
-                    onChange={(e) => setNuevoEmpleado({...nuevoEmpleado, turno_cierre: e.target.value})}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-                  />
-                </div>
-              </div>
-
               <div>
                 <label className="text-xs text-slate-400 mb-1 block">Fecha de inicio</label>
                 <input
@@ -797,15 +859,34 @@ export default function Dashboard() {
               </div>
 
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">URL de foto (opcional)</label>
-                <input
-                  type="text"
-                  value={nuevoEmpleado.foto_url || ''}
-                  onChange={(e) => setNuevoEmpleado({...nuevoEmpleado, foto_url: e.target.value})}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-                  placeholder="https://ejemplo.com/foto.jpg"
-                />
-             </div>
+                <label className="text-xs text-slate-400 mb-1 block">Foto del empleado (opcional)</label>
+                {/* Preview */}
+                {fotoPreview && (
+                  <div className="mb-2 flex items-center gap-3">
+                    <img src={fotoPreview} alt="preview" className="w-14 h-14 rounded-full object-cover border-2 border-slate-200" />
+                    <button
+                      type="button"
+                      onClick={() => { setFotoFile(null); setFotoPreview(null) }}
+                      className="text-xs text-red-400 hover:text-red-600"
+                    >
+                      ✕ Quitar foto
+                    </button>
+                  </div>
+                )}
+                <label className="flex items-center gap-2 cursor-pointer w-full border border-dashed border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-400 hover:border-blue-400 hover:text-blue-400 transition-colors">
+                  📷 {fotoFile ? fotoFile.name : 'Seleccionar imagen desde el ordenador'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] ?? null
+                      setFotoFile(file)
+                      setFotoPreview(file ? URL.createObjectURL(file) : null)
+                    }}
+                  />
+                </label>
+              </div>
 
               <div>
                 <label className="text-xs text-slate-400 mb-1 block">Email *</label>
@@ -843,12 +924,13 @@ export default function Dashboard() {
               </button>
               <button
                 onClick={darDeAltaEmpleado}
-                className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all"
+                disabled={subiendoFoto}
+                className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50"
                 style={{ background: 'linear-gradient(135deg,#1e5c2e,#2d8a44)', boxShadow: '0 2px 10px rgba(30,92,46,0.4)' }}
                 onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.1)' }}
                 onMouseLeave={e => { e.currentTarget.style.filter = '' }}
               >
-                ✓ Dar de alta
+                {subiendoFoto ? '⏳ Subiendo foto…' : '✓ Dar de alta'}
               </button>
             </div>
           </div>
@@ -869,26 +951,72 @@ export default function Dashboard() {
               <h2 className="text-white font-medium">Historial de {historialEmpleado.nombre}</h2>
               <button onClick={() => setHistorialEmpleado(null)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
             </div>
-            <div className="p-6 max-h-96 overflow-y-auto">
+            <div className="p-6 max-h-[70vh] overflow-y-auto">
               {historialEmpleado.fichajes.length === 0 ? (
                 <p className="text-slate-400 text-center">No hay fichajes registrados</p>
-              ) : (
-                <div className="space-y-2">
-                  {historialEmpleado.fichajes.map((f) => (
-                    <div key={f.id} className="flex justify-between items-center border-b pb-2 text-sm">
-                      <span className="text-slate-600 font-medium">
-                        {new Date(f.entrada).toLocaleDateString('es-ES')}
-                      </span>
-                      <span className="text-green-600">
-                        ↗ {new Date(f.entrada).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      <span className="text-red-500">
-                        ↘ {f.salida ? new Date(f.salida).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+              ) : (() => {
+                const TZ = { timeZone: 'Europe/Madrid', hour: '2-digit' as const, minute: '2-digit' as const }
+
+                /* Calcular horas para cada fichaje */
+                const conHoras = historialEmpleado.fichajes.map((f: any) => {
+                  const entrada = new Date(f.entrada)
+                  const salida  = f.salida ? new Date(f.salida) : null
+                  /* Si el servidor devuelve sin 'Z', forzar UTC añadiéndolo */
+                  const entradaUTC = f.entrada.endsWith('Z') || f.entrada.includes('+') ? entrada : new Date(f.entrada + 'Z')
+                  const salidaUTC  = salida && (f.salida.endsWith('Z') || f.salida.includes('+')) ? salida : (salida ? new Date(f.salida + 'Z') : null)
+                  const horas = salidaUTC
+                    ? (salidaUTC.getTime() - entradaUTC.getTime()) / 3_600_000
+                    : null
+                  return { ...f, _horas: horas, _entradaUTC: entradaUTC, _salidaUTC: salidaUTC }
+                })
+
+                /* Total de horas completadas (con salida) */
+                const totalHoras = conHoras.reduce((s: number, f: any) => s + (f._horas ?? 0), 0)
+
+                return (
+                  <div>
+                    {/* Resumen total */}
+                    <div className="mb-4 px-3 py-2 rounded-xl text-sm font-semibold flex justify-between items-center"
+                      style={{ background: 'rgba(45,138,68,0.15)', border: '1px solid rgba(45,138,68,0.3)', color: '#6ee7a0' }}>
+                      <span>⏱ Total horas registradas</span>
+                      <span>
+                        {(() => {
+                          const m = Math.round(totalHoras * 60)
+                          return m < 60 ? `${m} min` : `${Math.floor(m/60)}h ${m%60>0?`${m%60}min`:''}`
+                        })()}
                       </span>
                     </div>
-                  ))}
-                </div>
-              )}
+
+                    {/* Listado */}
+                    <div className="space-y-2">
+                      {conHoras.map((f: any) => {
+                        const minutos = f._horas != null ? Math.round(f._horas * 60) : null
+                        const durLabel = minutos != null
+                          ? minutos < 60
+                            ? `${minutos} min`
+                            : `${Math.floor(minutos / 60)}h ${minutos % 60 > 0 ? `${minutos % 60}min` : ''}`
+                          : '(activo)'
+                        return (
+                        <div key={f.id} className="grid grid-cols-4 items-center gap-2 border-b border-slate-100 pb-2 text-sm">
+                          <span className="text-slate-600 font-medium">
+                            {f._entradaUTC.toLocaleDateString('es-ES', { timeZone: 'Europe/Madrid' })}
+                          </span>
+                          <span className="text-green-600 text-center">
+                            ↗ {f._entradaUTC.toLocaleTimeString('es-ES', TZ)}
+                          </span>
+                          <span className={`text-center ${f.salida ? 'text-red-500' : 'text-slate-400'}`}>
+                            ↘ {f._salidaUTC ? f._salidaUTC.toLocaleTimeString('es-ES', TZ) : '--:--'}
+                          </span>
+                          <span className={`text-right font-semibold text-xs ${f._horas ? 'text-blue-500' : 'text-slate-400'}`}>
+                            {durLabel}
+                          </span>
+                        </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
           </div>
         </div>
