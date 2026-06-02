@@ -44,6 +44,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       items.push({ href: '/pedidos',   label: 'Pedidos',    icon: '🧾' })
       items.push({ href: '/menu',      label: 'Menú',       icon: '🍽️' })
       items.push({ href: '/cocina',    label: 'Cocina',     icon: '👨‍🍳' })
+      items.push({ href: '/reservas',  label: 'Reservas',   icon: '📅' })
       items.push({ href: '/qr',        label: 'QR Mesas',   icon: '📷' })
     }
     if (empleado.rol === 'camarero') {
@@ -66,6 +67,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.replace(menuItems()[0]?.href || '/login')
     }
   }, [cargando, empleado, pathname])
+
+  /* En la página de login no mostrar nada del layout mientras carga */
+  if (pathname === '/login') return <>{children}</>
 
   if (cargando) {
     return (

@@ -74,55 +74,91 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0d1f3c] flex items-center justify-center">
-      <div className="bg-white rounded-2xl p-8 w-96 shadow-2xl">
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center text-2xl mx-auto mb-4">
-            🍽️
-          </div>
-          <h1 className="text-white text-xl font-medium">Restaurante Lempira</h1>
-          <p className="text-slate-400 text-sm mt-1">Panel de administración</p>
-        </div>
+    <div className="min-h-screen flex">
 
-        <div className="flex flex-col gap-4">
-          <div>
-            <label className="text-white text-sm font-medium block mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="empleado@restaurante.com"
-              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-400 transition-colors"
-            />
-          </div>
-
-          <div>
-            <label className="text-white text-sm font-medium block mb-1">Contraseña</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-400 transition-colors"
-              onKeyDown={(e) => e.key === 'Enter' && iniciarSesion()}
-            />
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-500 text-sm px-4 py-3 rounded-xl">
-              {error}
-            </div>
-          )}
-
-          <button
-            onClick={iniciarSesion}
-            disabled={cargando}
-            className="w-full bg-[#0d1f3c] text-white py-3 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors mt-2 disabled:opacity-50"
-          >
-            {cargando ? 'Entrando...' : 'Iniciar sesión'}
-          </button>
+      {/* ── Panel izquierdo ── */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#0d1f3c] flex-col items-center justify-center relative overflow-hidden">
+        {/* Degradado decorativo */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0d1f3c] via-[#112a50] to-[#0a1628]" />
+        {/* Aquí podrás añadir tu imagen más adelante */}
+        <div className="relative z-10 text-center px-12">
+          <p className="text-blue-300 text-sm font-medium tracking-widest uppercase mb-3">
+            Panel de administración
+          </p>
+          <h1 className="text-white text-4xl font-bold leading-tight">
+            Restaurante<br />Lempira
+          </h1>
+          <div className="mt-8 w-16 h-1 bg-blue-500 mx-auto rounded-full" />
         </div>
       </div>
+
+      {/* ── Panel derecho (formulario) ── */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-white px-8 py-12">
+        <div className="w-full max-w-sm">
+
+          <h2 className="text-2xl font-bold text-gray-900 mb-1">Inicia sesión</h2>
+          <p className="text-gray-500 text-sm mb-8">
+            Accede a tu cuenta para continuar en el panel.
+          </p>
+
+          <div className="flex flex-col gap-5">
+
+            {/* Email */}
+            <div>
+              <label className="text-gray-700 text-sm font-medium block mb-1.5">
+                Correo electrónico
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">✉</span>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="ej. empleado@restaurante.com"
+                  className="w-full border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Contraseña */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-gray-700 text-sm font-medium">Contraseña</label>
+              </div>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔒</span>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Ingresa tu contraseña"
+                  className="w-full border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                  onKeyDown={(e) => e.key === 'Enter' && iniciarSesion()}
+                />
+              </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">
+                {error}
+              </div>
+            )}
+
+            {/* Botón */}
+            <button
+              onClick={iniciarSesion}
+              disabled={cargando}
+              className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50"
+              style={{ background: 'linear-gradient(135deg, #1a56db, #1e40af)', boxShadow: '0 4px 14px rgba(26,86,219,0.35)' }}
+            >
+              {cargando ? 'Entrando…' : 'Iniciar sesión'}
+            </button>
+
+          </div>
+        </div>
+      </div>
+
     </div>
   )
 }
