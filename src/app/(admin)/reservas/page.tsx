@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import HorarioInput from '@/components/ui/HorarioInput'
 import { HORA_CIERRE_ENTRADA, HORA_CIERRE_SALIDA } from '@/lib/horario'
+import ConfirmModal from '@/components/ui/ConfirmModal'
+import ToastContainer, { useAdminToast } from '@/components/ui/Toast'
 
 /* ─── Types ─── */
 type Estado     = 'confirmada' | 'pendiente' | 'cancelada'
@@ -100,6 +102,12 @@ export default function AdminReservas() {
   const [form,      setForm]      = useState<FormData>(FORM0)
   const [detalle,   setDetalle]   = useState<Reserva|null>(null)
   const [mesas,     setMesas]     = useState<Mesa[]>([])
+
+  type ConfirmState = { abierto: boolean; titulo: string; mensaje?: string; variante?: 'danger' | 'warning'; onAceptar: () => void }
+  const [confirmModal, setConfirmModal] = useState<ConfirmState>({ abierto: false, titulo: '', onAceptar: () => {} })
+  const confirmar = (cfg: Omit<ConfirmState, 'abierto'>) => setConfirmModal({ ...cfg, abierto: true })
+  const cerrarConfirm = () => setConfirmModal(s => ({ ...s, abierto: false }))
+  const { toast } = useAdminToast()
 
   /* ─── Supabase ─── */
   const cargar = useCallback(async () => {
@@ -219,9 +227,18 @@ export default function AdminReservas() {
     return { dur, ok: true, msg: '' }
   }, [form.hora_entrada, form.hora_salida])
 
-  const eliminar = async (id: string) => {
-    if (!confirm('¿Eliminar esta reserva?')) return
-    await supabase.from('reservas').delete().eq('id',id); cargar()
+  const eliminar = (id: string) => {
+    confirmar({
+      titulo: '¿Eliminar esta reserva?',
+      mensaje: 'Esta acción no se puede deshacer.',
+      variante: 'danger',
+      onAceptar: async () => {
+        cerrarConfirm()
+        await supabase.from('reservas').delete().eq('id', id)
+        cargar()
+        toast('Reserva eliminada', 'success')
+      }
+    })
   }
   const cambiarEstado = async (id: string, estado: Estado) => {
     await supabase.from('reservas').update({estado}).eq('id',id); cargar()
@@ -481,7 +498,7 @@ export default function AdminReservas() {
               {detalle.estado==='confirmada' && <button onClick={()=>{cambiarEstado(detalle.id,'cancelada');setDetalle(null)}} className="flex-1 py-2 rounded-xl text-sm" style={{background:'rgba(239,68,68,0.2)',color:'#fca5a5'}}>✕ Cancelar</button>}
               {detalle.estado==='cancelada'  && <button onClick={()=>{cambiarEstado(detalle.id,'confirmada');setDetalle(null)}} className="flex-1 py-2 rounded-xl text-sm" style={{background:'rgba(34,197,94,0.2)',color:'#86efac'}}>↩ Reactivar</button>}
               <button onClick={()=>{setDetalle(null);abrirEditar(detalle)}} className="flex-1 py-2 rounded-xl text-sm text-slate-300" style={{border:'1px solid rgba(255,255,255,0.15)'}}>✎ Editar</button>
-              <button onClick={()=>{if(confirm('¿Eliminar?')){eliminar(detalle.id);setDetalle(null)}}} className="py-2 px-3 rounded-xl text-sm" style={{color:'#fca5a5',border:'1px solid rgba(239,68,68,0.25)'}}>🗑</button>
+              <button onClick={()=>{eliminar(detalle.id);setDetalle(null)}} className="py-2 px-3 rounded-xl text-sm" style={{color:'#fca5a5',border:'1px solid rgba(239,68,68,0.25)'}}>🗑</button>
             </div>
           </div>
         </div>
@@ -500,6 +517,15 @@ export default function AdminReservas() {
   /* ══════════════ RENDER ══════════════ */
   return (
     <div className="flex flex-col gap-4 pb-6">
+      <ToastContainer />
+      <ConfirmModal
+        abierto={confirmModal.abierto}
+        titulo={confirmModal.titulo}
+        mensaje={confirmModal.mensaje}
+        variante={confirmModal.variante}
+        onAceptar={confirmModal.onAceptar}
+        onCancelar={cerrarConfirm}
+      />
 
       {/* ── HEADER ── */}
       <div className="flex flex-wrap items-center gap-3 shrink-0">

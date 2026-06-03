@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import ToastContainer, { useAdminToast } from '@/components/ui/Toast'
 
 // ── TIPOS ──
 type Ingrediente = {
@@ -26,6 +27,7 @@ type Plato = {
 
 
 export default function Menu() {
+  const { toast } = useAdminToast()
 
   // ── ESTADOS ──
   const [platos, setPlatos] = useState<Plato[]>([])
@@ -167,7 +169,7 @@ const crearPlato = async () => {
   // Verificar sesión activa
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) {
-    alert('No hay sesión activa — vuelve a iniciar sesión')
+    toast('No hay sesión activa — vuelve a iniciar sesión', 'error')
     return
   }
 
@@ -187,7 +189,7 @@ const crearPlato = async () => {
     .select()
 
   if (error) {
-    alert('Error: ' + error.message)
+    toast('Error: ' + error.message, 'error')
     return
   }
 
@@ -300,6 +302,7 @@ const crearPlato = async () => {
 
   return (
     <div>
+      <ToastContainer />
 
       {/* ── CABECERA ── */}
       <div className="flex items-center justify-between mb-8">
@@ -330,8 +333,8 @@ const crearPlato = async () => {
               className="w-full text-left"
             >
               <div className="relative h-24 bg-[#f8faff] flex items-center justify-center border-b border-slate-100 overflow-hidden">
-                {plato.imagen_url ? (
-                  <img src={plato.imagen_url} alt={plato.nombre} className="w-full h-full object-cover" />
+                {(plato.imagenes?.[0] || plato.imagen_url) ? (
+                  <img src={plato.imagenes?.[0] || plato.imagen_url!} alt={plato.nombre} className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-slate-300 text-xs">Sin imagen</span>
                 )}
@@ -391,8 +394,8 @@ const crearPlato = async () => {
             {/* Cabecera — fija */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
               <div className="flex items-center gap-2">
-                {platoSeleccionado.imagen_url && (
-                  <img src={platoSeleccionado.imagen_url} alt="" className="w-8 h-8 rounded-lg object-cover" />
+                {(platoSeleccionado.imagenes?.[0] || platoSeleccionado.imagen_url) && (
+                  <img src={platoSeleccionado.imagenes?.[0] || platoSeleccionado.imagen_url!} alt="" className="w-8 h-8 rounded-lg object-cover" />
                 )}
                 <h2 className="text-white font-medium">{platoSeleccionado.nombre}</h2>
               </div>

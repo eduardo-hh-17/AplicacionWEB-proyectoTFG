@@ -7,7 +7,7 @@ type Empleado = {
   id: string
   nombre: string
   apellido: string
-  rol: 'admin' | 'camarero' | 'cocinero'
+  rol: 'admin' | 'camarero' | 'cocinero' | 'gerente'
   activo: boolean
 }
 

@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     }
 
     // Validar rol permitido
-    const rolesPermitidos = ['admin', 'camarero', 'cocinero']
+    const rolesPermitidos = ['admin', 'camarero', 'cocinero', 'gerente']
     if (!rolesPermitidos.includes(rol)) {
       return NextResponse.json({ error: 'Rol no válido' }, { status: 400 })
     }

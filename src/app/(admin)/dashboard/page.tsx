@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import ConfirmModal from '@/components/ui/ConfirmModal'
+import ToastContainer, { useAdminToast } from '@/components/ui/Toast'
 
 type Pedido = {
   id: number
@@ -57,8 +59,12 @@ export default function Dashboard() {
   const [tabEmpleados, setTabEmpleados]   = useState<'activos' | 'todos'>('activos')
   const [todosEmpleados, setTodosEmpleados] = useState<Empleado[]>([])
 
-
-
+  // Modal de confirmación
+  type ConfirmState = { abierto: boolean; titulo: string; mensaje?: string; variante?: 'danger' | 'warning'; onAceptar: () => void }
+  const [confirmModal, setConfirmModal] = useState<ConfirmState>({ abierto: false, titulo: '', onAceptar: () => {} })
+  const confirmar = (cfg: Omit<ConfirmState, 'abierto'>) => setConfirmModal({ ...cfg, abierto: true })
+  const cerrarConfirm = () => setConfirmModal(s => ({ ...s, abierto: false }))
+  const { toast } = useAdminToast()
 
   useEffect(() => {
     cargarDatos()
@@ -204,11 +210,18 @@ export default function Dashboard() {
     if (data) setTodosEmpleados(data as Empleado[])
   }
 
-  const darDeBaja = async (id: string) => {
-    if (!confirm('¿Dar de baja a este empleado? No podrá acceder hasta que lo reactives.')) return
-    await supabase.from('empleados').update({ activo: false }).eq('id', id)
-    cargarTodosEmpleados()
-    cargarEmpleados()
+  const darDeBaja = (id: string) => {
+    confirmar({
+      titulo: 'Dar de baja al empleado',
+      mensaje: 'No podrá acceder al sistema hasta que lo reactives.',
+      variante: 'warning',
+      onAceptar: async () => {
+        cerrarConfirm()
+        await supabase.from('empleados').update({ activo: false }).eq('id', id)
+        cargarTodosEmpleados(); cargarEmpleados()
+        toast('Empleado dado de baja', 'info')
+      }
+    })
   }
 
   const reactivar = async (id: string) => {
@@ -217,21 +230,28 @@ export default function Dashboard() {
     cargarEmpleados()
   }
 
-  const eliminarEmpleadoCompleto = async (id: string) => {
-    if (!confirm('⚠️ Esto eliminará al empleado de forma permanente (BD + acceso). ¿Estás seguro?')) return
-    const { data: { session } } = await supabase.auth.getSession()
-    const res = await fetch('/api/eliminar-empleado', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session?.access_token ?? ''}`,
-      },
-      body: JSON.stringify({ id })
+  const eliminarEmpleadoCompleto = (id: string) => {
+    confirmar({
+      titulo: 'Eliminar empleado permanentemente',
+      mensaje: 'Se borrará de la base de datos y perderá el acceso. Esta acción no se puede deshacer.',
+      variante: 'danger',
+      onAceptar: async () => {
+        cerrarConfirm()
+        const { data: { session } } = await supabase.auth.getSession()
+        const res = await fetch('/api/eliminar-empleado', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.access_token ?? ''}`,
+          },
+          body: JSON.stringify({ id })
+        })
+        const data = await res.json()
+        if (!res.ok) { toast('Error: ' + data.error, 'error'); return }
+        cargarTodosEmpleados(); cargarEmpleados()
+        toast('Empleado eliminado', 'success')
+      }
     })
-    const data = await res.json()
-    if (!res.ok) { alert('Error: ' + data.error); return }
-    cargarTodosEmpleados()
-    cargarEmpleados()
   }
 
   // Fichar entrada
@@ -248,7 +268,7 @@ export default function Dashboard() {
       .maybeSingle()
 
     if (fichajeHoy) {
-      alert('Ya hay una entrada activa para hoy.')
+      toast('Ya hay una entrada activa para hoy.', 'info')
       return
     }
 
@@ -257,9 +277,9 @@ export default function Dashboard() {
       .insert({ empleado_id: empleadoId, fecha: hoy, entrada: ahora.toISOString() })
 
     if (error) {
-      alert('Error al fichar entrada: ' + error.message)
+      toast('Error al fichar entrada: ' + error.message, 'error')
     } else {
-      alert(`✅ Entrada fichada a las ${ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`)
+      toast(`Entrada fichada a las ${ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`, 'success')
       cargarEmpleados()
     }
   }
@@ -278,7 +298,7 @@ export default function Dashboard() {
       .maybeSingle()
 
     if (!fichajeHoy) {
-      alert('No hay entrada activa para hoy.')
+      toast('No hay entrada activa para hoy.', 'info')
       return
     }
 
@@ -293,21 +313,24 @@ export default function Dashboard() {
       .eq('id', fichajeHoy.id)
 
     if (error) {
-      alert('Error al fichar salida: ' + error.message)
+      toast('Error al fichar salida: ' + error.message, 'error')
     } else {
-      alert(`✅ Salida fichada a las ${ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} · ${horasTrabajadas.toFixed(1)}h trabajadas`)
+      toast(`Salida fichada a las ${ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} · ${horasTrabajadas.toFixed(1)}h trabajadas`, 'success')
       cargarEmpleados()
     }
   }
 
-  const eliminarEmpleado = async (id: string) => {
-    if (confirm('¿Estás seguro de eliminar este empleado?')) {
-      await supabase
-        .from('empleados')
-        .update({ activo: false })
-        .eq('id', id)
-      cargarEmpleados()
-    }
+  const eliminarEmpleado = (id: string) => {
+    confirmar({
+      titulo: '¿Eliminar empleado?',
+      variante: 'danger',
+      onAceptar: async () => {
+        cerrarConfirm()
+        await supabase.from('empleados').update({ activo: false }).eq('id', id)
+        cargarEmpleados()
+        toast('Empleado eliminado', 'success')
+      }
+    })
   }
 
   const verHistorial = async (id: string, nombre: string) => {
@@ -406,11 +429,11 @@ export default function Dashboard() {
 
   const darDeAltaEmpleado = async () => {
     if (!nuevoEmpleado.nombre || !nuevoEmpleado.rol) {
-      alert('Nombre y rol son obligatorios')
+      toast('Nombre y rol son obligatorios', 'error')
       return
     }
     if (!nuevoEmpleado.email || !nuevoEmpleado.password) {
-      alert('Email y contraseña son obligatorios')
+      toast('Email y contraseña son obligatorios', 'error')
       return
     }
 
@@ -428,7 +451,7 @@ export default function Dashboard() {
       setSubiendoFoto(false)
 
       if (uploadError) {
-        alert('Error al subir la foto: ' + uploadError.message)
+        toast('Error al subir la foto: ' + uploadError.message, 'error')
         return
       }
 
@@ -449,7 +472,7 @@ export default function Dashboard() {
     const data = await res.json()
 
     if (!res.ok) {
-      alert('Error: ' + data.error)
+      toast('Error: ' + data.error, 'error')
       return
     }
 
@@ -489,6 +512,15 @@ export default function Dashboard() {
 
   return (
     <div>
+      <ToastContainer />
+      <ConfirmModal
+        abierto={confirmModal.abierto}
+        titulo={confirmModal.titulo}
+        mensaje={confirmModal.mensaje}
+        variante={confirmModal.variante}
+        onAceptar={confirmModal.onAceptar}
+        onCancelar={cerrarConfirm}
+      />
       <h1 className="text-2xl font-bold text-gradient-anim mb-8">Panel de administración</h1>
 
       {/* Tarjetas de resumen */}

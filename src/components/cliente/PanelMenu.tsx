@@ -21,13 +21,17 @@ function CarruselImagenes({ imagenes, nombre, emoji }: { imagenes: string[]; nom
   const siguiente = () => setIndice(i => (i === imagenes.length - 1 ? 0 : i + 1))
 
   return (
-    <div className="relative w-full max-w-[220px] aspect-square rounded-2xl overflow-hidden shadow mb-4">
+    <div
+      className="relative w-full max-w-[220px] aspect-square rounded-2xl overflow-hidden shadow mb-4"
+      onContextMenu={e => e.preventDefault()}
+    >
       <Image
         src={imagenes[indice]}
         alt={`${nombre} ${indice + 1}`}
         fill
-        className="object-cover"
+        className="object-cover select-none"
         sizes="220px"
+        draggable={false}
       />
       {imagenes.length > 1 && (
         <>
@@ -288,10 +292,10 @@ const enviarPedido = async () => {
           >
             {/* Imagen / emoji */}
             <div className="h-44 relative overflow-hidden">
-              {plato.imagen_url ? (
+              {(plato.imagenes?.[0] || plato.imagen_url) ? (
                 <>
                   <Image
-                    src={plato.imagen_url}
+                    src={plato.imagenes?.[0] || plato.imagen_url}
                     alt={plato.nombre}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -367,10 +371,18 @@ const enviarPedido = async () => {
               }}
             >
               <div className="flex items-center gap-3">
-                {platoSeleccionado.imagen_url ? (
+                {(platoSeleccionado.imagenes?.[0] || platoSeleccionado.imagen_url) ? (
                   <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
-                    style={{ border: '2px solid rgba(212,160,64,0.6)' }}>
-                    <Image src={platoSeleccionado.imagen_url} alt={platoSeleccionado.nombre} fill className="object-cover" />
+                    style={{ border: '2px solid rgba(212,160,64,0.6)' }}
+                    onContextMenu={e => e.preventDefault()}
+                  >
+                    <Image
+                      src={platoSeleccionado.imagenes?.[0] || platoSeleccionado.imagen_url}
+                      alt={platoSeleccionado.nombre}
+                      fill
+                      className="object-cover select-none"
+                      draggable={false}
+                    />
                   </div>
                 ) : (
                   <span className="text-3xl">{platoSeleccionado.emoji || '🍽️'}</span>
@@ -380,19 +392,22 @@ const enviarPedido = async () => {
                   <p className="text-[12px] font-semibold" style={{ color: '#d4a040' }}>{platoSeleccionado.precio}€</p>
                 </div>
               </div>
-              <button onClick={() => setModalAbierto(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-colors text-white/70 hover:text-white"
-                style={{ background: 'rgba(255,255,255,0.1)' }}>
+              <button
+                onClick={() => setModalAbierto(false)}
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all font-bold text-lg"
+                style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: '2px solid rgba(255,255,255,0.35)' }}
+              >
                 ✕
               </button>
             </div>
 
-            {/* Contenido — dos columnas */}
+            {/* Contenido — una columna en móvil, dos en tablet+ */}
             <div className="flex-1 overflow-y-auto">
-              <div className="grid grid-cols-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2">
                 {/* Columna izquierda */}
-                <div className="p-6 flex flex-col items-center text-center"
-                  style={{ background: 'rgba(45,138,68,0.06)', borderRight: '1px solid rgba(212,160,64,0.15)' }}>
+                <div className="p-4 sm:p-6 flex flex-col items-center text-center"
+                  style={{ background: 'rgba(45,138,68,0.06)', borderRight: '1px solid rgba(212,160,64,0.15)' }}
+                >
                   <CarruselImagenes
                     imagenes={
                       platoSeleccionado.imagenes?.length
@@ -410,7 +425,7 @@ const enviarPedido = async () => {
                 </div>
 
                 {/* Columna derecha — ingredientes + notas */}
-                <div className="p-6 flex flex-col gap-4">
+                <div className="p-4 sm:p-6 flex flex-col gap-4">
                   <div>
                     <p className="font-semibold mb-3 text-[13px]" style={{ color: '#0a2010' }}>Elige tus ingredientes:</p>
                     <div className="space-y-2 max-h-[280px] overflow-y-auto pr-2">
