@@ -22,7 +22,7 @@ export default function PanelContacto() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-5">
+    <div className="p-3 sm:p-6 max-w-4xl mx-auto space-y-4 sm:space-y-5">
 
       {/* Cabecera */}
       <div className="animate-slide-up">
@@ -74,7 +74,7 @@ export default function PanelContacto() {
             <div className="px-6 py-4" style={{ borderBottom: '1px solid rgba(45,112,60,0.15)' }}>
               <p className="font-semibold text-[15px]" style={{ color: '#0a2214' }}>Envíanos un mensaje</p>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 sm:p-6 space-y-4">
               {enviado && (
                 <div className="flex items-center gap-3 px-4 py-3 rounded-xl animate-scale-in"
                   style={{ background: 'rgba(45,144,80,0.15)', border: '1px solid rgba(45,144,80,0.3)', color: '#2d9050' }}>

@@ -135,10 +135,10 @@ export default function PanelInicio() {
   ]
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-6">
+    <div className="p-3 sm:p-6 max-w-5xl mx-auto space-y-4 sm:space-y-6">
 
       {/* ── HERO ─────────────────────────────────────── */}
-      <div className="glass-dark relative overflow-hidden p-8 text-white animate-fade-in">
+      <div className="glass-dark relative overflow-hidden p-5 sm:p-8 text-white animate-fade-in">
         <div className="absolute -top-10 -right-10 w-56 h-56 rounded-full pointer-events-none opacity-30"
           style={{ background: 'radial-gradient(circle,#d4a040,transparent)' }} />
         <div className="absolute -bottom-8 -left-6 w-40 h-40 rounded-full pointer-events-none opacity-25"
@@ -153,7 +153,7 @@ export default function PanelInicio() {
             Abierto ahora · Lunes–Domingo 12:00–23:00
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2 animate-slide-up delay-75 text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-2 animate-slide-up delay-75 text-white">
             Bienvenido a{' '}
             <span className="text-gradient-anim">Restaurante Lempira</span>
           </h1>

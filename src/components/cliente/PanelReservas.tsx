@@ -436,7 +436,7 @@ export default function PanelReservas() {
 
   /* ══════════════ RENDER ══════════════ */
   return (
-    <div className="p-6 max-w-3xl mx-auto space-y-6">
+    <div className="p-3 sm:p-6 max-w-3xl mx-auto space-y-4 sm:space-y-6">
 
       {/* CABECERA */}
       <div className="animate-slide-up">
@@ -492,10 +492,10 @@ export default function PanelReservas() {
 
       {/* ─── FORMULARIO ─── */}
       <div className="glass-panel overflow-hidden animate-slide-up delay-150">
-        <div className="px-6 py-4" style={{borderBottom:'1px solid rgba(45,112,60,0.15)'}}>
+        <div className="px-4 sm:px-6 py-4" style={{borderBottom:'1px solid rgba(45,112,60,0.15)'}}>
           <p className="font-semibold text-[15px]" style={{color:'#0a2214'}}>Datos de la reserva</p>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5">
 
           {/* TIPO EVENTO */}
           <div>

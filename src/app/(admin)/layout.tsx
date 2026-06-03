@@ -1,12 +1,11 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useEmpleado } from '@/hooks/useEmpleado'
 
-/* ── Decoraciones palmeras (igual que cliente) ── */
 function PalmTopRightAdmin() {
   return (
     <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,6 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router   = useRouter()
   const pathname = usePathname()
   const { empleado, cargando } = useEmpleado()
+  const [menuAbierto, setMenuAbierto] = useState(false)
 
   const menuItems = () => {
     if (!empleado) return []
@@ -56,6 +56,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return items
   }
 
+  // Cerrar menú al cambiar de ruta
+  useEffect(() => { setMenuAbierto(false) }, [pathname])
+
   useEffect(() => {
     if (cargando) return
     if (!empleado) {
@@ -68,7 +71,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [cargando, empleado, pathname])
 
-  /* En la página de login no mostrar nada del layout mientras carga */
   if (pathname === '/login') return <>{children}</>
 
   if (cargando) {
@@ -102,7 +104,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const items = menuItems()
 
   return (
-    /* h-screen + overflow-hidden: igual que el cliente — solo el <main> hace scroll */
     <div
       className="admin-theme h-screen overflow-hidden flex flex-col relative"
       style={{
@@ -113,7 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           'linear-gradient(160deg, #08142a 0%, #0d2040 50%, #08142a 100%)',
       }}
     >
-      {/* Palmeras fijas en esquinas (siempre visibles) */}
+      {/* Palmeras decorativas */}
       <div className="fixed top-0 right-0 z-0 palm-enter palm-sway pointer-events-none" style={{ opacity: 0.55 }}>
         <PalmTopRightAdmin />
       </div>
@@ -121,9 +122,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <PalmBottomLeftAdmin />
       </div>
 
-      {/* ── NAVBAR — shrink-0: siempre visible, no participa en el scroll ── */}
+      {/* ── NAVBAR ── */}
       <nav
-        className="shrink-0 z-20 h-14 flex items-center justify-between px-6 animate-slide-up"
+        className="shrink-0 z-20 h-14 flex items-center justify-between px-4 md:px-6 animate-slide-up"
         style={{
           background: 'rgba(8,20,42,0.92)',
           backdropFilter: 'blur(16px)',
@@ -134,14 +135,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Logo */}
         <div className="flex items-center gap-3">
           <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center text-sm shadow"
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-sm shadow shrink-0"
             style={{ background: 'linear-gradient(135deg, #1e5c2e, #2d8a44)' }}
           >
             🍽️
           </div>
           <span className="text-white text-sm font-semibold tracking-tight">
             Lempira
-            <span className="font-normal text-slate-400 ml-2">
+            <span className="hidden sm:inline font-normal text-slate-400 ml-2">
               — {empleado?.nombre}
               <span className="ml-1 text-xs px-1.5 py-0.5 rounded-full capitalize"
                 style={{ background: 'rgba(45,138,68,0.2)', color: '#6ee7a0' }}>
@@ -151,8 +152,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </span>
         </div>
 
-        {/* Nav links */}
-        <div className="flex items-center gap-1">
+        {/* Nav links — solo visibles en desktop (lg+) */}
+        <div className="hidden lg:flex items-center gap-1">
           {items.map((item) => {
             const active = pathname === item.href
             return (
@@ -162,7 +163,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
                 style={{
                   background: active ? 'rgba(45,138,68,0.18)' : 'transparent',
-                  color:      active ? '#fff'      : 'rgba(255,255,255,0.55)',
+                  color:      active ? '#fff' : 'rgba(255,255,255,0.55)',
                   borderBottom: active ? '2px solid rgba(212,160,64,0.7)' : '2px solid transparent',
                 }}
               >
@@ -171,7 +172,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </Link>
             )
           })}
-
           <button
             onClick={handleLogout}
             className="ml-3 flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-semibold transition-all"
@@ -186,10 +186,112 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             ✕ Cerrar sesión
           </button>
         </div>
+
+        {/* Botón hamburguesa — visible solo en móvil/tablet (< lg) */}
+        <button
+          className="lg:hidden flex flex-col justify-center items-center w-9 h-9 rounded-lg gap-1.5 transition-all"
+          style={{ background: menuAbierto ? 'rgba(45,138,68,0.2)' : 'rgba(255,255,255,0.06)' }}
+          onClick={() => setMenuAbierto(v => !v)}
+          aria-label="Abrir menú"
+        >
+          <span
+            className="block w-5 h-0.5 rounded transition-all duration-300"
+            style={{
+              background: '#fff',
+              transform: menuAbierto ? 'translateY(8px) rotate(45deg)' : 'none',
+            }}
+          />
+          <span
+            className="block w-5 h-0.5 rounded transition-all duration-300"
+            style={{
+              background: '#fff',
+              opacity: menuAbierto ? 0 : 1,
+            }}
+          />
+          <span
+            className="block w-5 h-0.5 rounded transition-all duration-300"
+            style={{
+              background: '#fff',
+              transform: menuAbierto ? 'translateY(-8px) rotate(-45deg)' : 'none',
+            }}
+          />
+        </button>
       </nav>
 
-      {/* ── CONTENIDO — flex-1 + overflow-y-auto: solo aquí hace scroll ── */}
-      <main className="flex-1 overflow-y-auto relative z-10 p-6 animate-fade-in">
+      {/* ── SIDEBAR MÓVIL/TABLET — drawer deslizante desde la derecha ── */}
+      <>
+        {/* Overlay oscuro */}
+        {menuAbierto && (
+          <div
+            className="lg:hidden fixed inset-0 z-30"
+            style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(2px)' }}
+            onClick={() => setMenuAbierto(false)}
+          />
+        )}
+
+        {/* Panel lateral */}
+        <aside
+          className="lg:hidden fixed top-14 right-0 z-40 h-[calc(100vh-3.5rem)] w-64 flex flex-col transition-transform duration-300"
+          style={{
+            background: 'rgba(8,20,42,0.97)',
+            backdropFilter: 'blur(20px)',
+            borderLeft: '1px solid rgba(255,255,255,0.08)',
+            transform: menuAbierto ? 'translateX(0)' : 'translateX(100%)',
+          }}
+        >
+          {/* Empleado info */}
+          <div className="px-5 py-4 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+            <p className="text-white text-sm font-semibold">{empleado?.nombre} {empleado?.apellido}</p>
+            <span
+              className="text-xs px-2 py-0.5 rounded-full capitalize mt-1 inline-block"
+              style={{ background: 'rgba(45,138,68,0.2)', color: '#6ee7a0' }}
+            >
+              {empleado?.rol}
+            </span>
+          </div>
+
+          {/* Links de navegación */}
+          <nav className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1">
+            {items.map((item) => {
+              const active = pathname === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
+                  style={{
+                    background: active ? 'rgba(45,138,68,0.18)' : 'transparent',
+                    color: active ? '#fff' : 'rgba(255,255,255,0.60)',
+                    borderLeft: active ? '3px solid rgba(212,160,64,0.8)' : '3px solid transparent',
+                  }}
+                >
+                  <span className="text-lg">{item.icon}</span>
+                  {item.label}
+                </Link>
+              )
+            })}
+          </nav>
+
+          {/* Cerrar sesión */}
+          <div className="px-3 py-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all"
+              style={{
+                background: 'rgba(239,68,68,0.12)',
+                color: '#fca5a5',
+                border: '1px solid rgba(239,68,68,0.22)',
+              }}
+            >
+              <span>✕</span>
+              Cerrar sesión
+            </button>
+          </div>
+        </aside>
+      </>
+
+      {/* ── CONTENIDO PRINCIPAL ── */}
+      <main className="flex-1 overflow-y-auto relative z-10 p-4 md:p-6 animate-fade-in">
         {children}
       </main>
     </div>

@@ -385,24 +385,44 @@ export default function LayoutLateral({
       {/* ── MAIN ─────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10">
 
-        {/* Techo decorativo: enredaderas + luces */}
-        <CeilingDecoration animKey={palmKey} />
-
-        {/* Top bar mobile */}
+        {/* Top bar mobile — siempre arriba del todo en móvil */}
         <header
-          className="lg:hidden flex items-center justify-between px-4 h-13 shrink-0"
-          style={{ background: 'rgba(6,20,32,0.80)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(6,182,212,0.10)' }}
+          className="lg:hidden flex items-center justify-between px-4 h-12 shrink-0"
+          style={{
+            background: 'rgba(4,14,10,0.95)',
+            backdropFilter: 'blur(12px)',
+            borderBottom: '1px solid rgba(212,160,64,0.15)',
+          }}
         >
-          <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg text-white/70 hover:text-white transition-colors">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="p-2 rounded-lg transition-colors"
+            style={{ color: 'rgba(255,255,255,0.7)' }}
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
               <path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round"/>
             </svg>
           </button>
-          <span className="font-semibold text-[15px] text-white">
-            {menuItems.find(m => m.id === vistaActiva)?.nombre ?? 'Menú'}
+
+          {/* Logo centrado en móvil */}
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-base shrink-0"
+              style={{ background: 'linear-gradient(135deg,#d4a040,#c47a28)' }}>
+              🍽️
+            </div>
+            <span className="font-bold text-[14px] text-white tracking-tight">Lempira</span>
+          </div>
+
+          {/* Vista actual */}
+          <span className="text-[12px] font-medium px-2 py-1 rounded-lg" style={{ color: '#d4a040', background: 'rgba(212,160,64,0.1)' }}>
+            {menuItems.find(m => m.id === vistaActiva)?.nombre ?? ''}
           </span>
-          <div className="w-8" />
         </header>
+
+        {/* Techo decorativo — oculto en móvil para ahorrar espacio */}
+        <div className="hidden sm:block shrink-0">
+          <CeilingDecoration animKey={palmKey} />
+        </div>
 
         <main className="flex-1 overflow-y-auto">
           {children}

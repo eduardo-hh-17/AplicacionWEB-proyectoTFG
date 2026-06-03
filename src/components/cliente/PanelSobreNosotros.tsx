@@ -7,7 +7,7 @@ export default function PanelSobreNosotros() {
   ]
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-5">
+    <div className="p-3 sm:p-6 max-w-4xl mx-auto space-y-4 sm:space-y-5">
 
       {/* ── HERO ─────────────────────────────────────── */}
       <div className="glass-dark relative rounded-2xl overflow-hidden text-white animate-fade-in p-8">
