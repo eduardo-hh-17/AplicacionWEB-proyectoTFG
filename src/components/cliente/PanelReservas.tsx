@@ -126,13 +126,13 @@ export default function PanelReservas() {
   }, [diaDetalle, reloadKey])
 
   /* ── Compute occupied mesa IDs for selected hour ── */
-  const mesasOcupadasIds = useMemo(() => {
-    if (!horaDetalle) return new Set<string>()
+  const mesasOcupadasIds = useMemo<Set<number>>(() => {
+    if (!horaDetalle) return new Set<number>()
     const horaT = parseH(horaDetalle)
-    return new Set(
+    return new Set<number>(
       reservasDia
         .filter(r => r.mesa_id && tablaOcupadaEn(r, horaT))
-        .map(r => r.mesa_id!)
+        .map(r => r.mesa_id as number)
     )
   }, [reservasDia, horaDetalle])
 
