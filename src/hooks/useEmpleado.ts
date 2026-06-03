@@ -21,19 +21,14 @@ export function useEmpleado() {
 
   const obtenerEmpleado = async () => {
     setCargando(true)
-    
-    // Obtener sesión de Supabase Auth
+
     const { data: { session } } = await supabase.auth.getSession()
-    console.log('Session:', session)
 
     if (!session) {
-      console.log('No hay sesión')
       setEmpleado(null)
       setCargando(false)
       return
     }
-
-    console.log('Buscando empleado con id:', session.user.id)
 
     const { data, error } = await supabase
       .from('empleados')
@@ -41,11 +36,7 @@ export function useEmpleado() {
       .eq('id', session.user.id)
       .single()
 
-    console.log('Empleado encontrado:', data)
-    console.log('Error:', error)
-
-    if (error) {
-      console.error('Error cargando empleado:', error)
+    if (error || !data) {
       setEmpleado(null)
     } else {
       setEmpleado(data)

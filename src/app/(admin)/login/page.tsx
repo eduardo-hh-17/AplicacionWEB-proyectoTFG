@@ -27,16 +27,22 @@ export default function Login() {
       return
     }
 
-    // 2. Obtener el empleado por email para saber su rol
+    // 2. Obtener el empleado por email — verificar que existe, está activo y tiene rol
     const { data: empleado, error: empError } = await supabase
       .from('empleados')
-      .select('id, rol')
+      .select('id, rol, activo')
       .eq('email', email)
       .single()
 
     if (empError || !empleado) {
-      console.error('Empleado no encontrado:', empError)
       setError('Usuario no autorizado como empleado')
+      await supabase.auth.signOut()
+      setCargando(false)
+      return
+    }
+
+    if (!empleado.activo) {
+      setError('Tu cuenta está dada de baja. Contacta con el administrador.')
       await supabase.auth.signOut()
       setCargando(false)
       return

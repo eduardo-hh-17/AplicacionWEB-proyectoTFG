@@ -9,10 +9,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Nombre, email, contraseña y rol son obligatorios' }, { status: 400 })
     }
 
+    // Validar rol permitido
+    const rolesPermitidos = ['admin', 'camarero', 'cocinero']
+    if (!rolesPermitidos.includes(rol)) {
+      return NextResponse.json({ error: 'Rol no válido' }, { status: 400 })
+    }
+
+    // Validar longitud mínima contraseña
+    if (password.length < 6) {
+      return NextResponse.json({ error: 'La contraseña debe tener al menos 6 caracteres' }, { status: 400 })
+    }
+
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
+
+    // Verificar que el llamante es un admin autenticado
+    const authHeader = request.headers.get('Authorization')
+    const token = authHeader?.replace('Bearer ', '')
+    if (!token) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token)
+    if (userError || !user) {
+      return NextResponse.json({ error: 'Sesión inválida' }, { status: 401 })
+    }
+    const { data: caller } = await supabaseAdmin.from('empleados').select('rol, activo').eq('id', user.id).single()
+    if (!caller || caller.rol !== 'admin' || !caller.activo) {
+      return NextResponse.json({ error: 'Solo los administradores pueden crear empleados' }, { status: 403 })
+    }
 
     // 1. Crear usuario en Auth con copia informativa en user_metadata
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({

@@ -219,9 +219,13 @@ export default function Dashboard() {
 
   const eliminarEmpleadoCompleto = async (id: string) => {
     if (!confirm('⚠️ Esto eliminará al empleado de forma permanente (BD + acceso). ¿Estás seguro?')) return
+    const { data: { session } } = await supabase.auth.getSession()
     const res = await fetch('/api/eliminar-empleado', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token ?? ''}`,
+      },
       body: JSON.stringify({ id })
     })
     const data = await res.json()
@@ -432,9 +436,13 @@ export default function Dashboard() {
       foto_url = urlData.publicUrl
     }
 
+    const { data: { session } } = await supabase.auth.getSession()
     const res = await fetch('/api/crear-empleado', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token ?? ''}`,
+      },
       body: JSON.stringify({ ...nuevoEmpleado, foto_url })
     })
 

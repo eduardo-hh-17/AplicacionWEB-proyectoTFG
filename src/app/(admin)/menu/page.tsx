@@ -166,9 +166,6 @@ const crearPlato = async () => {
 
   // Verificar sesión activa
   const { data: { session } } = await supabase.auth.getSession()
-  console.log('Sesión activa:', session?.user?.email)
-  console.log('Token:', session?.access_token?.substring(0, 20))
-
   if (!session) {
     alert('No hay sesión activa — vuelve a iniciar sesión')
     return
@@ -188,9 +185,6 @@ const crearPlato = async () => {
       imagenes: nuevasImagenes.length > 0 ? nuevasImagenes : [],
     })
     .select()
-
-  console.log('Resultado:', data)
-  console.log('Error:', error)
 
   if (error) {
     alert('Error: ' + error.message)

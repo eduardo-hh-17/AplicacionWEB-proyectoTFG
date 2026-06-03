@@ -159,7 +159,6 @@ const abrirModal = (plato: any) => {
 
 
 const enviarPedido = async () => {
-  console.log('Mesa activa:', mesaActiva)
   // 📱 Caso 1: No escaneó QR
   if (!tokenActivo) {
     setModalAbierto(false)
