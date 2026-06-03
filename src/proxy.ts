@@ -10,7 +10,7 @@ const RUTAS_PROTEGIDAS = [
   '/reservas',   // ← estaba fuera, ahora protegida
 ]
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
   const esProtegida = RUTAS_PROTEGIDAS.some(r => pathname.startsWith(r))
 
