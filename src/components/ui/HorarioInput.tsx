@@ -31,19 +31,25 @@ export default function HorarioInput({
   const minH = parseInt(min.split(':')[0])
   const minM = parseInt(min.split(':')[1]) || 0
   const maxH = parseInt(max.split(':')[0])
+  const maxM = parseInt(max.split(':')[1]) || 0  // minuto límite de la hora máxima
 
   // Horas disponibles según rango
   const horas = useMemo(() => horasDisponibles(min, max), [min, max])
 
-  // Parsear value actual; si está fuera de rango, ajustar al mínimo
+  // Parsear value actual; si está fuera de rango, ajustar al máximo
   const rawH = parseInt((value || min).split(':')[0])
   const rawM = parseInt((value || min).split(':')[1]) || 0
   const hh = Math.min(Math.max(rawH, minH), maxH)
   const mm = rawM
 
   const setH = (h: number) => {
-    // Al cambiar hora, si los minutos actuales quedan por debajo del mínimo, resetear
-    const safeM = h === minH && mm <= minM ? getFirstValidMinuto(h) : mm
+    // Al cambiar hora, ajustar minutos si quedan fuera del rango
+    let safeM = mm
+    if (h === minH && mm <= minM) safeM = getFirstValidMinuto(h)
+    if (h === maxH) {
+      const validMax = MINUTOS.filter(m => m <= maxM)
+      if (!validMax.includes(mm)) safeM = validMax[0] ?? 0
+    }
     onChange(`${String(h).padStart(2, '0')}:${String(safeM).padStart(2, '0')}`)
   }
 
@@ -52,13 +58,11 @@ export default function HorarioInput({
   }
 
   // Minutos disponibles para la hora seleccionada
-  // Si hh === minH, solo mostrar minutos > minM
-  // Si hh === maxH (24), solo el :00
   const minutosDisponibles = useMemo(() => {
-    if (hh === maxH && maxH === 24) return [0]  // 24:00 solo existe con :00
-    if (hh === minH) return MINUTOS.filter(m => m > minM)   // > para no poder elegir la misma hora
+    if (hh === maxH) return MINUTOS.filter(m => m <= maxM)  // respetar minuto máximo (ej: 23:00 → solo :00)
+    if (hh === minH) return MINUTOS.filter(m => m > minM)   // > para no elegir la misma hora exacta
     return MINUTOS
-  }, [hh, minH, minM, maxH])
+  }, [hh, minH, minM, maxH, maxM])
 
   function getFirstValidMinuto(h: number): number {
     if (h === minH) {

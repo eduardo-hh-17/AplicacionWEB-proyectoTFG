@@ -45,6 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       items.push({ href: '/menu',      label: 'Menú',       icon: '🍽️' })
       items.push({ href: '/cocina',    label: 'Cocina',     icon: '👨‍🍳' })
       items.push({ href: '/reservas',  label: 'Reservas',   icon: '📅' })
+      items.push({ href: '/facturas',  label: 'Facturas',   icon: '💶' })
       items.push({ href: '/qr',        label: 'QR Mesas',   icon: '📷' })
     }
     if (empleado.rol === 'gerente') {
@@ -53,11 +54,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       items.push({ href: '/menu',      label: 'Menú',       icon: '🍽️' })
       items.push({ href: '/cocina',    label: 'Cocina',     icon: '👨‍🍳' })
       items.push({ href: '/reservas',  label: 'Reservas',   icon: '📅' })
+      items.push({ href: '/facturas',  label: 'Facturas',   icon: '💶' })
       items.push({ href: '/qr',        label: 'QR Mesas',   icon: '📷' })
     }
     if (empleado.rol === 'camarero') {
-      items.push({ href: '/pedidos', label: 'Pedidos', icon: '🧾' })
-      items.push({ href: '/menu',    label: 'Menú',    icon: '🍽️' })
+      items.push({ href: '/pedidos',  label: 'Pedidos',  icon: '🧾' })
+      items.push({ href: '/menu',     label: 'Menú',     icon: '🍽️' })
+      items.push({ href: '/facturas', label: 'Facturas', icon: '💶' })
     }
     if (empleado.rol === 'cocinero') {
       items.push({ href: '/cocina', label: 'Cocina', icon: '👨‍🍳' })

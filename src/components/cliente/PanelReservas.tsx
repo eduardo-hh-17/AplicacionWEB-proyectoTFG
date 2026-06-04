@@ -23,9 +23,9 @@ const TIPO: Record<TipoEvento, { label: string; color: string; bg: string; borde
 const MESES    = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 const DIAS_SEM = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom']
 const H0 = 11
-const H1 = 23
+const H1 = 24
 const PX = 52
-const HORAS_DET = Array.from({length:(H1-H0)*2}, (_,i) => {
+const HORAS_DET = Array.from({length:(H1-H0)*2+1}, (_,i) => {
   const h = H0 + i*0.5
   return `${String(Math.floor(h)).padStart(2,'0')}:${h%1===0?'00':'30'}`
 })
@@ -391,10 +391,7 @@ export default function PanelReservas() {
 
               {/* Resumen + mensaje mesas disponibles */}
               {(() => {
-                const libres = mesas.filter(m => !mesasOcupadasIds.has(m.id))
-                const grupos = libres.reduce<Record<number,number>>((a,m) => {
-                  a[m.capacidad] = (a[m.capacidad] ?? 0) + 1; return a
-                }, {})
+                const libres = mesas.filter(m => !mesasOcupadasIds.has(m.id) && m.estado !== 'inactiva')
                 return (
                   <div className="mt-3 pt-3 space-y-2" style={{borderTop:'1px solid rgba(45,112,60,0.10)'}}>
                     {libres.length === 0 ? (
@@ -405,15 +402,15 @@ export default function PanelReservas() {
                     ) : (
                       <>
                         <p className="text-[12px] font-semibold" style={{color:'#1a3a22'}}>
-                          Mesas disponibles para las <strong>{horaDetalle}</strong>:
+                          Mesas libres a las <strong>{horaDetalle}</strong>:
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {Object.entries(grupos)
-                            .sort(([a],[b]) => +a - +b)
-                            .map(([cap, count]) => (
-                              <span key={cap} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
+                          {libres
+                            .sort((a,b) => a.numero - b.numero)
+                            .map(m => (
+                              <span key={m.id} className="flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-semibold"
                                 style={{background:'rgba(34,197,94,0.12)', color:'#166534', border:'1px solid rgba(34,197,94,0.35)'}}>
-                                🪑 {count} mesa{count>1?'s':''} de {cap} pers.
+                                🪑 Mesa {m.numero} · {m.capacidad} pers.
                               </span>
                             ))}
                         </div>
@@ -436,7 +433,7 @@ export default function PanelReservas() {
 
   /* ══════════════ RENDER ══════════════ */
   return (
-    <div className="p-3 sm:p-6 max-w-3xl mx-auto space-y-4 sm:space-y-6">
+    <div className="p-3 sm:p-6 max-w-5xl mx-auto space-y-4 sm:space-y-6">
 
       {/* CABECERA */}
       <div className="animate-slide-up">

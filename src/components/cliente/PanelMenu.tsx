@@ -84,8 +84,7 @@ export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaN
     return () => { supabase.removeChannel(canal) }
   }, [])
 
-  // 👇 AÑADE ESTO después del useEffect que carga platos
-// Consultar estado de la mesa en Supabase
+  // Consultar estado de la mesa en Supabase
 useEffect(() => {
     if (mesaActiva) {
       supabase
@@ -97,6 +96,18 @@ useEffect(() => {
     } else {
       setMesaEstado(null)
   }
+}, [mesaActiva])
+
+// Realtime: recarga mis pedidos cuando cambian en BD (ej: cocinero cancela)
+useEffect(() => {
+  if (!mesaActiva) return
+  const canal = supabase
+    .channel('mis-pedidos-realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => {
+      cargarMisPedidos()
+    })
+    .subscribe()
+  return () => { supabase.removeChannel(canal) }
 }, [mesaActiva])
 
 const cargarPlatos = async () => {
@@ -128,13 +139,14 @@ const cargarMisPedidos = async () => {
   const { data } = await supabase
     .from('pedidos')
     .select('*')
-    .eq('mesa', mesaActiva)
-    .eq('sesion_id', sesionActiva)  // ← filtra por sesión activa 
+    .eq('sesion_id', sesionActiva)   // filtra por sesión activa (incluye pedidos del camarero)
     .order('creado_en', { ascending: false })
 
   if (data) {
     setMisPedidos(data)
-    const total = data.reduce((sum, p) => sum + (p.precio || 0), 0)
+    const total = data
+      .filter((p: any) => p.estado !== 'cancelado')
+      .reduce((sum: number, p: any) => sum + (p.precio || 0), 0)
     setTotalGastado(total)
   }
 }
@@ -249,21 +261,54 @@ const enviarPedido = async () => {
         <div className="glass-panel rounded-2xl overflow-hidden">
           <div className="flex justify-between items-center px-5 py-4" style={{ borderBottom: '1px solid rgba(45,112,60,0.15)' }}>
             <p className="font-semibold text-[14px]" style={{ color: '#0a2214' }}>Mis pedidos</p>
-            <span className="font-bold text-[14px]" style={{ color: '#c47a28' }}>Total: {totalGastado}€</span>
+            <span className="font-bold text-[14px]" style={{ color: '#c47a28' }}>Total: {totalGastado.toFixed(2)}€</span>
           </div>
           {misPedidos.length === 0 ? (
             <p className="text-sm text-center py-5" style={{ color: '#5a9a6a' }}>No has pedido nada aún</p>
           ) : (
-            <div className="divide-y divide-slate-50 max-h-48 overflow-y-auto">
-              {misPedidos.map((pedido) => (
-                <div key={pedido.id} className="flex justify-between items-center px-5 py-3">
-                  <div>
-                    <p className="font-medium text-sm" style={{ color: '#0a2214' }}>{pedido.plato_nombre}</p>
-                    <p className="text-xs" style={{ color: '#5a9a6a' }}>{new Date(pedido.creado_en).toLocaleTimeString()}</p>
+            <div className="divide-y max-h-56 overflow-y-auto" style={{ borderColor: 'rgba(45,112,60,0.08)' }}>
+              {misPedidos.map((pedido) => {
+                const cancelado = pedido.estado === 'cancelado'
+                return (
+                  <div key={pedido.id}
+                    className="flex justify-between items-center px-5 py-3"
+                    style={cancelado ? { background: 'rgba(239,68,68,0.06)' } : {}}>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate"
+                        style={{ color: cancelado ? '#ef4444' : '#0a2214', textDecoration: cancelado ? 'line-through' : 'none' }}>
+                        {pedido.plato_nombre}
+                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-xs" style={{ color: '#5a9a6a' }}>
+                          {new Date(pedido.creado_en).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}
+                        </p>
+                        {cancelado && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}>
+                            ✕ Cancelado
+                          </span>
+                        )}
+                        {!cancelado && pedido.estado === 'listo' && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={{ background: 'rgba(34,197,94,0.15)', color: '#16a34a' }}>
+                            ✅ Listo
+                          </span>
+                        )}
+                        {!cancelado && pedido.estado === 'preparando' && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={{ background: 'rgba(59,130,246,0.15)', color: '#1d4ed8' }}>
+                            👨‍🍳 En cocina
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="font-semibold text-sm ml-3"
+                      style={{ color: cancelado ? 'rgba(239,68,68,0.5)' : '#c47a28', textDecoration: cancelado ? 'line-through' : 'none' }}>
+                      {pedido.precio}€
+                    </span>
                   </div>
-                  <span className="font-semibold text-sm" style={{ color: '#c47a28' }}>{pedido.precio}€</span>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
@@ -525,15 +570,17 @@ const enviarPedido = async () => {
           </div>
         </div>
       )}
-        {/* Renderizar toasts */}
-      {toasts.map(toast => (
-        <Toast
-          key={toast.id}
-          message={toast.message}
-          type={toast.type}
-          onClose={() => removeToast(toast.id)}
-        />
-      ))}
+      {/* Toasts — contenedor fijo esquina inferior derecha */}
+      <div className="fixed bottom-6 right-4 z-[200] flex flex-col gap-2 items-end" style={{ pointerEvents: 'none' }}>
+        {toasts.map(toast => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </div>
     </div>
   )
 }

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import ConfirmModal from '@/components/ui/ConfirmModal'
+import ToastContainer, { useAdminToast } from '@/components/ui/Toast'
 
 type Ingrediente = {
   id: number
@@ -22,6 +24,12 @@ type Pedido = {
 }
 
 export default function Cocina() {
+  const { toast } = useAdminToast()
+
+  type ConfirmState = { abierto: boolean; titulo: string; mensaje?: string; onAceptar: () => void }
+  const [confirmModal, setConfirmModal] = useState<ConfirmState>({ abierto: false, titulo: '', onAceptar: () => {} })
+  const confirmar = (cfg: Omit<ConfirmState, 'abierto'>) => setConfirmModal({ ...cfg, abierto: true })
+  const cerrarConfirm = () => setConfirmModal(s => ({ ...s, abierto: false }))
 
   const [pedidos, setPedidos] = useState<Pedido[]>([])
   const [cargando, setCargando] = useState(true)
@@ -76,6 +84,19 @@ useEffect(() => {
       .eq('id', id)
   }
 
+  // Cancela el pedido (visible para cliente y admin como cancelado)
+  const cancelarPedido = (id: number, nombre: string) => {
+    confirmar({
+      titulo: `¿Cancelar "${nombre}"?`,
+      mensaje: 'El pedido se marcará como cancelado y será visible para el cliente.',
+      onAceptar: async () => {
+        cerrarConfirm()
+        await supabase.from('pedidos').update({ estado: 'cancelado' }).eq('id', id)
+        toast(`Pedido "${nombre}" cancelado`, 'info')
+      }
+    })
+  }
+
   // Color según el estado
   const colorTarjeta = (estado: string) => {
     if (estado === 'preparando') return 'border-blue-400 bg-blue-50'
@@ -102,8 +123,17 @@ useEffect(() => {
 
   return (
     <div>
-
-
+      <ToastContainer />
+      <ConfirmModal
+        abierto={confirmModal.abierto}
+        titulo={confirmModal.titulo}
+        mensaje={confirmModal.mensaje}
+        variante="warning"
+        textoAceptar="Cancelar pedido"
+        textoCancelar="Volver"
+        onAceptar={confirmModal.onAceptar}
+        onCancelar={cerrarConfirm}
+      />
 
       {/* ── PEDIDOS ── */}
       {pedidos.length === 0 ? (
@@ -187,6 +217,13 @@ useEffect(() => {
                   className="w-full bg-[#1e5c2e] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#2d8a44] transition-colors"
                 >
                   ✅ Listo — entregar
+                </button>
+                <button
+                  onClick={() => cancelarPedido(pedido.id, pedido.plato_nombre)}
+                  className="w-full py-2 rounded-xl text-sm font-medium transition-colors"
+                  style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.35)', color: '#fca5a5' }}
+                >
+                  ✕ Cancelar pedido
                 </button>
               </div>
 

@@ -10,10 +10,10 @@ interface ToastItem {
   tipo: ToastType
 }
 
-const TOAST_CONFIG: Record<ToastType, { icon: string; bg: string; border: string; color: string }> = {
-  success: { icon: '✅', bg: 'rgba(34,197,94,0.15)',  border: 'rgba(34,197,94,0.4)',  color: '#86efac' },
-  error:   { icon: '❌', bg: 'rgba(239,68,68,0.15)',  border: 'rgba(239,68,68,0.4)',  color: '#fca5a5' },
-  info:    { icon: 'ℹ️', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.4)', color: '#93c5fd' },
+const TOAST_CONFIG: Record<ToastType, { dot: string; bg: string; border: string; color: string }> = {
+  success: { dot: '#22c55e', bg: 'rgba(34,197,94,0.15)',  border: 'rgba(34,197,94,0.4)',  color: '#86efac' },
+  error:   { dot: '#ef4444', bg: 'rgba(239,68,68,0.15)',  border: 'rgba(239,68,68,0.4)',  color: '#fca5a5' },
+  info:    { dot: '#3b82f6', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.4)', color: '#93c5fd' },
 }
 
 function ToastItem({ item, onRemove }: { item: ToastItem; onRemove: () => void }) {
@@ -34,7 +34,7 @@ function ToastItem({ item, onRemove }: { item: ToastItem; onRemove: () => void }
         minWidth: 260, maxWidth: 360,
       }}
     >
-      <span className="text-lg shrink-0">{cfg.icon}</span>
+      <span className="shrink-0 w-2 h-2 rounded-full mt-1" style={{ background: cfg.dot }} />
       <p className="text-sm font-medium leading-snug" style={{ color: cfg.color }}>{item.mensaje}</p>
       <button
         onClick={onRemove}
