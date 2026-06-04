@@ -150,7 +150,7 @@ export default function PanelInicio() {
             style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.18)' }}
           >
             <span className="w-1.5 h-1.5 rounded-full animate-pulse-soft" style={{ background: '#6abf69' }} />
-            Abierto ahora · Lunes–Domingo 12:00–23:00
+            Abierto ahora · Lunes–Domingo 12:00–24:00
           </div>
 
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-2 animate-slide-up delay-75 text-white">
@@ -163,7 +163,7 @@ export default function PanelInicio() {
 
           <div className="flex flex-wrap gap-3 mt-6 animate-slide-up delay-200">
             {[
-              { icon: '🕐', text: '12:00 – 23:00' },
+              { icon: '🕐', text: '12:00 – 24:00' },
               { icon: '📍', text: 'San Pedro Sula' },
               { icon: '⭐', text: '4.8 · +10k clientes' },
             ].map(item => (

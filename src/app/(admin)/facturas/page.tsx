@@ -27,10 +27,11 @@ const estadoOf = (f: Factura) => (f.estado === 'pagada' || f.pagada) ? 'pagada' 
 
 export default function Facturas() {
   const { toast } = useAdminToast()
-  const [facturas, setFacturas]       = useState<Factura[]>([])
-  const [cargando, setCargando]       = useState(true)
-  const [expandida, setExpandida]     = useState<number | null>(null)
-  const [filtro, setFiltro]           = useState<'todas' | 'pagada' | 'pendiente'>('todas')
+  const [facturas, setFacturas] = useState<Factura[]>([])
+  const [cargando, setCargando] = useState(true)
+  const [expandida, setExpandida] = useState<number | null>(null)
+  const [seleccionadaId, setSeleccionadaId] = useState<number | null>(null)
+  const [filtro, setFiltro] = useState<'todas' | 'pagada' | 'pendiente'>('todas')
   const [confirmAbierto, setConfirmAbierto] = useState(false)
   const [facturaAEliminar, setFacturaAEliminar] = useState<Factura | null>(null)
 
@@ -52,9 +53,11 @@ export default function Facturas() {
     return () => { supabase.removeChannel(ch) }
   }, [cargar])
 
-  const pedirEliminar = (f: Factura, e: React.MouseEvent) => {
-    e.stopPropagation()
-    setFacturaAEliminar(f)
+  const facturaSeleccionada = facturas.find(f => f.id === seleccionadaId) ?? null
+
+  const pedirEliminarSeleccionada = () => {
+    if (!facturaSeleccionada) return
+    setFacturaAEliminar(facturaSeleccionada)
     setConfirmAbierto(true)
   }
 
@@ -68,6 +71,7 @@ export default function Facturas() {
     }
     toast(`Factura mesa ${facturaAEliminar.mesa_numero} eliminada`, 'success')
     if (expandida === facturaAEliminar.id) setExpandida(null)
+    if (seleccionadaId === facturaAEliminar.id) setSeleccionadaId(null)
     setFacturaAEliminar(null)
     cargar()
   }
@@ -111,14 +115,26 @@ export default function Facturas() {
         onCancelar={() => { setConfirmAbierto(false); setFacturaAEliminar(null) }}
       />
 
-      {/* ── CABECERA ── */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gradient-anim">Facturas</h1>
-          <p className="text-slate-400 text-sm mt-0.5">Historial de cuentas cobradas y pendientes · actualización en tiempo real</p>
+          <p className="text-slate-400 text-sm mt-0.5">Selecciona una factura y pulsa eliminar · tiempo real</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            disabled={!seleccionadaId}
+            onClick={pedirEliminarSeleccionada}
+            className="px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{
+              background: seleccionadaId ? 'rgba(239,68,68,0.85)' : 'rgba(255,255,255,0.06)',
+              color: '#fff',
+              border: seleccionadaId ? '1px solid rgba(239,68,68,0.5)' : '1px solid rgba(255,255,255,0.1)',
+            }}
+          >
+            Eliminar factura seleccionada
+          </button>
           <div className="px-4 py-2 rounded-xl text-sm" style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.30)' }}>
             <span className="text-slate-400 text-xs block">Total cobrado</span>
             <span className="font-black text-lg" style={{ color: '#d4a040' }}>{totalGlobal.toFixed(2)}€</span>
@@ -130,7 +146,12 @@ export default function Facturas() {
         </div>
       </div>
 
-      {/* ── FILTROS ── */}
+      {facturaSeleccionada && (
+        <p className="text-xs px-3 py-2 rounded-lg" style={{ background: 'rgba(45,138,68,0.12)', color: '#86efac', border: '1px solid rgba(45,138,68,0.3)' }}>
+          Seleccionada: Mesa {facturaSeleccionada.mesa_numero} · {(facturaSeleccionada.total || 0).toFixed(2)}€ · {formatFecha(facturaSeleccionada.creada_en).fecha} {formatFecha(facturaSeleccionada.creada_en).hora}
+        </p>
+      )}
+
       <div className="flex gap-2">
         {(['todas', 'pagada', 'pendiente'] as const).map(f => (
           <button key={f} onClick={() => setFiltro(f)}
@@ -144,7 +165,6 @@ export default function Facturas() {
         ))}
       </div>
 
-      {/* ── LISTA ── */}
       {cargando ? (
         <div className="flex items-center justify-center h-48">
           <p className="text-slate-400 text-sm animate-pulse">Cargando facturas...</p>
@@ -162,20 +182,21 @@ export default function Facturas() {
             const est = estadoOf(f)
             const cfg = ESTADO_CFG[est]
             const abierta = expandida === f.id
+            const seleccionada = seleccionadaId === f.id
             const pedidosValidos = (f.pedidos || []).filter((p: any) => p.estado !== 'cancelado')
-            const seleccionada = expandida === f.id
 
             return (
               <div key={f.id}
                 className="rounded-2xl overflow-hidden transition-all"
                 style={{
-                  background: seleccionada ? 'rgba(45,138,68,0.08)' : 'rgba(255,255,255,0.04)',
-                  border: seleccionada ? '1px solid rgba(45,138,68,0.35)' : '1px solid rgba(255,255,255,0.08)',
+                  background: seleccionada ? 'rgba(45,138,68,0.10)' : 'rgba(255,255,255,0.04)',
+                  border: seleccionada ? '2px solid rgba(45,138,68,0.50)' : '1px solid rgba(255,255,255,0.08)',
                 }}>
 
                 <div className="flex items-stretch">
                   <button
-                    onClick={() => setExpandida(abierta ? null : f.id)}
+                    type="button"
+                    onClick={() => setSeleccionadaId(seleccionada ? null : f.id)}
                     className="flex-1 flex items-center gap-4 px-5 py-4 text-left hover:bg-white/5 transition-colors"
                   >
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-black text-base"
@@ -206,26 +227,17 @@ export default function Facturas() {
                       <p className="font-black text-lg" style={{ color: '#d4a040' }}>{(f.total || 0).toFixed(2)}€</p>
                       <p className="text-xs" style={{ color: '#475569' }}>{pedidosValidos.length} plato{pedidosValidos.length !== 1 ? 's' : ''}</p>
                     </div>
-                    <span className="text-slate-500 text-lg transition-transform duration-200 shrink-0 ml-2"
-                      style={{ transform: abierta ? 'rotate(90deg)' : 'rotate(0deg)' }}>
-                      ›
-                    </span>
                   </button>
 
-                  {seleccionada && (
-                    <button
-                      onClick={(e) => pedirEliminar(f, e)}
-                      className="shrink-0 px-4 flex items-center justify-center text-sm font-semibold transition-all border-l"
-                      style={{
-                        background: 'rgba(239,68,68,0.10)',
-                        borderColor: 'rgba(239,68,68,0.25)',
-                        color: '#fca5a5',
-                      }}
-                      title="Eliminar factura"
-                    >
-                      ✕
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setExpandida(abierta ? null : f.id)}
+                    className="shrink-0 px-4 flex items-center text-slate-400 hover:text-white border-l transition-colors"
+                    style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+                    title="Ver detalle"
+                  >
+                    <span style={{ transform: abierta ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>›</span>
+                  </button>
                 </div>
 
                 {abierta && (
@@ -273,18 +285,10 @@ export default function Facturas() {
                       )}
                     </div>
 
-                    <div className="flex justify-between items-center mt-3 pt-3 gap-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div className="flex justify-between items-center mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                       <span className="text-sm font-semibold text-white">Total factura</span>
                       <span className="font-black text-xl" style={{ color: '#d4a040' }}>{(f.total || 0).toFixed(2)}€</span>
                     </div>
-
-                    <button
-                      onClick={(e) => pedirEliminar(f, e)}
-                      className="mt-3 w-full py-2 rounded-xl text-xs font-semibold transition-all"
-                      style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.30)' }}
-                    >
-                      Eliminar factura
-                    </button>
                   </div>
                 )}
               </div>

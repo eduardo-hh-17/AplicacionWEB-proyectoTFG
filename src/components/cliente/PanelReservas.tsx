@@ -3,7 +3,15 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import HorarioInput from '@/components/ui/HorarioInput'
-import { addHoras, HORA_CIERRE_ENTRADA, HORA_CIERRE_SALIDA } from '@/lib/horario'
+import {
+  addHoras,
+  HORA_APERTURA,
+  HORA_CIERRE_ENTRADA,
+  HORA_CIERRE_SALIDA,
+  HORA_CALENDARIO_INICIO,
+  HORA_CALENDARIO_FIN_EXCLUSIVO,
+  franjasMediaHora,
+} from '@/lib/horario'
 
 /* ─── Types ─── */
 type TipoEvento = 'standard' | 'cumpleanos' | 'pedida' | 'evento' | 'empresa'
@@ -22,13 +30,10 @@ const TIPO: Record<TipoEvento, { label: string; color: string; bg: string; borde
 /* ─── Calendar constants ─── */
 const MESES    = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 const DIAS_SEM = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom']
-const H0 = 11
-const H1 = 24
+const H0 = HORA_CALENDARIO_INICIO
+const H1 = HORA_CALENDARIO_FIN_EXCLUSIVO
 const PX = 52
-const HORAS_DET = Array.from({length:(H1-H0)*2+1}, (_,i) => {
-  const h = H0 + i*0.5
-  return `${String(Math.floor(h)).padStart(2,'0')}:${h%1===0?'00':'30'}`
-})
+const HORAS_DET = franjasMediaHora(HORA_APERTURA, HORA_CIERRE_ENTRADA)
 
 /* ─── Helpers ─── */
 const parseH  = (s: string) => { const [h,m] = s.split(':').map(Number); return h + m/60 }

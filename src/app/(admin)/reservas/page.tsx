@@ -1,9 +1,16 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import HorarioInput from '@/components/ui/HorarioInput'
-import { HORA_CIERRE_ENTRADA, HORA_CIERRE_SALIDA } from '@/lib/horario'
+import {
+  HORA_APERTURA,
+  HORA_CIERRE_ENTRADA,
+  HORA_CIERRE_SALIDA,
+  HORA_CALENDARIO_INICIO,
+  HORA_CALENDARIO_FIN_EXCLUSIVO,
+  franjasMediaHora,
+} from '@/lib/horario'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import ToastContainer, { useAdminToast } from '@/components/ui/Toast'
 
@@ -44,18 +51,14 @@ const EST: Record<Estado, { color: string; label: string }> = {
   cancelada:  { color: '#fca5a5', label: 'Cancelada'  },
 }
 
-const HORAS_SEL = [
-  '11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30',
-  '16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30',
-  '20:00','20:30','21:00','21:30','22:00','22:30',
-]
+const HORAS_SEL = franjasMediaHora(HORA_APERTURA, HORA_CIERRE_ENTRADA)
 const MESES  = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 const DIAS_C = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom']
 
-/* Grid constants */
-const H0 = 11  // primera hora visible
-const H1 = 23  // última hora (exclusiva)
-const PX = 64  // píxeles por hora
+/* Grid calendario: 12:00 – 23:00 (última franja hasta 24:00) */
+const H0 = HORA_CALENDARIO_INICIO
+const H1 = HORA_CALENDARIO_FIN_EXCLUSIVO
+const PX = 52  // píxeles por hora (caben 12 franjas en pantallas habituales)
 
 const FORM0: FormData = {
   nombre:'', apellido:'', email:'', telefono:'',
@@ -108,6 +111,21 @@ export default function AdminReservas() {
   const confirmar = (cfg: Omit<ConfirmState, 'abierto'>) => setConfirmModal({ ...cfg, abierto: true })
   const cerrarConfirm = () => setConfirmModal(s => ({ ...s, abierto: false }))
   const { toast } = useAdminToast()
+  const scrollCalRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (vista === 'mes') return
+    const el = scrollCalRef.current
+    if (!el) return
+    const cur = new Date().getHours() + new Date().getMinutes() / 60
+    requestAnimationFrame(() => {
+      if (cur >= H0 && cur < H1) {
+        el.scrollTop = Math.max(0, (cur - H0) * PX - el.clientHeight * 0.35)
+      } else {
+        el.scrollTop = Math.max(0, el.scrollHeight - el.clientHeight)
+      }
+    })
+  }, [vista, refDate])
 
   /* ─── Supabase ─── */
   const cargar = useCallback(async () => {
@@ -253,7 +271,7 @@ export default function AdminReservas() {
     const rows = Array.from({length: H1-H0}, (_,i) => H0+i)
 
     return (
-      <div className="flex overflow-hidden rounded-2xl" style={{border:'1px solid rgba(255,255,255,0.08)', height: `${(H1-H0)*PX + 36}px`}}>
+      <div className="flex rounded-2xl shrink-0" style={{border:'1px solid rgba(255,255,255,0.08)', minHeight: `${(H1-H0)*PX + 36}px`}}>
         {/* Columna de horas */}
         <div className="shrink-0 w-14 flex flex-col overflow-hidden" style={{borderRight:'1px solid rgba(255,255,255,0.07)'}}>
           <div className="shrink-0" style={{height:36, borderBottom:'1px solid rgba(255,255,255,0.07)'}} />
@@ -575,7 +593,7 @@ export default function AdminReservas() {
       </div>
 
       {/* ── CONTENIDO ── */}
-      <div className="overflow-y-auto overflow-x-hidden" style={{maxHeight:'calc(100vh - 220px)'}}>
+      <div ref={scrollCalRef} className="overflow-y-auto overflow-x-hidden" style={{maxHeight:'calc(100vh - 220px)'}}>
         {vista==='dia'    && renderDia()}
         {vista==='semana' && renderSemana()}
         {vista==='mes'    && renderMes()}

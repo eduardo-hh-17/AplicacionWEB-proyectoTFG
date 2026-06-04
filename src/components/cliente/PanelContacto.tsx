@@ -6,7 +6,7 @@ const infoItems = [
   { icon: '📍', label: 'Dirección', lines: ['Calle Principal #123, Colonia Centro', 'San Pedro Sula, Honduras'] },
   { icon: '📞', label: 'Teléfono', lines: ['+504 1234-5678', '+504 8765-4321'] },
   { icon: '✉️', label: 'Email', lines: ['info@restaurantelempira.com', 'reservas@restaurantelempira.com'] },
-  { icon: '⏰', label: 'Horario', lines: ['Lunes a Jueves: 12:00 – 23:00', 'Viernes y Sábado: 12:00 – 00:00'] },
+  { icon: '⏰', label: 'Horario', lines: ['Lunes a Domingo: 12:00 – 24:00'] },
 ]
 
 export default function PanelContacto() {

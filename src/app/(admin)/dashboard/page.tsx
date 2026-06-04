@@ -2,7 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, type TooltipContentProps } from 'recharts'
+import {
+  HORA_RESTAURANTE_INICIO,
+  HORA_RESTAURANTE_FIN,
+  redondearEuros,
+  formatearEuros,
+  formatearEurosEje,
+  eurosNumero,
+  techoEjeIngresos,
+  ticksEjeIngresos,
+} from '@/lib/horario'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import ToastContainer, { useAdminToast } from '@/components/ui/Toast'
 
@@ -53,8 +63,16 @@ export default function Dashboard() {
   const[clientesHoy, setClientesHoy] = useState(0)
   const[modalEmpleados, setModalEmpleados] = useState(false)
   const[modalAltaEmpleado, setModalAltaEmpleado] = useState(false)
-  const[periodoGrafica, setPeriodoGrafica] = useState<'dia' | 'semana' | 'mes'>('dia')
-  const[datosGrafica, setDatosGrafica] = useState<{ label: string, total: number }[]>([])
+  const [periodoGrafica, setPeriodoGrafica] = useState<'dia' | 'semana' | 'mes'>('dia')
+  const [refGrafica, setRefGrafica] = useState(() => new Date())
+  const [rangoGrafica, setRangoGrafica] = useState('')
+  type DatoGrafica = {
+    label: string
+    total: number
+    tooltipFecha: string
+    tooltipRango: string
+  }
+  const [datosGrafica, setDatosGrafica] = useState<DatoGrafica[]>([])
   const [historialEmpleado, setHistorialEmpleado] = useState<{ id: string; nombre: string; fichajes: any[] } | null>(null)
   const [tabEmpleados, setTabEmpleados]   = useState<'activos' | 'todos'>('activos')
   const [todosEmpleados, setTodosEmpleados] = useState<Empleado[]>([])
@@ -66,12 +84,44 @@ export default function Dashboard() {
   const cerrarConfirm = () => setConfirmModal(s => ({ ...s, abierto: false }))
   const { toast } = useAdminToast()
 
+  const TZ_MADRID = 'Europe/Madrid'
+
+  const isoDiaLocal = (d: Date = new Date()) =>
+    new Intl.DateTimeFormat('en-CA', { timeZone: TZ_MADRID, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d)
+
+  const horaEnMadrid = (iso: string) => {
+    const h = parseInt(
+      new Intl.DateTimeFormat('es-ES', {
+        timeZone: TZ_MADRID,
+        hour: '2-digit',
+        hour12: false,
+      }).format(new Date(iso)),
+      10
+    )
+    return Number.isFinite(h) ? h : new Date(iso).getHours()
+  }
+
+  const horaBucketRestaurante = (iso: string) => {
+    const h = horaEnMadrid(iso)
+    if (h < HORA_RESTAURANTE_INICIO) return HORA_RESTAURANTE_INICIO
+    if (h >= HORA_RESTAURANTE_FIN) return HORA_RESTAURANTE_FIN - 1
+    return h
+  }
+
+  const diaSiguienteStr = (d: Date) => {
+    const n = new Date(d)
+    n.setDate(n.getDate() + 1)
+    return isoDiaLocal(n)
+  }
+
+  const isoDia = (d: Date) => isoDiaLocal(d)
+
   useEffect(() => {
     cargarDatos()
     cargarEmpleados()
     cargarSesionesActivas()
     cargarClientesHoy()
-    cargarDatosGrafica('dia')
+    cargarDatosGrafica('dia', new Date())
 
       // ✅ AÑADE ESTO (actualiza empleados cada minuto)
       const interval = setInterval(() => {
@@ -80,7 +130,9 @@ export default function Dashboard() {
 
     const canal = supabase
       .channel('dashboard-live')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => cargarDatos())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => {
+        cargarDatos()
+      })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'mesas' }, () => cargarDatos())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'platos' }, () => cargarDatos())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'empleados' }, () => cargarDatos())
@@ -116,24 +168,33 @@ export default function Dashboard() {
   }, [])
 
   useEffect(() => {
-  cargarDatosGrafica(periodoGrafica)
-}, [periodoGrafica])
+    cargarDatosGrafica(periodoGrafica, refGrafica)
+    const ch = supabase
+      .channel('dashboard-grafica')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => {
+        cargarDatosGrafica(periodoGrafica, refGrafica)
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(ch) }
+  }, [periodoGrafica, refGrafica])
 
   const cargarDatos = async () => {
     setCargando(true)
 
-    const hoy = new Date().toISOString().split('T')[0] // Formato: YYYY-MM-DD
+    const hoy = isoDiaLocal()
+    const manana = diaSiguienteStr(new Date())
 
-    // 1. Pedidos de hoy
+    // 1. Pedidos de hoy (fecha local España)
     const { data: pedidosData } = await supabase
       .from('pedidos')
       .select('*')
       .gte('creado_en', `${hoy}T00:00:00`)
-      .lte('creado_en', `${hoy}T23:59:59`)
+      .lt('creado_en', `${manana}T00:00:00`)
 
     if (pedidosData) {
-      setPedidosHoy(pedidosData.length)
-      const ingresos = pedidosData.reduce((sum, p) => sum + (p.precio || 0), 0)
+      const validos = pedidosData.filter(p => p.estado !== 'cancelado')
+      setPedidosHoy(validos.length)
+      const ingresos = redondearEuros(validos.reduce((sum, p) => sum + eurosNumero(p.precio), 0))
       setIngresosHoy(ingresos)
     }
 
@@ -369,64 +430,143 @@ export default function Dashboard() {
     }
   }
 
-  const cargarDatosGrafica = async (periodo: 'dia' | 'semana' | 'mes') => {
-    const ahora = new Date()
-    let datos: { label: string, total: number }[] = []
+  const inicioSemana = (d: Date) => {
+    const x = new Date(d)
+    const dow = x.getDay()
+    const diff = dow === 0 ? -6 : 1 - dow
+    x.setDate(x.getDate() + diff)
+    x.setHours(0, 0, 0, 0)
+    return x
+  }
+
+  const sumarPedidos = (pedidos: { precio: unknown; estado?: string; creado_en?: string }[]) =>
+    redondearEuros(
+      pedidos
+        .filter(p => p.estado !== 'cancelado')
+        .reduce((s, p) => s + eurosNumero(p.precio), 0)
+    )
+
+  const cargarDatosGrafica = async (periodo: 'dia' | 'semana' | 'mes', ref: Date) => {
+    let datos: DatoGrafica[] = []
+    let subtitulo = ''
 
     if (periodo === 'dia') {
-      // Últimas 24 horas por hora
-      for (let i = 23; i >= 0; i--) {
-        const desde = new Date(ahora)
-        desde.setHours(ahora.getHours() - i, 0, 0, 0)
-        const hasta = new Date(desde)
-        hasta.setHours(desde.getHours() + 1, 0, 0, 0)
+      const diaStr = isoDiaLocal(ref)
+      const dia = new Date(`${diaStr}T12:00:00`)
+      subtitulo = dia.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 
-        const { data } = await supabase
-          .from('pedidos')
-          .select('precio')
-          .gte('creado_en', desde.toISOString())
-          .lt('creado_en', hasta.toISOString())
+      const mananaStr = diaSiguienteStr(dia)
+      const { data } = await supabase
+        .from('pedidos')
+        .select('precio, estado, creado_en')
+        .gte('creado_en', `${diaStr}T00:00:00`)
+        .lt('creado_en', `${mananaStr}T00:00:00`)
 
-        const total = data?.reduce((sum, p) => sum + (p.precio || 0), 0) || 0
-        datos.push({ label: `${desde.getHours()}h`, total })
+      const delDia = (data || []).filter(
+        p => p.estado !== 'cancelado' && p.creado_en?.startsWith(diaStr)
+      )
+
+      const buckets = new Map<number, number>()
+      for (let h = HORA_RESTAURANTE_INICIO; h < HORA_RESTAURANTE_FIN; h++) buckets.set(h, 0)
+
+      delDia.forEach(p => {
+        if (!p.creado_en) return
+        const h = horaBucketRestaurante(p.creado_en)
+        buckets.set(h, redondearEuros((buckets.get(h) || 0) + eurosNumero(p.precio)))
+      })
+
+      for (let h = HORA_RESTAURANTE_INICIO; h < HORA_RESTAURANTE_FIN; h++) {
+        const hFin = h + 1 === 24 ? '24:00' : `${String(h + 1).padStart(2, '0')}:00`
+        datos.push({
+          label: `${String(h).padStart(2, '0')}:00`,
+          total: buckets.get(h) || 0,
+          tooltipFecha: subtitulo,
+          tooltipRango: `${String(h).padStart(2, '0')}:00 – ${hFin}`,
+        })
       }
     } else if (periodo === 'semana') {
-      // Últimos 7 días
-      for (let i = 6; i >= 0; i--) {
-        const fecha = new Date(ahora)
-        fecha.setDate(ahora.getDate() - i)
-        const dia = fecha.toISOString().split('T')[0]
+      const lun = inicioSemana(ref)
+      const dom = new Date(lun)
+      dom.setDate(lun.getDate() + 6)
+      subtitulo = `${lun.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} – ${dom.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}`
 
-        const { data } = await supabase
-          .from('pedidos')
-          .select('precio')
-          .gte('creado_en', `${dia}T00:00:00`)
-          .lte('creado_en', `${dia}T23:59:59`)
+      const desdeStr = isoDia(lun)
+      const hastaDate = new Date(dom)
+      hastaDate.setDate(dom.getDate() + 1)
+      const hastaStr = isoDia(hastaDate)
 
-        const total = data?.reduce((sum, p) => sum + (p.precio || 0), 0) || 0
-        const etiqueta = fecha.toLocaleDateString('es-ES', { weekday: 'short' })
-        datos.push({ label: etiqueta, total })
+      const { data } = await supabase
+        .from('pedidos')
+        .select('precio, estado, creado_en')
+        .gte('creado_en', `${desdeStr}T00:00:00`)
+        .lt('creado_en', `${hastaStr}T00:00:00`)
+
+      for (let i = 0; i < 7; i++) {
+        const fecha = new Date(lun)
+        fecha.setDate(lun.getDate() + i)
+        const diaStr = isoDia(fecha)
+        const delDia = (data || []).filter(p => p.creado_en?.startsWith(diaStr))
+        datos.push({
+          label: fecha.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' }),
+          total: sumarPedidos(delDia),
+          tooltipFecha: fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
+          tooltipRango: 'Todo el día',
+        })
       }
-    } else if (periodo === 'mes') {
-      // Últimos 30 días agrupados por semana
-      for (let i = 3; i >= 0; i--) {
-        const desde = new Date(ahora)
-        desde.setDate(ahora.getDate() - (i + 1) * 7)
-        const hasta = new Date(ahora)
-        hasta.setDate(ahora.getDate() - i * 7)
+    } else {
+      const mesRef = new Date(ref.getFullYear(), ref.getMonth(), 1)
+      const ultimoDia = new Date(ref.getFullYear(), ref.getMonth() + 1, 0).getDate()
+      subtitulo = mesRef.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
 
-        const { data } = await supabase
-          .from('pedidos')
-          .select('precio')
-          .gte('creado_en', desde.toISOString())
-          .lt('creado_en', hasta.toISOString())
+      const desdeStr = isoDia(mesRef)
+      const finMes = new Date(ref.getFullYear(), ref.getMonth() + 1, 0)
+      const hastaDate = new Date(finMes)
+      hastaDate.setDate(finMes.getDate() + 1)
+      const hastaStr = isoDia(hastaDate)
 
-        const total = data?.reduce((sum, p) => sum + (p.precio || 0), 0) || 0
-        datos.push({ label: `Sem ${4 - i}`, total })
+      const { data } = await supabase
+        .from('pedidos')
+        .select('precio, estado, creado_en')
+        .gte('creado_en', `${desdeStr}T00:00:00`)
+        .lt('creado_en', `${hastaStr}T00:00:00`)
+
+      for (let d = 1; d <= ultimoDia; d++) {
+        const fecha = new Date(ref.getFullYear(), ref.getMonth(), d)
+        const diaStr = isoDia(fecha)
+        const delDia = (data || []).filter(p => p.creado_en?.startsWith(diaStr))
+        datos.push({
+          label: String(d),
+          total: sumarPedidos(delDia),
+          tooltipFecha: fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
+          tooltipRango: `Día ${d} de ${ultimoDia}`,
+        })
       }
     }
 
+    setRangoGrafica(subtitulo)
     setDatosGrafica(datos)
+  }
+
+  const navegarGrafica = (dir: -1 | 1) => {
+    setRefGrafica(prev => {
+      const n = new Date(prev)
+      if (periodoGrafica === 'dia') n.setDate(n.getDate() + dir)
+      else if (periodoGrafica === 'semana') n.setDate(n.getDate() + dir * 7)
+      else n.setMonth(n.getMonth() + dir)
+      return n
+    })
+  }
+
+  const renderTooltipIngresos = ({ active, payload }: TooltipContentProps) => {
+    if (!active || !payload?.[0]) return null
+    const p = payload[0].payload as DatoGrafica
+    return (
+      <div className="px-3 py-2 rounded-xl text-sm" style={{ background: '#0a1628', border: '1px solid rgba(212,160,64,0.35)' }}>
+        <p style={{ color: '#d4a040', fontWeight: 600 }}>{p.tooltipFecha}</p>
+        <p style={{ color: '#94a3b8', fontSize: 11 }}>{p.tooltipRango}</p>
+        <p className="text-white font-bold mt-1">{formatearEuros(p.total)} €</p>
+      </div>
+    )
   }
 
   const darDeAltaEmpleado = async () => {
@@ -543,7 +683,7 @@ export default function Dashboard() {
 
         <div className="bg-white rounded-2xl p-6 border border-slate-200">
           <p className="text-slate-400 text-sm mb-1">Ingresos hoy</p>
-          <p className="text-white text-3xl font-medium">{ingresosHoy}€</p>
+          <p className="text-white text-3xl font-medium">{formatearEuros(ingresosHoy)} €</p>
           <p className="text-green-500 text-xs mt-2">💰 Ventas</p>
         </div>
 
@@ -577,7 +717,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl p-6 border border-slate-200">
           <p className="text-slate-400 text-sm mb-1">Ticket promedio</p>
           <p className="text-white text-3xl font-medium">
-            {pedidosHoy > 0 ? (ingresosHoy / pedidosHoy).toFixed(2) : 0}€
+            {pedidosHoy > 0 ? formatearEuros(ingresosHoy / pedidosHoy) : formatearEuros(0)} €
           </p>
           <p className="text-blue-500 text-xs mt-2">🧾 Por pedido</p>
         </div>
@@ -600,17 +740,56 @@ export default function Dashboard() {
 
       {/* Gráfica de ingresos */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-base font-bold text-gradient-anim">Ingresos</h2>
-          <div className="flex gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <h2 className="text-base font-bold text-gradient-anim">Ingresos</h2>
+            {rangoGrafica && (
+              <p className="text-slate-400 text-xs mt-1 capitalize">{rangoGrafica}</p>
+            )}
+            <p className="text-slate-500 text-[11px] mt-0.5">
+              Horario del restaurante: {HORA_RESTAURANTE_INICIO}:00 – {HORA_RESTAURANTE_FIN}:00
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1 mr-1">
+                <button
+                  type="button"
+                  onClick={() => navegarGrafica(-1)}
+                  className="w-8 h-8 rounded-lg text-sm font-bold text-white"
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+                  aria-label="Periodo anterior"
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navegarGrafica(1)}
+                  className="w-8 h-8 rounded-lg text-sm font-bold text-white"
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+                  aria-label="Periodo siguiente"
+                >
+                  ›
+                </button>
+              </div>
+            {periodoGrafica === 'dia' && (
+              <button
+                type="button"
+                onClick={() => setRefGrafica(new Date())}
+                className="px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-300"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                Ir a hoy
+              </button>
+            )}
             {(['dia', 'semana', 'mes'] as const).map((p) => (
               <button
                 key={p}
-                onClick={() => setPeriodoGrafica(p)}
+                onClick={() => {
+                  setPeriodoGrafica(p)
+                  setRefGrafica(new Date())
+                }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                  periodoGrafica === p
-                    ? 'text-white'
-                    : 'text-slate-400 hover:text-white'
+                  periodoGrafica === p ? 'text-white' : 'text-slate-400 hover:text-white'
                 }`}
                 style={periodoGrafica === p
                   ? { background: 'linear-gradient(135deg,#d4a040,#c47a28)', boxShadow: '0 2px 8px rgba(212,160,64,0.4)' }
@@ -623,14 +802,18 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {datosGrafica.every(d => d.total === 0) ? (
+        {datosGrafica.reduce((s, d) => s + d.total, 0) === 0 ? (
           <div className="text-center py-12">
             <p className="text-4xl mb-3">📊</p>
             <p className="text-slate-400 text-sm">No hay datos para este periodo</p>
           </div>
-        ) : (
+        ) : (() => {
+          const maxBarra = datosGrafica.reduce((m, d) => Math.max(m, d.total), 0)
+          const yMax = techoEjeIngresos(maxBarra)
+          const yTicks = ticksEjeIngresos(maxBarra)
+          return (
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={datosGrafica} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+            <BarChart data={datosGrafica} margin={{ top: 5, right: 10, left: 8, bottom: 5 }}>
               <defs>
                 <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%"   stopColor="#d4a040" stopOpacity={1}/>
@@ -638,17 +821,22 @@ export default function Dashboard() {
                 </linearGradient>
               </defs>
               <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#98bce0' }} axisLine={{ stroke: 'rgba(255,255,255,0.12)' }} tickLine={false}/>
-              <YAxis tick={{ fontSize: 11, fill: '#98bce0' }} tickFormatter={(v) => `${v}€`} axisLine={false} tickLine={false}/>
-              <Tooltip
-                formatter={(value) => [`${value}€`, 'Ingresos']}
-                contentStyle={{ background: '#0a1628', border: '1px solid rgba(212,160,64,0.3)', borderRadius: 10, color: '#e0f0ff' }}
-                labelStyle={{ color: '#d4a040', fontWeight: 600 }}
-                cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+              <YAxis
+                width={56}
+                domain={[0, yMax]}
+                ticks={yTicks}
+                allowDecimals={false}
+                tick={{ fontSize: 11, fill: '#98bce0' }}
+                tickFormatter={(v) => `${formatearEurosEje(Number(v))} €`}
+                axisLine={false}
+                tickLine={false}
               />
+              <Tooltip content={renderTooltipIngresos} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
               <Bar dataKey="total" fill="url(#barGrad)" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        )}
+          )
+        })()}
       </div>
 
       {/* Sección de pedidos recientes */}
