@@ -85,6 +85,8 @@ export default function Dashboard() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'platos' }, () => cargarDatos())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'empleados' }, () => cargarDatos())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'fichajes' }, () => cargarEmpleados())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'facturas' }, () => cargarDatos())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, () => cargarDatos())
       .subscribe()
 
         return () => {
@@ -451,12 +453,20 @@ export default function Dashboard() {
       setSubiendoFoto(false)
 
       if (uploadError) {
-        toast('Error al subir la foto: ' + uploadError.message, 'error')
-        return
+        if (uploadError.message.includes('Bucket not found')) {
+          toast(
+            'Falta el bucket "empleados" en Supabase → Storage. Se creará el empleado sin foto; luego puedes añadirla.',
+            'info'
+          )
+          foto_url = null
+        } else {
+          toast('Error al subir la foto: ' + uploadError.message, 'error')
+          return
+        }
+      } else {
+        const { data: urlData } = supabase.storage.from('empleados').getPublicUrl(uploadData!.path)
+        foto_url = urlData.publicUrl
       }
-
-      const { data: urlData } = supabase.storage.from('empleados').getPublicUrl(uploadData.path)
-      foto_url = urlData.publicUrl
     }
 
     const { data: { session } } = await supabase.auth.getSession()

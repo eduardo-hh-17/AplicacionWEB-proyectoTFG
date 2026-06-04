@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
+import ConfirmModal from '@/components/ui/ConfirmModal'
+import ToastContainer, { useAdminToast } from '@/components/ui/Toast'
 
 type Factura = {
   id: number
@@ -24,21 +26,50 @@ const ESTADO_CFG = {
 const estadoOf = (f: Factura) => (f.estado === 'pagada' || f.pagada) ? 'pagada' : 'pendiente'
 
 export default function Facturas() {
+  const { toast } = useAdminToast()
   const [facturas, setFacturas]       = useState<Factura[]>([])
   const [cargando, setCargando]       = useState(true)
   const [expandida, setExpandida]     = useState<number | null>(null)
   const [filtro, setFiltro]           = useState<'todas' | 'pagada' | 'pendiente'>('todas')
+  const [confirmAbierto, setConfirmAbierto] = useState(false)
+  const [facturaAEliminar, setFacturaAEliminar] = useState<Factura | null>(null)
 
-  useEffect(() => { cargar() }, [])
-
-  const cargar = async () => {
-    setCargando(true)
+  const cargar = useCallback(async () => {
     const { data } = await supabase
       .from('facturas')
       .select('*')
       .order('creada_en', { ascending: false })
     if (data) setFacturas(data as Factura[])
     setCargando(false)
+  }, [])
+
+  useEffect(() => {
+    cargar()
+    const ch = supabase
+      .channel('facturas-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'facturas' }, () => cargar())
+      .subscribe()
+    return () => { supabase.removeChannel(ch) }
+  }, [cargar])
+
+  const pedirEliminar = (f: Factura, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setFacturaAEliminar(f)
+    setConfirmAbierto(true)
+  }
+
+  const eliminarFactura = async () => {
+    if (!facturaAEliminar) return
+    const { error } = await supabase.from('facturas').delete().eq('id', facturaAEliminar.id)
+    setConfirmAbierto(false)
+    if (error) {
+      toast('Error al eliminar: ' + error.message, 'error')
+      return
+    }
+    toast(`Factura mesa ${facturaAEliminar.mesa_numero} eliminada`, 'success')
+    if (expandida === facturaAEliminar.id) setExpandida(null)
+    setFacturaAEliminar(null)
+    cargar()
   }
 
   const filtradas = facturas.filter(f =>
@@ -66,14 +97,27 @@ export default function Facturas() {
 
   return (
     <div className="space-y-6">
+      <ToastContainer />
+
+      <ConfirmModal
+        abierto={confirmAbierto}
+        titulo="¿Eliminar esta factura?"
+        mensaje={facturaAEliminar
+          ? `Se borrará la factura de la mesa ${facturaAEliminar.mesa_numero} (${(facturaAEliminar.total || 0).toFixed(2)}€). Esta acción no se puede deshacer.`
+          : ''}
+        textoAceptar="Eliminar"
+        variante="danger"
+        onAceptar={eliminarFactura}
+        onCancelar={() => { setConfirmAbierto(false); setFacturaAEliminar(null) }}
+      />
+
       {/* ── CABECERA ── */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gradient-anim">Facturas</h1>
-          <p className="text-slate-400 text-sm mt-0.5">Historial de cuentas cobradas y pendientes</p>
+          <p className="text-slate-400 text-sm mt-0.5">Historial de cuentas cobradas y pendientes · actualización en tiempo real</p>
         </div>
 
-        {/* Resumen rápido */}
         <div className="flex items-center gap-3">
           <div className="px-4 py-2 rounded-xl text-sm" style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.30)' }}>
             <span className="text-slate-400 text-xs block">Total cobrado</span>
@@ -119,55 +163,71 @@ export default function Facturas() {
             const cfg = ESTADO_CFG[est]
             const abierta = expandida === f.id
             const pedidosValidos = (f.pedidos || []).filter((p: any) => p.estado !== 'cancelado')
+            const seleccionada = expandida === f.id
 
             return (
               <div key={f.id}
                 className="rounded-2xl overflow-hidden transition-all"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                style={{
+                  background: seleccionada ? 'rgba(45,138,68,0.08)' : 'rgba(255,255,255,0.04)',
+                  border: seleccionada ? '1px solid rgba(45,138,68,0.35)' : '1px solid rgba(255,255,255,0.08)',
+                }}>
 
-                {/* Fila principal — clic para expandir */}
-                <button
-                  onClick={() => setExpandida(abierta ? null : f.id)}
-                  className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-white/5 transition-colors"
-                >
-                  {/* Icono mesa */}
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-black text-base"
-                    style={{ background: 'rgba(212,160,64,0.15)', color: '#d4a040', border: '1px solid rgba(212,160,64,0.30)' }}>
-                    {f.mesa_numero}
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-white font-semibold text-sm">Mesa {f.mesa_numero}</span>
-                      <span className="text-slate-400 text-xs">·</span>
-                      <span className="text-slate-400 text-xs">{f.personas} pers.</span>
-                      <span className="text-slate-400 text-xs">·</span>
-                      <span className="text-slate-400 text-xs">{fecha} — {hora}</span>
+                <div className="flex items-stretch">
+                  <button
+                    onClick={() => setExpandida(abierta ? null : f.id)}
+                    className="flex-1 flex items-center gap-4 px-5 py-4 text-left hover:bg-white/5 transition-colors"
+                  >
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-black text-base"
+                      style={{ background: 'rgba(212,160,64,0.15)', color: '#d4a040', border: '1px solid rgba(212,160,64,0.30)' }}>
+                      {f.mesa_numero}
                     </div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
-                        style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}>
-                        {cfg.label}
-                      </span>
-                      {f.tiempo_minutos > 0 && (
-                        <span className="text-xs" style={{ color: '#475569' }}>{f.tiempo_minutos} min</span>
-                      )}
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-white font-semibold text-sm">Mesa {f.mesa_numero}</span>
+                        <span className="text-slate-400 text-xs">·</span>
+                        <span className="text-slate-400 text-xs">{f.personas} pers.</span>
+                        <span className="text-slate-400 text-xs">·</span>
+                        <span className="text-slate-400 text-xs">{fecha} — {hora}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                          style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}>
+                          {cfg.label}
+                        </span>
+                        {f.tiempo_minutos > 0 && (
+                          <span className="text-xs" style={{ color: '#475569' }}>{f.tiempo_minutos} min</span>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Total + chevron */}
-                  <div className="text-right shrink-0">
-                    <p className="font-black text-lg" style={{ color: '#d4a040' }}>{(f.total || 0).toFixed(2)}€</p>
-                    <p className="text-xs" style={{ color: '#475569' }}>{pedidosValidos.length} plato{pedidosValidos.length !== 1 ? 's' : ''}</p>
-                  </div>
-                  <span className="text-slate-500 text-lg transition-transform duration-200 shrink-0"
-                    style={{ transform: abierta ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                    ›
-                  </span>
-                </button>
+                    <div className="text-right shrink-0">
+                      <p className="font-black text-lg" style={{ color: '#d4a040' }}>{(f.total || 0).toFixed(2)}€</p>
+                      <p className="text-xs" style={{ color: '#475569' }}>{pedidosValidos.length} plato{pedidosValidos.length !== 1 ? 's' : ''}</p>
+                    </div>
+                    <span className="text-slate-500 text-lg transition-transform duration-200 shrink-0 ml-2"
+                      style={{ transform: abierta ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+                      ›
+                    </span>
+                  </button>
 
-                {/* Detalle expandible */}
+                  {seleccionada && (
+                    <button
+                      onClick={(e) => pedirEliminar(f, e)}
+                      className="shrink-0 px-4 flex items-center justify-center text-sm font-semibold transition-all border-l"
+                      style={{
+                        background: 'rgba(239,68,68,0.10)',
+                        borderColor: 'rgba(239,68,68,0.25)',
+                        color: '#fca5a5',
+                      }}
+                      title="Eliminar factura"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
                 {abierta && (
                   <div className="px-5 pb-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                     <p className="text-xs font-semibold uppercase tracking-wider mt-3 mb-2" style={{ color: '#475569' }}>
@@ -213,11 +273,18 @@ export default function Facturas() {
                       )}
                     </div>
 
-                    {/* Subtotal del detalle */}
-                    <div className="flex justify-between items-center mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div className="flex justify-between items-center mt-3 pt-3 gap-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                       <span className="text-sm font-semibold text-white">Total factura</span>
                       <span className="font-black text-xl" style={{ color: '#d4a040' }}>{(f.total || 0).toFixed(2)}€</span>
                     </div>
+
+                    <button
+                      onClick={(e) => pedirEliminar(f, e)}
+                      className="mt-3 w-full py-2 rounded-xl text-xs font-semibold transition-all"
+                      style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.30)' }}
+                    >
+                      Eliminar factura
+                    </button>
                   </div>
                 )}
               </div>
@@ -226,7 +293,6 @@ export default function Facturas() {
         </div>
       )}
 
-      {/* ── TOTAL GLOBAL ── */}
       {facturas.length > 0 && (
         <div className="rounded-2xl px-6 py-4 flex items-center justify-between"
           style={{ background: 'linear-gradient(135deg,rgba(212,160,64,0.12),rgba(196,122,40,0.08))', border: '1px solid rgba(212,160,64,0.28)' }}>

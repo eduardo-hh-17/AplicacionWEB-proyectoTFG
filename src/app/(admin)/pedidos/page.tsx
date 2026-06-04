@@ -74,11 +74,42 @@ export default function Pedidos() {
       .channel('cambios')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'mesas' }, () => cargarMesas())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => cargarPedidos())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'platos' }, () => cargarPlatos())
       .subscribe()
 
-    // Limpia la suscripción cuando el componente se desmonta
     return () => { supabase.removeChannel(canal) }
   }, [])
+
+  // Tiempo real en modal "Ver cuenta"
+  useEffect(() => {
+    if (!modalCuenta || !mesaSeleccionada) return
+
+    const recargarCuenta = async () => {
+      const { data: mesaData } = await supabase
+        .from('mesas')
+        .select('sesion_id')
+        .eq('id', mesaSeleccionada.id)
+        .single()
+      if (!mesaData?.sesion_id) {
+        setPedidosMesa([])
+        return
+      }
+      const { data } = await supabase
+        .from('pedidos')
+        .select('*')
+        .eq('sesion_id', mesaData.sesion_id)
+        .order('creado_en', { ascending: true })
+      setPedidosMesa(data || [])
+    }
+
+    recargarCuenta()
+    const ch = supabase
+      .channel(`cuenta-mesa-${mesaSeleccionada.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, recargarCuenta)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'mesas', filter: `id=eq.${mesaSeleccionada.id}` }, recargarCuenta)
+      .subscribe()
+    return () => { supabase.removeChannel(ch) }
+  }, [modalCuenta, mesaSeleccionada?.id])
 
   // Carga las mesas desde Supabase
   const cargarMesas = async () => {

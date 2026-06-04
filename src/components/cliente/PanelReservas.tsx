@@ -89,6 +89,11 @@ export default function PanelReservas() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, () => {
         setReloadKey(k => k + 1)
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'mesas' }, () => {
+        supabase.from('mesas').select('id, numero, capacidad, estado').order('numero')
+          .then(({ data }) => { if (data) setMesas(data as Mesa[]) })
+        setReloadKey(k => k + 1)
+      })
       .subscribe()
     return () => { supabase.removeChannel(ch) }
   }, [])

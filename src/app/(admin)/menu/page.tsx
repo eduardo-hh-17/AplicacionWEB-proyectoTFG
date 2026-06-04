@@ -134,7 +134,6 @@ export default function Menu() {
         precio: parseFloat(precio),
         categoria_id: categoriaEditar,
         ingredientes,
-        imagen_url: imagenesEditar[0] || null,
         imagenes: imagenesEditar,
       })
       .eq('id', platoSeleccionado.id)
@@ -183,8 +182,11 @@ const crearPlato = async () => {
       categoria_id: nuevaCategoria,
       ingredientes: nuevosIngredientes.filter((i) => i.nombre.trim()), 
       activo: true,
-      imagen_url: nuevasImagenes[0] || nuevaImagenUrl || null,
-      imagenes: nuevasImagenes.length > 0 ? nuevasImagenes : [],
+      imagenes: nuevasImagenes.length > 0
+        ? nuevasImagenes
+        : nuevaImagenUrl
+          ? [nuevaImagenUrl]
+          : [],
     })
     .select()
 
@@ -278,13 +280,17 @@ const crearPlato = async () => {
   }
 
 
-  // Subir imagen a Supabase Storage
+  // Subir imagen a Supabase Storage (nombre sin espacios ni ñ — Supabase rechaza claves inválidas)
   const subirImagen = async (file: File): Promise<string | null> => {
     setSubiendoImagen(true)
-    const fileName = `${Date.now()}-${file.name}`
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg'
+    const fileName = `${Date.now()}.${ext}`
     const { error } = await supabase.storage.from('platos').upload(fileName, file)
     if (error) {
-      console.error('Error subiendo imagen:', error)
+      const hint = error.message.includes('Bucket not found')
+        ? ' Crea el bucket "platos" en Supabase → Storage (o ejecuta supabase/storage-buckets.sql).'
+        : ''
+      toast('Error al subir la imagen: ' + error.message + hint, 'error')
       setSubiendoImagen(false)
       return null
     }

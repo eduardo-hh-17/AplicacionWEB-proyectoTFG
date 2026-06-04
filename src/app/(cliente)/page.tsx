@@ -47,7 +47,7 @@ useEffect(() => {
       event: 'UPDATE', 
       schema: 'public', 
       table: 'mesas',
-      filter: `id=eq.${mesa}`
+      filter: `id=eq.${mesaId}`
     }, (payload) => {
       const mesaActualizada = payload.new as any
       if (mesaActualizada.estado === 'ocupada') {

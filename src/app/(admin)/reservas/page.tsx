@@ -124,6 +124,10 @@ export default function AdminReservas() {
     cargar()
     const ch = supabase.channel('res-cal-v2')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, () => cargar())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'mesas' }, () => {
+        supabase.from('mesas').select('id, numero, capacidad, estado').order('numero')
+          .then(({ data }) => { if (data) setMesas(data as Mesa[]) })
+      })
       .subscribe()
     return () => { supabase.removeChannel(ch) }
   }, [cargar]) // eslint-disable-line react-hooks/exhaustive-deps

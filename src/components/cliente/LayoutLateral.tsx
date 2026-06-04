@@ -268,14 +268,14 @@ function PalmBottomLeft() {
 }
 
 /* ── LAYOUT PRINCIPAL ──────────────────────────────────── */
-export default function LayoutLateral({
+export default function LayoutLateral({ 
   children,
   vistaActiva,
   onCambiarVista,
-}: {
+}: { 
   children: React.ReactNode
   vistaActiva: Vista
-  onCambiarVista: (vista: Vista) => void
+  onCambiarVista: (vista: Vista) => void 
 }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [palmKey, setPalmKey] = useState(0)
@@ -340,8 +340,8 @@ export default function LayoutLateral({
           {menuItems.map((item, i) => {
             const active = vistaActiva === item.id
             return (
-              <button
-                key={item.id}
+            <button
+              key={item.id}
                 onClick={() => { onCambiarVista(item.id); setMobileOpen(false) }}
                 className={`sidebar-item-active group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-200 animate-slide-right ${!active ? 'hover:translate-x-0.5' : ''}`}
                 style={{
@@ -355,10 +355,10 @@ export default function LayoutLateral({
                   style={{ color: active ? '#d4a040' : undefined }}
                 >
                   {item.icon}
-                </span>
+              </span>
                 <span className="flex-1 text-left">{item.nombre}</span>
                 {active && <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: '#d4a040' }} />}
-              </button>
+            </button>
             )
           })}
         </nav>
@@ -424,9 +424,9 @@ export default function LayoutLateral({
           <CeilingDecoration animKey={palmKey} />
         </div>
 
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
+      <main className="flex-1 overflow-y-auto">
+        {children}
+      </main>
       </div>
     </div>
   )

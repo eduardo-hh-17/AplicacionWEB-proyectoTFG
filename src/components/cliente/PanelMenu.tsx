@@ -98,13 +98,31 @@ useEffect(() => {
   }
 }, [mesaActiva])
 
-// Realtime: recarga mis pedidos cuando cambian en BD (ej: cocinero cancela)
+// Realtime: pedidos de la sesión activa
+useEffect(() => {
+  if (!sesionActiva) return
+  const canal = supabase
+    .channel(`mis-pedidos-${sesionActiva}`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => {
+      cargarMisPedidos()
+    })
+    .subscribe()
+  return () => { supabase.removeChannel(canal) }
+}, [sesionActiva, mesaActiva])
+
+// Realtime: estado de la mesa (ocupada / libre)
 useEffect(() => {
   if (!mesaActiva) return
   const canal = supabase
-    .channel('mis-pedidos-realtime')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => {
-      cargarMisPedidos()
+    .channel(`mesa-estado-${mesaActiva}`)
+    .on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'mesas',
+      filter: `numero=eq.${mesaActiva}`,
+    }, (payload) => {
+      const m = payload.new as { estado?: string }
+      if (m.estado) setMesaEstado(m.estado)
     })
     .subscribe()
   return () => { supabase.removeChannel(canal) }
@@ -134,12 +152,12 @@ const cargarPlatos = async () => {
 
 // 👇 AÑADE ESTO después de cargarPlatos
 const cargarMisPedidos = async () => {
-  if (!mesaActiva) return
+  if (!sesionActiva) return
 
   const { data } = await supabase
     .from('pedidos')
     .select('*')
-    .eq('sesion_id', sesionActiva)   // filtra por sesión activa (incluye pedidos del camarero)
+    .eq('sesion_id', sesionActiva)
     .order('creado_en', { ascending: false })
 
   if (data) {
@@ -153,10 +171,8 @@ const cargarMisPedidos = async () => {
 
 // Cargar pedidos cuando cambia la mesa o se envía un pedido
 useEffect(() => {
-  if (mesaActiva) {
-    cargarMisPedidos()
-  }
-}, [mesaActiva, carrito.length])
+  if (sesionActiva) cargarMisPedidos()
+}, [sesionActiva, carrito.length])
 
 const abrirModal = (plato: any) => {
   setPlatoSeleccionado(plato)
