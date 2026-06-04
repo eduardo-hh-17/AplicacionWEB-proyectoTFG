@@ -37,6 +37,7 @@ type Plato = {
   descripcion: string
   ingredientes: any[]
   imagen_url: string | null
+  imagenes: string[] | null
 }
 
 export default function Pedidos() {
