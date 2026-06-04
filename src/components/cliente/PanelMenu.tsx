@@ -274,9 +274,9 @@ const enviarPedido = async () => {
 
       {/* Mis pedidos */}
       {mesaActiva && (
-        <div className="glass-panel rounded-2xl overflow-hidden">
+        <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(4,14,10,0.62)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(212,160,64,0.18)' }}>
           <div className="flex justify-between items-center px-5 py-4" style={{ borderBottom: '1px solid rgba(45,112,60,0.15)' }}>
-            <p className="font-semibold text-[14px]" style={{ color: '#0a2214' }}>Mis pedidos</p>
+            <p className="font-semibold text-[14px]" style={{ color: '#e8f5e9' }}>Mis pedidos</p>
             <span className="font-bold text-[14px]" style={{ color: '#c47a28' }}>Total: {totalGastado.toFixed(2)}€</span>
           </div>
           {misPedidos.length === 0 ? (
@@ -291,7 +291,7 @@ const enviarPedido = async () => {
                     style={cancelado ? { background: 'rgba(239,68,68,0.06)' } : {}}>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm truncate"
-                        style={{ color: cancelado ? '#ef4444' : '#0a2214', textDecoration: cancelado ? 'line-through' : 'none' }}>
+                        style={{ color: cancelado ? '#ef4444' : '#e8f5e9', textDecoration: cancelado ? 'line-through' : 'none' }}>
                         {pedido.plato_nombre}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
@@ -347,8 +347,11 @@ const enviarPedido = async () => {
             className="group relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl animate-slide-up"
             style={{
               animationDelay: `${i * 60}ms`,
-              background: 'linear-gradient(145deg,#2d4a32,#1a2a1e)',
-              boxShadow: '0 2px 8px rgba(26,42,30,.22)',
+              background: 'rgba(4,14,10,0.62)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '1px solid rgba(212,160,64,0.18)',
+              boxShadow: '0 4px 18px rgba(4,14,10,0.45)',
             }}
           >
             {/* Imagen / emoji */}

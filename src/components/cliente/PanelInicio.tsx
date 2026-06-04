@@ -176,9 +176,6 @@ export default function PanelInicio() {
           </div>
         </div>
 
-        <div className="absolute right-6 top-1/2 -translate-y-1/2 text-6xl opacity-15 select-none hidden md:block animate-float">
-          🦜
-        </div>
       </div>
 
       {/* ── STATS (datos reales) ─────────────────────── */}

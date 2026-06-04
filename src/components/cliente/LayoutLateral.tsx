@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 
 type Vista = 'inicio' | 'sobre' | 'reservas' | 'contacto' | 'menu'
 
@@ -267,6 +268,62 @@ function PalmBottomLeft() {
   )
 }
 
+/* ── FONDOS POR VISTA ──────────────────────────────────── */
+const FONDOS: Partial<Record<Vista, { src: string; overlay: number }>> = {
+  inicio:   { src: '/restaurante/inicio-hero.png', overlay: 0.48 },
+  menu:     { src: '/restaurante/menu.webp',        overlay: 0.45 },
+  sobre:    { src: '/restaurante/sobre.png',        overlay: 0.45 },
+  reservas: { src: '/restaurante/reserva.png',      overlay: 0.50 },
+  contacto: { src: '/restaurante/contacto.png',     overlay: 0.48 },
+}
+
+// Sin miniaturas laterales
+const LATERALES: Partial<Record<Vista, string[]>> = {}
+
+/**
+ * Fondo fotográfico/animado — sin overlay propio.
+ * El overlay se aplica por separado en el área de contenido para no bloquear
+ * el efecto glass (backdrop-filter) del sidebar.
+ */
+function FotoFondo({ src }: { src: string }) {
+  const [error, setError] = useState(false)
+  if (error) return null
+  return (
+    <div className="absolute inset-0 pointer-events-none z-0" aria-hidden>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        onError={() => setError(true)}
+      />
+    </div>
+  )
+}
+
+/** Miniatura decorativa lateral — desaparece si la imagen no existe */
+function MiniThumb({ src, rot, delay }: { src: string; rot: number; delay: number }) {
+  const [error, setError] = useState(false)
+  if (error) return null
+  return (
+    <div
+      className="relative w-20 h-[4.5rem] rounded-xl overflow-hidden animate-slide-right"
+      style={{
+        animationDelay: `${delay}ms`,
+        transform: `rotate(${rot}deg)`,
+        border: '1px solid rgba(212,160,64,0.35)',
+        boxShadow: '0 6px 22px rgba(0,0,0,0.55)',
+      }}
+    >
+      <Image
+        src={src} alt="" fill className="object-cover" sizes="80px"
+        onError={() => setError(true)}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+    </div>
+  )
+}
+
 /* ── LAYOUT PRINCIPAL ──────────────────────────────────── */
 export default function LayoutLateral({ 
   children,
@@ -277,8 +334,12 @@ export default function LayoutLateral({
   vistaActiva: Vista
   onCambiarVista: (vista: Vista) => void 
 }) {
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [palmKey, setPalmKey] = useState(0)
+  const [mobileOpen,  setMobileOpen]  = useState(false)
+  const [palmKey,     setPalmKey]     = useState(0)
+  const [collapsed,   setCollapsed]   = useState(false)
+
+  const fondo     = FONDOS[vistaActiva]
+  const laterales = LATERALES[vistaActiva] ?? []
 
   useEffect(() => {
     setPalmKey(k => k + 1)
@@ -300,13 +361,13 @@ export default function LayoutLateral({
       }}
     >
 
-      {/* Palmeras en esquinas (detrás de todo) */}
-      <div key={`tr-${palmKey}`} className="fixed top-0 right-0 z-0 palm-enter palm-sway" style={{ opacity: 0.65 }}>
-        <PalmTopRight />
-      </div>
-      <div key={`bl-${palmKey}`} className="fixed bottom-0 z-0 palm-enter palm-sway-left" style={{ left: 260, opacity: 0.58, animationDelay: '0.25s, 0.8s' }}>
-        <PalmBottomLeft />
-      </div>
+      {/* Fondo fotográfico global — cubre sidebar + main.
+          Sin overlay aquí: el overlay va solo en el área de contenido
+          para que el backdrop-filter del sidebar vea la foto limpia. */}
+      {fondo && (
+        <FotoFondo key={vistaActiva} src={fondo.src} />
+      )}
+
 
       {/* Overlay mobile */}
       {mobileOpen && (
@@ -316,34 +377,65 @@ export default function LayoutLateral({
 
       {/* ── SIDEBAR ──────────────────────────────────── */}
       <aside
-        className={`fixed lg:relative z-30 flex flex-col h-full transition-transform duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        className={`fixed lg:relative z-30 flex flex-col h-full transition-all duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
         style={{
-          width: 260, minWidth: 260,
-          background: 'linear-gradient(180deg, #040e0a 0%, #071814 55%, #040e0a 100%)',
-          borderRight: '1px solid rgba(6,182,212,0.12)',
+          width:    collapsed ? 56 : 260,
+          minWidth: collapsed ? 56 : 260,
+          background: 'rgba(4,14,10,0.65)',
+          backdropFilter: 'blur(18px)',
+          WebkitBackdropFilter: 'blur(18px)',
+          borderRight: '1px solid rgba(212,160,64,0.20)',
         }}
       >
+        {/* ── Botón colapsar (solo desktop) ── */}
+        <button
+          onClick={() => setCollapsed(c => !c)}
+          title={collapsed ? 'Expandir menú' : 'Colapsar menú'}
+          className="hidden lg:flex absolute items-center justify-center w-6 h-6 rounded-full z-40 transition-transform duration-300"
+          style={{
+            right: -12,
+            top: '50%',
+            transform: `translateY(-50%) rotate(${collapsed ? 180 : 0}deg)`,
+            background: 'linear-gradient(135deg,#1e5c2e,#2d8a44)',
+            border: '2px solid rgba(45,138,68,0.5)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.45)',
+            color: 'white',
+          }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3 h-3">
+            <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+
         {/* Logo */}
-        <div className="flex items-center gap-3 px-6 py-5" style={{ borderBottom: '1px solid rgba(6,182,212,0.1)' }}>
+        <div
+          className={`flex items-center py-5 overflow-hidden ${collapsed ? 'justify-center px-0' : 'gap-3 px-6'}`}
+          style={{ borderBottom: '1px solid rgba(6,182,212,0.1)' }}
+        >
           <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0"
             style={{ background: 'linear-gradient(135deg,#d4a040,#c47a28)' }}>
             🍽️
           </div>
-          <div>
-            <p className="font-bold text-[15px] leading-tight tracking-tight text-white">Lempira</p>
-            <p className="text-[11px] font-medium tracking-wide uppercase" style={{ color: '#4a9aaa' }}>Restaurante</p>
-          </div>
+          {!collapsed && (
+            <div className="min-w-0">
+              <p className="font-bold text-[15px] leading-tight tracking-tight text-white truncate">Lempira</p>
+              <p className="text-[11px] font-medium tracking-wide uppercase truncate" style={{ color: '#4a9aaa' }}>Restaurante</p>
+            </div>
+          )}
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className={`flex-1 py-4 space-y-1 overflow-y-auto ${collapsed ? 'px-1' : 'px-3'}`}>
           {menuItems.map((item, i) => {
             const active = vistaActiva === item.id
             return (
-            <button
-              key={item.id}
+              <button
+                key={item.id}
                 onClick={() => { onCambiarVista(item.id); setMobileOpen(false) }}
-                className={`sidebar-item-active group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-200 animate-slide-right ${!active ? 'hover:translate-x-0.5' : ''}`}
+                title={collapsed ? item.nombre : undefined}
+                className={`sidebar-item-active group w-full flex items-center rounded-xl text-[14px] font-medium transition-all duration-200 animate-slide-right
+                  ${collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'}
+                  ${!active ? 'hover:translate-x-0.5' : ''}`}
                 style={{
                   animationDelay: `${i * 55}ms`,
                   background: active ? 'rgba(212,160,64,0.16)' : 'transparent',
@@ -355,43 +447,62 @@ export default function LayoutLateral({
                   style={{ color: active ? '#d4a040' : undefined }}
                 >
                   {item.icon}
-              </span>
-                <span className="flex-1 text-left">{item.nombre}</span>
-                {active && <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: '#d4a040' }} />}
-            </button>
+                </span>
+                {!collapsed && <span className="flex-1 text-left">{item.nombre}</span>}
+                {!collapsed && active && <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: '#d4a040' }} />}
+              </button>
             )
           })}
         </nav>
 
-        {/* Guacamaya */}
-        <div className="px-5 pt-1 pb-0.5 text-center">
-          <span className="text-4xl animate-float inline-block select-none" title="¡Bienvenido al Restaurante Lempira!">🦜</span>
-          <p className="text-[10px] mt-0.5" style={{ color: '#5a9a6a' }}>¡Bienvenido!</p>
-        </div>
-
         {/* Footer */}
-        <div className="px-5 py-4" style={{ borderTop: '1px solid rgba(6,182,212,0.10)' }}>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
-              style={{ background: 'linear-gradient(135deg,#d4a040,#c47a28)' }}>L</div>
-            <div className="min-w-0">
-              <p className="text-[13px] font-medium text-white leading-tight truncate">Restaurante Lempira</p>
-              <p className="text-[11px] truncate" style={{ color: '#5a9a6a' }}>San Pedro Sula, Honduras</p>
+        {!collapsed && (
+          <div className="px-5 py-4" style={{ borderTop: '1px solid rgba(6,182,212,0.10)' }}>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
+                style={{ background: 'linear-gradient(135deg,#d4a040,#c47a28)' }}>L</div>
+              <div className="min-w-0">
+                <p className="text-[13px] font-medium text-white leading-tight truncate">Restaurante Lempira</p>
+                <p className="text-[11px] truncate" style={{ color: '#5a9a6a' }}>San Pedro Sula, Honduras</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </aside>
 
       {/* ── MAIN ─────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10">
 
+        {/* Overlay de legibilidad — solo cubre el área de contenido, no el sidebar */}
+        {fondo && (
+          <div
+            className="absolute inset-0 pointer-events-none z-0"
+            style={{ background: `rgba(4,14,10,${fondo.overlay})` }}
+          />
+        )}
+
+        {/* Miniaturas laterales flotantes — solo pantallas xl, decorativo */}
+        {laterales.length > 0 && (
+          <div className="hidden xl:flex fixed right-3 top-1/2 -translate-y-1/2 flex-col gap-3 z-20 pointer-events-none">
+            {laterales.map((src, i) => (
+              <MiniThumb
+                key={`${vistaActiva}-${i}`}
+                src={src}
+                rot={i % 2 === 0 ? -2 : 2}
+                delay={i * 90}
+              />
+            ))}
+          </div>
+        )}
+
         {/* Top bar mobile — siempre arriba del todo en móvil */}
         <header
           className="lg:hidden flex items-center justify-between px-4 h-12 shrink-0"
           style={{
-            background: 'rgba(4,14,10,0.95)',
-            backdropFilter: 'blur(12px)',
-            borderBottom: '1px solid rgba(212,160,64,0.15)',
+            background: 'rgba(4,14,10,0.40)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderBottom: '1px solid rgba(212,160,64,0.18)',
           }}
         >
           <button
@@ -418,11 +529,6 @@ export default function LayoutLateral({
             {menuItems.find(m => m.id === vistaActiva)?.nombre ?? ''}
           </span>
         </header>
-
-        {/* Techo decorativo — oculto en móvil para ahorrar espacio */}
-        <div className="hidden sm:block shrink-0">
-          <CeilingDecoration animKey={palmKey} />
-        </div>
 
       <main className="flex-1 overflow-y-auto">
         {children}
