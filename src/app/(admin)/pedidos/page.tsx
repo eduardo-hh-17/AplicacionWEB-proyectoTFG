@@ -632,7 +632,7 @@ export default function Pedidos() {
                   >
                     <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center">
                       {(plato.imagenes?.[0] || plato.imagen_url) ? (
-                        <img src={plato.imagenes?.[0] || plato.imagen_url} alt={plato.nombre} className="w-full h-full object-cover" />
+                        <img src={plato.imagenes?.[0] || plato.imagen_url || undefined} alt={plato.nombre} className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-2xl">{plato.emoji || '🍽️'}</span>
                       )}
