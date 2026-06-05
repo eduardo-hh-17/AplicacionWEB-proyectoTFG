@@ -1,8 +1,13 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy: se instancia solo al enviar, nunca en tiempo de build
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY ?? '')
+}
 
-const FROM = process.env.RESEND_FROM_EMAIL ?? 'Restaurante Lempira <onboarding@resend.dev>'
+function getFrom() {
+  return process.env.RESEND_FROM_EMAIL ?? 'Restaurante Lempira <onboarding@resend.dev>'
+}
 
 /* ─── Plantilla base compartida ─────────────────────────────────────────── */
 function wrapEmail(contenido: string): string {
@@ -137,8 +142,8 @@ export async function enviarConfirmacionReserva(reserva: {
     </p>
   `
 
-  const { error } = await resend.emails.send({
-    from: FROM,
+  const { error } = await getResend().emails.send({
+    from: getFrom(),
     to:   reserva.email,
     subject: `✅ Reserva confirmada — ${fechaFormateada} a las ${reserva.hora}`,
     html: wrapEmail(contenido),
@@ -194,8 +199,8 @@ export async function enviarAutorespuestaContacto(datos: {
     </p>
   `
 
-  const { error } = await resend.emails.send({
-    from: FROM,
+  const { error } = await getResend().emails.send({
+    from: getFrom(),
     to:   datos.email,
     subject: '📩 Hemos recibido tu mensaje — Restaurante Lempira',
     html: wrapEmail(contenido),
