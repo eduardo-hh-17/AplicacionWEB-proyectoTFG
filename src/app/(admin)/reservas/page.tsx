@@ -206,9 +206,21 @@ export default function AdminReservas() {
       hora: form.hora_entrada, duracion_horas: duracion,
       estado:form.estado, tipo_evento:form.tipo_evento,
       notas:form.notas.trim()||null, mesa_id: form.mesa_id||null }
-    editando
-      ? await supabase.from('reservas').update(p).eq('id',editando.id)
-      : await supabase.from('reservas').insert(p)
+    if (editando) {
+      await supabase.from('reservas').update(p).eq('id', editando.id)
+    } else {
+      await supabase.from('reservas').insert(p)
+    }
+
+    // Email de confirmación si el estado es 'confirmada' y hay email
+    if (p.estado === 'confirmada' && p.email) {
+      fetch('/api/email/reserva', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...p, apellido: p.apellido ?? '' }),
+      }).catch(e => console.error('[guardar] Error enviando email:', e))
+    }
+
     setGuardando(false); setModal(false); cargar()
   }
 
@@ -263,7 +275,25 @@ export default function AdminReservas() {
     })
   }
   const cambiarEstado = async (id: string, estado: Estado) => {
-    await supabase.from('reservas').update({estado}).eq('id',id); cargar()
+    await supabase.from('reservas').update({ estado }).eq('id', id)
+    cargar()
+
+    // Enviar email de confirmación solo cuando se confirma una reserva con email
+    if (estado === 'confirmada') {
+      const { data: r } = await supabase
+        .from('reservas')
+        .select('nombre,apellido,email,fecha,hora,personas,tipo_evento')
+        .eq('id', id)
+        .single()
+
+      if (r?.email) {
+        fetch('/api/email/reserva', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(r),
+        }).catch(e => console.error('[reservas] Error enviando email:', e))
+      }
+    }
   }
 
   /* ─── TIME GRID (día + semana) ─── */

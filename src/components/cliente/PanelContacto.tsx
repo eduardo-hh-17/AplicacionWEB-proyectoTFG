@@ -10,15 +10,40 @@ const infoItems = [
 ]
 
 export default function PanelContacto() {
-  const [email, setEmail] = useState('')
-  const [mensajeContacto, setMensajeContacto] = useState('')
-  const [enviado, setEnviado] = useState(false)
+  const [nombre,   setNombre]   = useState('')
+  const [email,    setEmail]    = useState('')
+  const [asunto,   setAsunto]   = useState('')
+  const [mensaje,  setMensaje]  = useState('')
+  const [enviado,  setEnviado]  = useState(false)
+  const [error,    setError]    = useState('')
+  const [enviando, setEnviando] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setEnviado(true)
-    setTimeout(() => setEnviado(false), 4000)
-    setEmail(''); setMensajeContacto('')
+    setError('')
+    setEnviando(true)
+
+    try {
+      const res = await fetch('/api/email/contacto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, email, asunto: asunto.trim() || undefined, mensaje }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error ?? 'Error al enviar el mensaje. Inténtalo de nuevo.')
+        return
+      }
+
+      setEnviado(true)
+      setNombre(''); setEmail(''); setAsunto(''); setMensaje('')
+      setTimeout(() => setEnviado(false), 6000)
+    } catch {
+      setError('Error de conexión. Inténtalo de nuevo.')
+    } finally {
+      setEnviando(false)
+    }
   }
 
   return (
@@ -81,22 +106,48 @@ export default function PanelContacto() {
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 shrink-0">
                     <circle cx="12" cy="12" r="10" /><path d="M9 12l2 2 4-4" />
                   </svg>
-                  <span className="text-sm font-medium">Mensaje enviado. Te responderemos pronto.</span>
+                  <span className="text-sm font-medium">
+                    ¡Mensaje enviado! Pronto nos pondremos en contacto contigo. Revisa tu correo.
+                  </span>
                 </div>
               )}
+
+              {error && (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                  style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5' }}>
+                  <span className="text-sm">⚠️ {error}</span>
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block mb-1.5 text-[13px] font-medium" style={{ color: '#1a3a22' }}>Nombre *</label>
+                  <input type="text" value={nombre} onChange={e => setNombre(e.target.value)}
+                    placeholder="Tu nombre completo" className="input-modern" required />
+                </div>
                 <div>
                   <label className="block mb-1.5 text-[13px] font-medium" style={{ color: '#1a3a22' }}>Email *</label>
                   <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                     placeholder="tucorreo@ejemplo.com" className="input-modern" required />
                 </div>
                 <div>
+                  <label className="block mb-1.5 text-[13px] font-medium" style={{ color: '#1a3a22' }}>
+                    Asunto <span className="font-normal text-[11px]" style={{ color: '#5a9a6a' }}>(opcional)</span>
+                  </label>
+                  <input type="text" value={asunto} onChange={e => setAsunto(e.target.value)}
+                    placeholder="Ej: Reserva para evento, consulta de menú…" className="input-modern" />
+                </div>
+                <div>
                   <label className="block mb-1.5 text-[13px] font-medium" style={{ color: '#1a3a22' }}>Mensaje *</label>
-                  <textarea value={mensajeContacto} onChange={e => setMensajeContacto(e.target.value)}
+                  <textarea value={mensaje} onChange={e => setMensaje(e.target.value)}
                     placeholder="Escribe tu mensaje aquí…" rows={4} className="input-modern resize-none" required />
                 </div>
-                <button type="submit" className="btn-primary w-full py-3 text-[15px]">
-                  Enviar mensaje
+                <button
+                  type="submit"
+                  disabled={enviando}
+                  className="btn-primary w-full py-3 text-[15px] disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {enviando ? '⏳ Enviando…' : 'Enviar mensaje'}
                 </button>
               </form>
             </div>
