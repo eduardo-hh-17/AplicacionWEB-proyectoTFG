@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useToast } from '@/hooks/useToast'
+import { Toast } from '@/components/cliente/Toast'
 import HorarioInput from '@/components/ui/HorarioInput'
 import {
   addHoras,
@@ -67,6 +69,7 @@ export default function PanelReservas() {
   const [notas,       setNotas]       = useState('')
   const [enviado,     setEnviado]     = useState(false)
   const [enviando,    setEnviando]    = useState(false)
+  const { toasts, showToast, removeToast } = useToast()
 
   /* ── Calendar state ── */
   const [vista,        setVista]        = useState<'semana'|'mes'>('semana')
@@ -187,6 +190,7 @@ export default function PanelReservas() {
       tipo_evento:tipoEvento, duracion_horas:durInfo.dur, notas:notas.trim()||null,
     })
     setEnviando(false); setEnviado(true)
+    showToast('🍽️ ¡Solicitud enviada! El restaurante te confirmará pronto.', 'success')
     setNombre(''); setApellido(''); setEmail(''); setTelefono('')
     setFecha(''); setHoraEntrada(''); setHoraSalida('')
     setPersonas(1); setTipoEvento('standard'); setNotas('')
@@ -462,7 +466,7 @@ export default function PanelReservas() {
           <span className="text-sm font-medium">¡Solicitud enviada! El restaurante te confirmará pronto.</span>
         </div>
       )}
-
+      
       {/* ─── DISPONIBILIDAD ─── */}
       <div className="glass-panel overflow-hidden animate-slide-up delay-100">
         {/* Header cal */}
@@ -519,8 +523,8 @@ export default function PanelReservas() {
                 </button>
               ))}
             </div>
-          </div>
-
+        </div>
+        
           {/* NOMBRE + APELLIDO */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
@@ -532,7 +536,7 @@ export default function PanelReservas() {
               <input value={apellido} onChange={e=>setApellido(e.target.value)} placeholder="García" className="input-modern"/>
             </div>
           </div>
-
+          
           {/* EMAIL + TELÉFONO */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
@@ -591,8 +595,8 @@ export default function PanelReservas() {
                     </span>
               )}
             </div>
-          </div>
-
+            </div>
+            
           {/* PERSONAS */}
           <div>
             <label className="block mb-1.5 text-[13px] font-medium" style={{color:'#1a3a22'}}>Número de personas</label>
@@ -604,7 +608,7 @@ export default function PanelReservas() {
                 className="input-modern" style={{width:36,height:36,padding:0,textAlign:'center',fontWeight:'bold',flexShrink:0}}>+</button>
             </div>
           </div>
-
+          
           {/* NOTAS */}
           <div>
             <label className="block mb-1.5 text-[13px] font-medium" style={{color:'#1a3a22'}}>
@@ -614,14 +618,14 @@ export default function PanelReservas() {
               placeholder="Alergias, necesidades especiales, decoración, petición concreta…"
               rows={2} className="input-modern resize-none"/>
           </div>
-
+          
           <button type="submit" disabled={enviando || (!!horaEntrada && !!horaSalida && !durInfo.ok)}
             className="btn-primary w-full py-3 text-[15px] disabled:opacity-50">
             {enviando ? 'Enviando…' : 'Solicitar reserva'}
           </button>
         </form>
       </div>
-
+      
       {/* INFO CONTACTO */}
       <div className="glass-panel rounded-2xl p-5 flex items-center gap-4 animate-slide-up delay-200">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0" style={{background:'rgba(212,160,64,0.15)'}}>📞</div>
@@ -630,6 +634,13 @@ export default function PanelReservas() {
           <a href="tel:+50412345678" className="font-semibold hover:underline" style={{color:'#c47a28'}}>+504 1234-5678</a>
           {' '}para reservar directamente.
         </p>
+      </div>
+
+      {/* Toasts flotantes */}
+      <div className="fixed bottom-6 right-4 z-[200] flex flex-col gap-2 items-end" style={{ pointerEvents: 'none' }}>
+        {toasts.map(t => (
+          <Toast key={t.id} message={t.message} type={t.type} onClose={() => removeToast(t.id)} />
+        ))}
       </div>
     </div>
   )

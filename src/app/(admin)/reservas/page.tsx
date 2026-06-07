@@ -214,11 +214,20 @@ export default function AdminReservas() {
 
     // Email de confirmación si el estado es 'confirmada' y hay email
     if (p.estado === 'confirmada' && p.email) {
-      fetch('/api/email/reserva', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...p, apellido: p.apellido ?? '' }),
-      }).catch(e => console.error('[guardar] Error enviando email:', e))
+      try {
+        const res = await fetch('/api/email/reserva', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...p, apellido: p.apellido ?? '' }),
+        })
+        if (res.ok) {
+          toast(`✉️ Email de confirmación enviado a ${p.email}`, 'success')
+        } else {
+          toast(`⚠️ Reserva guardada, pero no se pudo enviar el email a ${p.email}`, 'error')
+        }
+      } catch {
+        toast('⚠️ Reserva guardada, pero falló la conexión con el servicio de email', 'error')
+      }
     }
 
     setGuardando(false); setModal(false); cargar()
@@ -278,7 +287,6 @@ export default function AdminReservas() {
     await supabase.from('reservas').update({ estado }).eq('id', id)
     cargar()
 
-    // Enviar email de confirmación solo cuando se confirma una reserva con email
     if (estado === 'confirmada') {
       const { data: r } = await supabase
         .from('reservas')
@@ -287,11 +295,22 @@ export default function AdminReservas() {
         .single()
 
       if (r?.email) {
-        fetch('/api/email/reserva', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(r),
-        }).catch(e => console.error('[reservas] Error enviando email:', e))
+        try {
+          const res = await fetch('/api/email/reserva', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(r),
+          })
+          if (res.ok) {
+            toast(`✉️ Email de confirmación enviado a ${r.email}`, 'success')
+          } else {
+            toast(`⚠️ Reserva confirmada, pero no se pudo enviar el email a ${r.email}`, 'error')
+          }
+        } catch {
+          toast('⚠️ Reserva confirmada, pero falló la conexión con el servicio de email', 'error')
+        }
+      } else {
+        toast('✅ Reserva confirmada (sin email del cliente)', 'success')
       }
     }
   }
