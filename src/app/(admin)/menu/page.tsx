@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
 import ToastContainer, { useAdminToast } from '@/components/ui/Toast'
+import { supabase } from '@/lib/supabase'
+import { useEffect, useState } from 'react'
 
 // ── TIPOS ──
 type Ingrediente = {
@@ -20,8 +20,8 @@ type Plato = {
   precio: number
   ingredientes: Ingrediente[]
   activo: boolean
-  categoria_id:number | null
-    imagen_url: string | null
+  categoria_id: number | null
+  imagen_url: string | null
   imagenes?: string[]
 }
 
@@ -48,8 +48,9 @@ export default function Menu() {
 
   const [nuevaDesc, setNuevaDesc] = useState('')
   const [nuevoPrecio, setNuevoPrecio] = useState('')
-  const [categorias, setCategorias] = useState<{id: number, nombre: string, emoji: string}[]>([])
+  const [categorias, setCategorias] = useState<{ id: number, nombre: string, emoji: string }[]>([])
   const [nuevaCategoria, setNuevaCategoria] = useState<number | null>(null)
+  const [filtroCategoria, setFiltroCategoria] = useState<number | null>(null)
   const [categoriaEditar, setCategoriaEditar] = useState<number | null>(null)
 
   const [imagenUrl, setImagenUrl] = useState('')
@@ -74,7 +75,7 @@ export default function Menu() {
   }, [])
 
   // ── FUNCIONES ──
-    const cargarCategorias = async () => {
+  const cargarCategorias = async () => {
     const { data } = await supabase
       .from('categorias')
       .select('*')
@@ -109,14 +110,14 @@ export default function Menu() {
     setIngredientes(
       Array.isArray(plato.ingredientes)
         ? plato.ingredientes.map(ing =>
-            typeof ing === 'string'
-                            ? { id: 0, nombre: ing, imagen_url: null, activo: true }
-              : {
-                  ...ing,
-                  imagen_url: ing.imagen_url ?? null,
-                  nombre: ing.nombre ?? '',
-                }
-          )
+          typeof ing === 'string'
+            ? { id: 0, nombre: ing, imagen_url: null, activo: true }
+            : {
+              ...ing,
+              imagen_url: ing.imagen_url ?? null,
+              nombre: ing.nombre ?? '',
+            }
+        )
         : []
     )
     setModalAbierto(true)
@@ -162,54 +163,54 @@ export default function Menu() {
     setModalAbierto(false)
   }
 
-const crearPlato = async () => {
-  if (!nuevoNombre || !nuevoPrecio) return
+  const crearPlato = async () => {
+    if (!nuevoNombre || !nuevoPrecio) return
 
-  // Verificar sesión activa
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) {
-    toast('No hay sesión activa — vuelve a iniciar sesión', 'error')
-    return
+    // Verificar sesión activa
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      toast('No hay sesión activa — vuelve a iniciar sesión', 'error')
+      return
+    }
+
+    const { data, error } = await supabase
+      .from('platos')
+      .insert({
+        nombre: nuevoNombre,
+        emoji: '',
+        descripcion: nuevaDesc,
+        precio: parseFloat(nuevoPrecio),
+        categoria_id: nuevaCategoria,
+        ingredientes: nuevosIngredientes.filter((i) => i.nombre.trim()),
+        activo: true,
+        imagenes: nuevasImagenes.length > 0
+          ? nuevasImagenes
+          : nuevaImagenUrl
+            ? [nuevaImagenUrl]
+            : [],
+      })
+      .select()
+
+    if (error) {
+      toast('Error: ' + error.message, 'error')
+      return
+    }
+
+    setModalNuevo(false)
+    setNuevoNombre('')
+    setNuevaImagenUrl('')
+    setNuevasImagenes([])
+    setNuevaDesc('')
+    setNuevoPrecio('')
+    setNuevaCategoria(null)
+    setNuevosIngredientes([])
   }
 
-  const { data, error } = await supabase
-    .from('platos')
-    .insert({
-      nombre: nuevoNombre,
-      emoji: '',
-      descripcion: nuevaDesc,
-      precio: parseFloat(nuevoPrecio),
-      categoria_id: nuevaCategoria,
-      ingredientes: nuevosIngredientes.filter((i) => i.nombre.trim()), 
-      activo: true,
-      imagenes: nuevasImagenes.length > 0
-        ? nuevasImagenes
-        : nuevaImagenUrl
-          ? [nuevaImagenUrl]
-          : [],
-    })
-    .select()
-
-  if (error) {
-    toast('Error: ' + error.message, 'error')
-    return
-  }
-
-  setModalNuevo(false)
-  setNuevoNombre('')
-  setNuevaImagenUrl('')
-  setNuevasImagenes([])
-  setNuevaDesc('')
-  setNuevoPrecio('')
-  setNuevaCategoria(null)
-  setNuevosIngredientes([])
-}
-  
 
   // Envía el plato a cocina — crea un pedido en Supabase
 
 
-    const agregarIngrediente = (lista: 'editar' | 'nuevo') => {
+  const agregarIngrediente = (lista: 'editar' | 'nuevo') => {
     const nuevo: Ingrediente = {
       id: Date.now(),
       nombre: '',
@@ -229,14 +230,14 @@ const crearPlato = async () => {
     valor: string,
     lista: 'editar' | 'nuevo'
   ) => {
-        if (lista === 'editar') {
+    if (lista === 'editar') {
       setIngredientes(
         ingredientes.map((ing, i) =>
           i === index
             ? {
-                ...ing,
-                [campo]: campo === 'nombre' ? valor : (valor || null),
-              }
+              ...ing,
+              [campo]: campo === 'nombre' ? valor : (valor || null),
+            }
             : ing
         )
       )
@@ -245,9 +246,9 @@ const crearPlato = async () => {
         nuevosIngredientes.map((ing, i) =>
           i === index
             ? {
-                ...ing,
-                [campo]: campo === 'nombre' ? valor : (valor || null),
-              }
+              ...ing,
+              [campo]: campo === 'nombre' ? valor : (valor || null),
+            }
             : ing
         )
       )
@@ -271,7 +272,7 @@ const crearPlato = async () => {
     if (url) actualizarIngrediente(index, 'imagen_url', url, lista)
   }
 
-  
+
   // Activa o desactiva un ingrediente
   const toggleIngrediente = (index: number) => {
     setIngredientes(ingredientes.map((ing, i) =>
@@ -311,26 +312,46 @@ const crearPlato = async () => {
       <ToastContainer />
 
       {/* ── CABECERA ── */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gradient-anim">Menú</h1>
         <button
           onClick={() => setModalNuevo(true)}
           className="bg-[#0d1f3c] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#1e3a6e] transition-colors flex items-center gap-2"
         >
-          + Añadir plato
+          + Añadir producto
         </button>
       </div>
 
+      {/* ── FILTRO POR CATEGORÍA ── */}
+      {categorias.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
+          <button
+            onClick={() => setFiltroCategoria(null)}
+            className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border ${filtroCategoria === null ? 'bg-[#0d1f3c] text-white border-[#0d1f3c]' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'}`}
+          >
+            Todos
+          </button>
+          {categorias.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setFiltroCategoria(cat.id)}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border ${filtroCategoria === cat.id ? 'bg-[#0d1f3c] text-white border-[#0d1f3c]' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'}`}
+            >
+              {cat.emoji} {cat.nombre}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* ── GRID DE PLATOS ── */}
       <div className="grid grid-cols-4 gap-4">
-        {platos.map((plato) => (
+        {(filtroCategoria !== null ? platos.filter(p => Number(p.categoria_id) === Number(filtroCategoria)) : platos).map((plato) => (
           <div
             key={plato.id}
-            className={`rounded-2xl border text-left overflow-hidden transition-all relative ${
-              plato.activo
+            className={`rounded-2xl border text-left overflow-hidden transition-all relative ${plato.activo
                 ? 'bg-white border-slate-200 hover:shadow-md'
                 : 'bg-slate-100 border-slate-300 opacity-70 grayscale'
-            }`}
+              }`}
           >
             {/* Zona clicable → abre editar */}
             <button
@@ -374,11 +395,10 @@ const crearPlato = async () => {
                   .eq('id', plato.id)
               }}
               title={plato.activo ? 'Desactivar' : 'Activar'}
-              className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-md z-10 ${
-                plato.activo
+              className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-md z-10 ${plato.activo
                   ? 'bg-white hover:bg-red-50'
                   : 'bg-green-500 hover:bg-green-600 text-white'
-              }`}
+                }`}
             >
               {plato.activo ? '🚫' : '✅'}
             </button>
@@ -415,154 +435,165 @@ const crearPlato = async () => {
 
             {/* Cuerpo modal — scrollable, dos columnas */}
             <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-2 gap-0">
+              <div className="grid grid-cols-2 gap-0">
 
-              {/* Columna izquierda — campos editables */}
-              <div className="p-6 border-r border-slate-200 flex flex-col gap-4">
-                <p className="text-white text-sm font-medium">Editar plato</p>
+                {/* Columna izquierda — campos editables */}
+                <div className="p-6 border-r border-slate-200 flex flex-col gap-4">
+                  <p className="text-white text-sm font-medium">Editar producto</p>
 
-                <div>
-                  <label className="text-slate-400 text-xs block mb-1">Nombre</label>
-                  <input
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-slate-400 text-xs block mb-1">Descripción</label>
-                  <textarea
-                    value={descripcion}
-                    onChange={(e) => setDescripcion(e.target.value)}
-                    rows={3}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors resize-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-slate-400 text-xs block mb-1">Categoría</label>
-                  <select
-                    value={categoriaEditar ?? ''}
-                    onChange={(e) => setCategoriaEditar(e.target.value ? Number(e.target.value) : null)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors"
-                  >
-                    <option value="">Selecciona una categoría</option>
-                    {categorias.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-slate-400 text-xs block mb-1">Precio (€)</label>
-                  <input
-                    value={precio}
-                    onChange={(e) => setPrecio(e.target.value)}
-                    type="number"
-                    step="0.01"
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors"
-                  />
-                </div>
-
-
-                
-                <div>
-                  <label className="text-slate-400 text-xs block mb-1">Imágenes del plato</label>
-
-                  {imagenesEditar.length > 0 && (
-                    <div className="flex gap-2 flex-wrap mb-2">
-                      {imagenesEditar.map((url, i) => (
-                        <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden">
-                          <img src={url} alt="" className="w-full h-full object-cover" />
-                          <button
-                            type="button"
-                            onClick={() => setImagenesEditar(imagenesEditar.filter((_, idx) => idx !== i))}
-                            className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 rounded-bl"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 transition-colors">
-                    <span className="text-slate-400 text-xs">+ Añadir foto</span>
+                  <div>
+                    <label className="text-slate-400 text-xs block mb-1">Nombre</label>
                     <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0]
-                        if (file) {
-                          const url = await subirImagen(file)
-                          if (url) setImagenesEditar(prev => [...prev, url])
-                        }
-                      }}
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors"
                     />
-                  </label>
-                  {subiendoImagen && <p className="text-xs text-gray-400 mt-1">Subiendo...</p>}
-                </div>
-              </div>
+                  </div>
 
-              {/* Columna derecha — ingredientes */}
-              {/* Columna derecha — ingredientes (empleado) */}
-              <div className="p-6 flex flex-col gap-3 max-h-[420px] overflow-y-auto">
-                <div className="flex items-center justify-between">
-                  <p className="text-white text-sm font-medium">Ingredientes</p>
-                  <button
-                    type="button"
-                    onClick={() => agregarIngrediente('editar')}
-                    className="text-xs px-2 py-1 rounded-lg border border-slate-200 hover:bg-slate-50"
-                  >
-                    + Añadir
-                  </button>
-                </div>
+                  <div>
+                    <label className="text-slate-400 text-xs block mb-1">Descripción</label>
+                    <textarea
+                      value={descripcion}
+                      onChange={(e) => setDescripcion(e.target.value)}
+                      rows={3}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors resize-none"
+                    />
+                  </div>
 
-                {ingredientes.length === 0 ? (
-                  <p className="text-slate-400 text-xs">Pulsa + para añadir ingredientes</p>
-                ) : (
-                  ingredientes.map((ing, index) => (
-                    <div key={ing.id ?? index} className="border border-slate-200 rounded-xl p-3 flex flex-col gap-2">
-                      <input
-                        value={ing.nombre ?? ''}
-                        onChange={(e) => actualizarIngrediente(index, 'nombre', e.target.value, 'editar')}
-                        placeholder="Nombre del ingrediente"
-                        className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs"
-                      />
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        {ing.imagen_url ? (
-                          <img src={ing.imagen_url} alt="" className="w-10 h-10 rounded object-cover" />
-                        ) : (
-                          <span className="w-10 h-10 rounded bg-slate-100 flex items-center justify-center text-[10px] text-slate-400">
-                            Foto
-                          </span>
-                        )}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="text-xs"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0]
-                            if (file) subirImagenIngrediente(index, file, 'editar')
-                          }}
-                        />
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => quitarIngrediente(index, 'editar')}
-                        className="text-xs text-red-500 self-end"
-                      >
-                        Quitar
-                      </button>
+                  <div>
+                    <label className="text-slate-400 text-xs block mb-1">Categoría</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {categorias.map((cat) => {
+                        const activa = Number(categoriaEditar) === Number(cat.id)
+                        return (
+                          <button
+                            key={cat.id}
+                            type="button"
+                            onClick={() => setCategoriaEditar(activa ? null : cat.id)}
+                            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all border"
+                            style={activa
+                              ? { background: '#0d1f3c', color: '#fff', borderColor: '#1e3a6e' }
+                              : { background: 'transparent', color: '#94a3b8', borderColor: '#e2e8f0' }}
+                          >
+                            <span>{cat.emoji}</span>
+                            <span>{cat.nombre}</span>
+                            {activa && <span className="ml-auto text-blue-300 text-xs">✓</span>}
+                          </button>
+                        )
+                      })}
                     </div>
-                  ))
-                )}
+                    {!categoriaEditar && (
+                      <p className="text-xs text-amber-500 mt-1.5">⚠ Selecciona una categoría</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 text-xs block mb-1">Precio (€)</label>
+                    <input
+                      value={precio}
+                      onChange={(e) => setPrecio(e.target.value)}
+                      type="number"
+                      step="0.01"
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors"
+                    />
+                  </div>
+
+
+
+                  <div>
+                    <label className="text-slate-400 text-xs block mb-1">Imágenes del plato</label>
+
+                    {imagenesEditar.length > 0 && (
+                      <div className="flex gap-2 flex-wrap mb-2">
+                        {imagenesEditar.map((url, i) => (
+                          <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden">
+                            <img src={url} alt="" className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => setImagenesEditar(imagenesEditar.filter((_, idx) => idx !== i))}
+                              className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 rounded-bl"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 transition-colors">
+                      <span className="text-slate-400 text-xs">+ Añadir foto</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            const url = await subirImagen(file)
+                            if (url) setImagenesEditar(prev => [...prev, url])
+                          }
+                        }}
+                      />
+                    </label>
+                    {subiendoImagen && <p className="text-xs text-gray-400 mt-1">Subiendo...</p>}
+                  </div>
+                </div>
+
+                {/* Columna derecha — ingredientes */}
+                {/* Columna derecha — ingredientes (empleado) */}
+                <div className="p-6 flex flex-col gap-3 max-h-[420px] overflow-y-auto">
+                  <div className="flex items-center justify-between">
+                    <p className="text-white text-sm font-medium">Ingredientes</p>
+                    <button
+                      type="button"
+                      onClick={() => agregarIngrediente('editar')}
+                      className="text-xs px-2 py-1 rounded-lg border border-slate-200 hover:bg-slate-50"
+                    >
+                      + Añadir
+                    </button>
+                  </div>
+
+                  {ingredientes.length === 0 ? (
+                    <p className="text-slate-400 text-xs">Pulsa + para añadir ingredientes</p>
+                  ) : (
+                    ingredientes.map((ing, index) => (
+                      <div key={ing.id ?? index} className="border border-slate-200 rounded-xl p-3 flex flex-col gap-2">
+                        <input
+                          value={ing.nombre ?? ''}
+                          onChange={(e) => actualizarIngrediente(index, 'nombre', e.target.value, 'editar')}
+                          placeholder="Nombre del ingrediente"
+                          className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs"
+                        />
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          {ing.imagen_url ? (
+                            <img src={ing.imagen_url} alt="" className="w-10 h-10 rounded object-cover" />
+                          ) : (
+                            <span className="w-10 h-10 rounded bg-slate-100 flex items-center justify-center text-[10px] text-slate-400">
+                              Foto
+                            </span>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="text-xs"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (file) subirImagenIngrediente(index, file, 'editar')
+                            }}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => quitarIngrediente(index, 'editar')}
+                          className="text-xs text-red-500 self-end"
+                        >
+                          Quitar
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-            </div>
 
             </div>{/* cierre scroll wrapper */}
 
@@ -586,11 +617,10 @@ const crearPlato = async () => {
               <button
                 onClick={toggleActivoPlato}
                 title={platoSeleccionado.activo ? 'Desactivar plato' : 'Activar plato'}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  platoSeleccionado.activo
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${platoSeleccionado.activo
                     ? 'border border-slate-200 text-slate-500 hover:bg-red-50 hover:border-red-200'
                     : 'border border-green-300 bg-green-50 text-green-700 hover:bg-green-100'
-                }`}
+                  }`}
               >
                 {platoSeleccionado.activo ? '🚫' : '✅'}
               </button>
@@ -620,7 +650,7 @@ const crearPlato = async () => {
           >
             <div className="text-center mb-6">
               <p className="text-4xl mb-3">🗑️</p>
-              <h3 className="text-white font-medium text-base mb-2">¿Eliminar plato?</h3>
+              <h3 className="text-white font-medium text-base mb-2">¿Eliminar producto?</h3>
               <p className="text-slate-400 text-sm">
                 Vas a eliminar <strong>{platoSeleccionado?.nombre}</strong> de la base de datos. Esta acción no se puede deshacer.
               </p>
@@ -659,7 +689,7 @@ const crearPlato = async () => {
           >
             {/* Cabecera — fija */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
-              <h2 className="text-white font-medium">Nuevo plato</h2>
+              <h2 className="text-white font-medium">Nuevo producto</h2>
               <button
                 onClick={() => setModalNuevo(false)}
                 className="text-slate-400 hover:text-white text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
@@ -714,7 +744,7 @@ const crearPlato = async () => {
                 <input
                   value={nuevoNombre}
                   onChange={(e) => setNuevoNombre(e.target.value)}
-                  placeholder="Nombre del plato"
+                  placeholder="Nombre del producto"
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition-colors"
                 />
               </div>
@@ -723,7 +753,7 @@ const crearPlato = async () => {
                 <textarea
                   value={nuevaDesc}
                   onChange={(e) => setNuevaDesc(e.target.value)}
-                  placeholder="Descripción del plato"
+                  placeholder="Descripción del producto"
                   rows={3}
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition-colors resize-none"
                 />
@@ -732,21 +762,32 @@ const crearPlato = async () => {
 
               <div>
                 <label className="text-slate-400 text-xs block mb-1">Categoría</label>
-                <select
-                  value={nuevaCategoria ?? ''}
-                  onChange={(e) => setNuevaCategoria(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-400 transition-colors"
-                >
-                  <option value="">Sin categoría</option>
-                  {categorias.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.nombre}
-                    </option>
-                  ))}
-                </select>
+                <div className="grid grid-cols-2 gap-2">
+                  {categorias.map((cat) => {
+                    const activa = Number(nuevaCategoria) === Number(cat.id)
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setNuevaCategoria(activa ? null : cat.id)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all border"
+                        style={activa
+                          ? { background: '#0d1f3c', color: '#fff', borderColor: '#1e3a6e' }
+                          : { background: 'transparent', color: '#94a3b8', borderColor: '#e2e8f0' }}
+                      >
+                        <span>{cat.emoji}</span>
+                        <span>{cat.nombre}</span>
+                        {activa && <span className="ml-auto text-blue-300 text-xs">✓</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+                {!nuevaCategoria && (
+                  <p className="text-xs text-amber-500 mt-1.5">⚠ Selecciona una categoría</p>
+                )}
               </div>
 
-                            <div>
+              <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-slate-400 text-xs">Ingredientes</label>
                   <button

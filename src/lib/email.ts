@@ -156,6 +156,67 @@ export async function enviarConfirmacionReserva(reserva: {
   return { ok: true }
 }
 
+/* ─── Email 3: Código de recuperación de contraseña ────────────────────── */
+export async function enviarCodigoRecuperacion(datos: {
+  email: string
+  codigo: string
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('[email] RESEND_API_KEY no configurada — email omitido')
+    return { ok: false, error: 'No API key' }
+  }
+
+  const contenido = `
+    <h2 style="margin:0 0 8px;color:#0a2010;font-size:20px;font-weight:700;">
+      🔐 Código de recuperación
+    </h2>
+    <p style="margin:0 0 20px;color:#3d6a4a;font-size:15px;line-height:1.6;">
+      Hemos recibido una solicitud para restablecer la contraseña de tu cuenta.
+      Usa el siguiente código para continuar:
+    </p>
+
+    <table width="100%" cellpadding="0" cellspacing="0"
+      style="background:#f0faf4;border:1px solid #c8e6d0;border-radius:12px;margin-bottom:24px;">
+      <tr>
+        <td style="padding:28px;text-align:center;">
+          <p style="margin:0 0 8px;color:#5a9a6a;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Tu código</p>
+          <p style="margin:0;color:#0a2010;font-size:36px;font-weight:800;letter-spacing:10px;">${datos.codigo}</p>
+        </td>
+      </tr>
+    </table>
+
+    <table width="100%" cellpadding="0" cellspacing="0"
+      style="background:#fff8e6;border:1px solid #f0d080;border-radius:10px;margin-bottom:24px;">
+      <tr>
+        <td style="padding:16px 20px;">
+          <p style="margin:0;color:#7a5000;font-size:13px;line-height:1.6;">
+            ⚠️ <strong>Importante:</strong> Este código es válido durante
+            <strong>10 minutos</strong>. Si no has solicitado este cambio,
+            ignora este correo.
+          </p>
+        </td>
+      </tr>
+    </table>
+
+    <p style="margin:0;color:#0a2010;font-size:14px;font-weight:600;">
+      — El equipo del Restaurante Lempira
+    </p>
+  `
+
+  const { error } = await getResend().emails.send({
+    from: getFrom(),
+    to:   datos.email,
+    subject: '🔐 Código de recuperación — Restaurante Lempira',
+    html: wrapEmail(contenido),
+  })
+
+  if (error) {
+    console.error('[email] Error al enviar código de recuperación:', error)
+    return { ok: false, error }
+  }
+  return { ok: true }
+}
+
 /* ─── Email 2: Autorespuesta de formulario de contacto ──────────────────── */
 export async function enviarAutorespuestaContacto(datos: {
   nombre: string

@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { useToast } from '@/hooks/useToast'
 import { Toast } from '@/components/cliente/Toast'
+import { useToast } from '@/hooks/useToast'
+import { supabase } from '@/lib/supabase'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 
 function CarruselImagenes({ imagenes, nombre, emoji }: { imagenes: string[]; nombre: string; emoji?: string }) {
   const [indice, setIndice] = useState(0)
@@ -46,7 +46,9 @@ function CarruselImagenes({ imagenes, nombre, emoji }: { imagenes: string[]; nom
   )
 }
 
-export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaNoActivada }: { 
+type Categoria = { id: number; nombre: string; emoji: string; orden: number }
+
+export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaNoActivada }: {
   tokenActivo: string | null
   mesaActiva: number | null
   sesionActiva: string | null
@@ -59,19 +61,20 @@ export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaN
   const [ingredientesSeleccionados, setIngredientesSeleccionados] = useState<any[]>([])
   const [notasPedido, setNotasPedido] = useState('')
   const [cargando, setCargando] = useState(true)
+  const [categorias, setCategorias] = useState<Categoria[]>([])
+  const [categoriaActiva, setCategoriaActiva] = useState<number | null>(null)
 
   const { toasts, showToast, removeToast } = useToast()
 
-  // 👇 AÑADE ESTO después de los otros useState
   const [mesaEstado, setMesaEstado] = useState<string | null>(null)
   const [misPedidos, setMisPedidos] = useState<any[]>([])
   const [totalGastado, setTotalGastado] = useState(0)
 
-  // Cargar platos desde Supabase
+  // Cargar platos y categorías desde Supabase
   useEffect(() => {
     cargarPlatos()
+    cargarCategorias()
 
-    // Escucha cambios en tiempo real
     const canal = supabase
       .channel('platos-cliente')
       .on('postgres_changes', {
@@ -85,7 +88,7 @@ export default function PanelMenu({ tokenActivo, mesaActiva, sesionActiva, mesaN
   }, [])
 
   // Consultar estado de la mesa en Supabase
-useEffect(() => {
+  useEffect(() => {
     if (mesaActiva) {
       supabase
         .from('mesas')
@@ -95,40 +98,48 @@ useEffect(() => {
         .then(({ data }) => setMesaEstado(data?.estado || null))
     } else {
       setMesaEstado(null)
+    }
+  }, [mesaActiva])
+
+  // Realtime: pedidos de la sesión activa
+  useEffect(() => {
+    if (!sesionActiva) return
+    const canal = supabase
+      .channel(`mis-pedidos-${sesionActiva}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => {
+        cargarMisPedidos()
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(canal) }
+  }, [sesionActiva, mesaActiva])
+
+  // Realtime: estado de la mesa (ocupada / libre)
+  useEffect(() => {
+    if (!mesaActiva) return
+    const canal = supabase
+      .channel(`mesa-estado-${mesaActiva}`)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'mesas',
+        filter: `numero=eq.${mesaActiva}`,
+      }, (payload) => {
+        const m = payload.new as { estado?: string }
+        if (m.estado) setMesaEstado(m.estado)
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(canal) }
+  }, [mesaActiva])
+
+  const cargarCategorias = async () => {
+    const { data } = await supabase
+      .from('categorias')
+      .select('*')
+      .order('orden', { ascending: true })
+    if (data) setCategorias(data)
   }
-}, [mesaActiva])
 
-// Realtime: pedidos de la sesión activa
-useEffect(() => {
-  if (!sesionActiva) return
-  const canal = supabase
-    .channel(`mis-pedidos-${sesionActiva}`)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => {
-      cargarMisPedidos()
-    })
-    .subscribe()
-  return () => { supabase.removeChannel(canal) }
-}, [sesionActiva, mesaActiva])
-
-// Realtime: estado de la mesa (ocupada / libre)
-useEffect(() => {
-  if (!mesaActiva) return
-  const canal = supabase
-    .channel(`mesa-estado-${mesaActiva}`)
-    .on('postgres_changes', {
-      event: 'UPDATE',
-      schema: 'public',
-      table: 'mesas',
-      filter: `numero=eq.${mesaActiva}`,
-    }, (payload) => {
-      const m = payload.new as { estado?: string }
-      if (m.estado) setMesaEstado(m.estado)
-    })
-    .subscribe()
-  return () => { supabase.removeChannel(canal) }
-}, [mesaActiva])
-
-const cargarPlatos = async () => {
+  const cargarPlatos = async () => {
     setCargando(true)
     try {
       const { data, error } = await supabase
@@ -136,11 +147,10 @@ const cargarPlatos = async () => {
         .select('*')
         .eq('activo', true)
         .order('id', { ascending: true })
-      
-      if (!error && data && data.length > 0) {
+
+      if (!error && data) {
         setPlatos(data)
       } else {
-        // Datos de respaldo por si la BD está vacía
         setPlatos([])
       }
     } catch (error) {
@@ -150,36 +160,36 @@ const cargarPlatos = async () => {
     }
   }
 
-// 👇 AÑADE ESTO después de cargarPlatos
-const cargarMisPedidos = async () => {
-  if (!sesionActiva) return
+  // 👇 AÑADE ESTO después de cargarPlatos
+  const cargarMisPedidos = async () => {
+    if (!sesionActiva) return
 
-  const { data } = await supabase
-    .from('pedidos')
-    .select('*')
-    .eq('sesion_id', sesionActiva)
-    .order('creado_en', { ascending: false })
+    const { data } = await supabase
+      .from('pedidos')
+      .select('*')
+      .eq('sesion_id', sesionActiva)
+      .order('creado_en', { ascending: false })
 
-  if (data) {
-    setMisPedidos(data)
-    const total = data
-      .filter((p: any) => p.estado !== 'cancelado')
-      .reduce((sum: number, p: any) => sum + (p.precio || 0), 0)
-    setTotalGastado(total)
+    if (data) {
+      setMisPedidos(data)
+      const total = data
+        .filter((p: any) => p.estado !== 'cancelado')
+        .reduce((sum: number, p: any) => sum + (p.precio || 0), 0)
+      setTotalGastado(total)
+    }
   }
-}
 
-// Cargar pedidos cuando cambia la mesa o se envía un pedido
-useEffect(() => {
-  if (sesionActiva) cargarMisPedidos()
-}, [sesionActiva, carrito.length])
+  // Cargar pedidos cuando cambia la mesa o se envía un pedido
+  useEffect(() => {
+    if (sesionActiva) cargarMisPedidos()
+  }, [sesionActiva, carrito.length])
 
-const abrirModal = (plato: any) => {
-  setPlatoSeleccionado(plato)
-  setIngredientesSeleccionados([...(plato?.ingredientes || [])])
-  setNotasPedido('')
-  setModalAbierto(true)
-}
+  const abrirModal = (plato: any) => {
+    setPlatoSeleccionado(plato)
+    setIngredientesSeleccionados([...(plato?.ingredientes || [])])
+    setNotasPedido('')
+    setModalAbierto(true)
+  }
 
   const toggleIngrediente = (id: number) => {
     setIngredientesSeleccionados(ingredientesSeleccionados.map(ing =>
@@ -190,21 +200,21 @@ const abrirModal = (plato: any) => {
 
 
 
-const enviarPedido = async () => {
-  // 📱 Caso 1: No escaneó QR
-  if (!tokenActivo) {
-    setModalAbierto(false)
-    showToast('📱 Escanea el código QR de tu mesa para hacer pedidos', 'error')
-    return
-  }
+  const enviarPedido = async () => {
+    // 📱 Caso 1: No escaneó QR
+    if (!tokenActivo) {
+      setModalAbierto(false)
+      showToast('📱 Escanea el código QR de tu mesa para hacer pedidos', 'error')
+      return
+    }
 
-  if (!mesaActiva || mesaEstado !== 'ocupada') {
-    setModalAbierto(false)
-    showToast('⏳ Solicita al camarero que active tu mesa', 'error')
-    return
-  }
+    if (!mesaActiva || mesaEstado !== 'ocupada') {
+      setModalAbierto(false)
+      showToast('⏳ Solicita al camarero que active tu mesa', 'error')
+      return
+    }
 
-  if (!platoSeleccionado) return
+    if (!platoSeleccionado) return
 
     const nuevoPedido = {
       plato_id: platoSeleccionado.id,
@@ -217,7 +227,7 @@ const enviarPedido = async () => {
       notas: notasPedido.trim() || null,
       creado_en: new Date().toISOString()
     }
-    
+
     try {
       const { error } = await supabase.from('pedidos').insert([nuevoPedido])
       if (error) {
@@ -225,17 +235,17 @@ const enviarPedido = async () => {
         showToast('❌ Error al enviar el pedido: ' + error.message, 'error')
         return
       }
-      
+
       setCarrito([...carrito, { ...nuevoPedido, id: Date.now() }])
       showToast(`✅ ${platoSeleccionado.nombre} enviado a cocina!`, 'success')
       setModalAbierto(false)
     } catch (err) {
       console.error('Error inesperado:', err)
-       showToast('❌ Error de conexión', 'error')
+      showToast('❌ Error de conexión', 'error')
     }
   }
-  
-  
+
+
 
   if (cargando) {
     return (
@@ -296,7 +306,7 @@ const enviarPedido = async () => {
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
                         <p className="text-xs" style={{ color: '#5a9a6a' }}>
-                          {new Date(pedido.creado_en).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}
+                          {new Date(pedido.creado_en).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                         </p>
                         {cancelado && (
                           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
@@ -332,15 +342,51 @@ const enviarPedido = async () => {
 
 
 
-      {/* Grid de platos */}
-      <div className="flex items-center gap-3 mb-6">
+      {/* Título + pestañas de categorías */}
+      <div className="flex items-center gap-3 mb-4">
         <h2 className="text-xl font-bold text-gradient-anim">Nuestro Menú</h2>
-        <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: 'rgba(212,160,64,0.15)', color: '#b8692a' }}>
-          {platos.length} platos
-        </span>
       </div>
+
+      {categorias.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
+          <button
+            onClick={() => setCategoriaActiva(null)}
+            className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
+            style={categoriaActiva === null
+              ? { background: 'linear-gradient(135deg,#d4a040,#c47a28)', color: '#0a1a08', boxShadow: '0 4px 12px rgba(212,160,64,0.35)' }
+              : { background: 'rgba(212,160,64,0.12)', color: '#d4a040', border: '1px solid rgba(212,160,64,0.25)' }}
+          >
+            🍽️ Todos
+          </button>
+          {categorias.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setCategoriaActiva(cat.id)}
+              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
+              style={categoriaActiva === cat.id
+                ? { background: 'linear-gradient(135deg,#d4a040,#c47a28)', color: '#0a1a08', boxShadow: '0 4px 12px rgba(212,160,64,0.35)' }
+                : { background: 'rgba(212,160,64,0.12)', color: '#d4a040', border: '1px solid rgba(212,160,64,0.25)' }}
+            >
+              {cat.emoji} {cat.nombre}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Grid de platos */}
+      {(() => {
+        const platosFiltrados = categoriaActiva !== null
+          ? platos.filter(p => Number(p.categoria_id) === Number(categoriaActiva))
+          : platos
+        return (
+          <>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: 'rgba(212,160,64,0.15)', color: '#b8692a' }}>
+                {platosFiltrados.length} {platosFiltrados.length === 1 ? 'producto' : 'productos'}
+              </span>
+            </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {platos.map((plato, i) => (
+        {platosFiltrados.map((plato, i) => (
           <div
             key={plato.id}
             onClick={() => abrirModal(plato)}
@@ -395,7 +441,7 @@ const enviarPedido = async () => {
               <div className="mt-3 flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide" style={{ color: '#d4a040' }}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
-                    <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   Personalizar
                 </span>
@@ -404,7 +450,7 @@ const enviarPedido = async () => {
                   onMouseEnter={e => (e.currentTarget.style.background = '#b8692a')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'rgba(212,160,64,0.2)')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 transition-colors" style={{ color: '#d4a040' }}>
-                    <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               </div>
@@ -412,6 +458,9 @@ const enviarPedido = async () => {
           </div>
         ))}
       </div>
+          </>
+        )
+      })()}
 
       {/* MODAL DE PERSONALIZACIÓN */}
       {modalAbierto && platoSeleccionado && (
