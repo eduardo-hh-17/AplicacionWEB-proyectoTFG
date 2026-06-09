@@ -139,3 +139,23 @@ export function franjasMediaHora(desde: string, hasta: string): string[] {
 /** Calendario: filas 12:00 … 23:00 (fin exclusivo 24 = última franja reservable) */
 export const HORA_CALENDARIO_INICIO = HORA_RESTAURANTE_INICIO
 export const HORA_CALENDARIO_FIN_EXCLUSIVO = HORA_RESTAURANTE_FIN
+
+/**
+ * Formatea un timestamp de Supabase (UTC) a la hora/fecha LOCAL del navegador.
+ * Supabase a veces devuelve "2026-06-09T08:19:00" sin sufijo de zona horaria.
+ * Si no tiene 'Z' ni offset explícito, añadimos 'Z' para forzar parseo UTC
+ * y que toLocaleTimeString convierta correctamente a la hora local del usuario.
+ */
+export function formatTimestampLocal(iso: string): { fecha: string; hora: string } {
+  if (!iso) return { fecha: '—', hora: '—' }
+  const isoUTC =
+    iso.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(iso)
+      ? iso
+      : iso.replace(' ', 'T') + 'Z'
+  const d = new Date(isoUTC)
+  if (isNaN(d.getTime())) return { fecha: '—', hora: '—' }
+  return {
+    fecha: d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+    hora:  d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+  }
+}

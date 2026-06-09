@@ -153,9 +153,9 @@ export default function PanelReservas() {
   const durInfo = useMemo(() => {
     if (!horaEntrada || !horaSalida) return { dur: 0, ok: false, msg: '' }
     const dur = parseH(horaSalida) - parseH(horaEntrada)
-    if (dur <= 0) return { dur, ok: false, msg: 'La hora de salida debe ser posterior.' }
-    if (dur < 1)  return { dur, ok: false, msg: 'Duración mínima: 1 hora.' }
-    if (dur > 3)  return { dur, ok: false, msg: 'Duración máxima: 3 horas.' }
+    if (dur <= 0)  return { dur, ok: false, msg: 'La hora de salida debe ser posterior.' }
+    if (dur < 0.5) return { dur, ok: false, msg: 'Duración mínima: 30 minutos.' }
+    if (dur > 3)   return { dur, ok: false, msg: 'Duración máxima: 3 horas.' }
     return { dur, ok: true, msg: '' }
   }, [horaEntrada, horaSalida])
 
@@ -181,7 +181,23 @@ export default function PanelReservas() {
   /* ── Submit ── */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!nombre||!telefono||!fecha||!horaEntrada||!horaSalida||!durInfo.ok) return
+
+    if (!nombre.trim()) {
+      showToast('⚠️ El nombre es obligatorio', 'error'); return
+    }
+    if (!telefono.trim()) {
+      showToast('⚠️ El teléfono es obligatorio', 'error'); return
+    }
+    if (!fecha) {
+      showToast('⚠️ Selecciona una fecha para la reserva', 'error'); return
+    }
+    if (!horaEntrada || !horaSalida) {
+      showToast('⚠️ Indica la hora de llegada y salida', 'error'); return
+    }
+    if (!durInfo.ok) {
+      showToast(`⚠️ ${durInfo.msg}`, 'error'); return
+    }
+
     setEnviando(true)
     await supabase.from('reservas').insert({
       nombre:nombre.trim(), apellido:apellido.trim(),

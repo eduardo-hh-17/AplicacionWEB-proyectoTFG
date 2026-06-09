@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import ToastContainer, { useAdminToast } from '@/components/ui/Toast'
+import { formatTimestampLocal } from '@/lib/horario'
 
 type Factura = {
   id: number
@@ -84,13 +85,7 @@ export default function Facturas() {
     .filter(f => estadoOf(f) === 'pagada')
     .reduce((s, f) => s + (f.total || 0), 0)
 
-  const formatFecha = (iso: string) => {
-    const d = new Date(iso)
-    return {
-      fecha: d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
-      hora:  d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-    }
-  }
+  const formatFecha = formatTimestampLocal
 
   const estadoPedidoCfg = (estado: string) => {
     if (estado === 'entregado') return { color: '#86efac', label: 'Entregado' }
@@ -217,9 +212,14 @@ export default function Facturas() {
                           style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}>
                           {cfg.label}
                         </span>
-                        {f.tiempo_minutos > 0 && (
-                          <span className="text-xs" style={{ color: '#475569' }}>{f.tiempo_minutos} min</span>
-                        )}
+                        {f.tiempo_minutos > 0 && (() => {
+                          const h = Math.floor(f.tiempo_minutos / 60)
+                          const m = f.tiempo_minutos % 60
+                          const label = h > 0
+                            ? (m > 0 ? `${h}h ${m}min` : `${h}h`)
+                            : `${m}min`
+                          return <span className="text-xs" style={{ color: '#475569' }}>⏱ {label}</span>
+                        })()}
                       </div>
                     </div>
 
@@ -252,7 +252,11 @@ export default function Facturas() {
                         (f.pedidos || []).map((p: any, i: number) => {
                           const pc = estadoPedidoCfg(p.estado)
                           const ph = p.creado_en
-                            ? new Date(p.creado_en).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                            ? (() => {
+                                const iso = p.creado_en
+                                const d2 = new Date(iso.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(iso) ? iso : iso + 'Z')
+                                return d2.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                              })()
                             : '—'
                           return (
                             <div key={i}

@@ -23,8 +23,22 @@ export default function Login() {
 
   // ─────────────────────────────────────────────
   const iniciarSesion = async () => {
-    setCargando(true)
     setError('')
+
+    if (!email.trim()) {
+      setError('Introduce tu correo electrónico')
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('El correo no tiene un formato válido')
+      return
+    }
+    if (!password) {
+      setError('Introduce tu contraseña')
+      return
+    }
+
+    setCargando(true)
 
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
 

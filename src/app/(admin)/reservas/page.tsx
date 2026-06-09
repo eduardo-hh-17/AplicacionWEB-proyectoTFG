@@ -196,9 +196,34 @@ export default function AdminReservas() {
     setModal(true)
   }
   const guardar = async () => {
-    if (!form.nombre.trim() || !form.fecha || !form.hora_entrada || !form.hora_salida) return
+    // ── Campos obligatorios
+    if (!form.nombre.trim()) {
+      toast('⚠️ El nombre es obligatorio', 'error'); return
+    }
+    if (!form.fecha) {
+      toast('⚠️ Debes seleccionar una fecha', 'error'); return
+    }
+    if (!form.hora_entrada || !form.hora_salida) {
+      toast('⚠️ Debes indicar hora de llegada y salida', 'error'); return
+    }
+
+    // ── Validación de horario
     const duracion = parseH(form.hora_salida) - parseH(form.hora_entrada)
-    if (duracion < 0.5 || duracion > 5) return
+    if (duracion <= 0) {
+      toast('⚠️ La hora de salida debe ser posterior a la de llegada', 'error'); return
+    }
+    if (duracion < 0.5) {
+      toast('⚠️ La reserva debe durar al menos 30 minutos', 'error'); return
+    }
+    if (duracion > 5) {
+      toast('⚠️ La reserva no puede superar las 5 horas', 'error'); return
+    }
+
+    // ── Personas válidas
+    if (!form.personas || form.personas < 1) {
+      toast('⚠️ Indica el número de personas (mínimo 1)', 'error'); return
+    }
+
     setGuardando(true)
     const p = { nombre:form.nombre.trim(), apellido:form.apellido.trim(),
       email:form.email.trim()||null, telefono:form.telefono.trim()||null,
@@ -215,9 +240,13 @@ export default function AdminReservas() {
     // Email de confirmación si el estado es 'confirmada' y hay email
     if (p.estado === 'confirmada' && p.email) {
       try {
+        const { data: { session } } = await supabase.auth.getSession()
         const res = await fetch('/api/email/reserva', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.access_token ?? ''}`,
+          },
           body: JSON.stringify({ ...p, apellido: p.apellido ?? '' }),
         })
         if (res.ok) {
@@ -230,7 +259,12 @@ export default function AdminReservas() {
       }
     }
 
-    setGuardando(false); setModal(false); cargar()
+    setGuardando(false)
+    setModal(false)
+    cargar()
+    if (!p.estado || p.estado !== 'confirmada' || !p.email) {
+      toast(editando ? '✅ Reserva actualizada' : '✅ Reserva creada', 'success')
+    }
   }
 
   /* ── Refresca datos cada vez que se abre el modal ── */
@@ -296,9 +330,13 @@ export default function AdminReservas() {
 
       if (r?.email) {
         try {
+          const { data: { session } } = await supabase.auth.getSession()
           const res = await fetch('/api/email/reserva', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session?.access_token ?? ''}`,
+            },
             body: JSON.stringify(r),
           })
           if (res.ok) {

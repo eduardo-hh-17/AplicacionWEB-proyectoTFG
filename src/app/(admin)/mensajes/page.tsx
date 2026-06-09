@@ -123,8 +123,11 @@ export default function MensajesPage() {
     if (!m.leido) marcarLeido(m.id)
   }
 
+  const parseUTC = (iso: string) =>
+    new Date(iso.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(iso) ? iso : iso.replace(' ', 'T') + 'Z')
+
   const formatFecha = (iso: string) => {
-    const d = new Date(iso)
+    const d = parseUTC(iso)
     const hoy = new Date()
     const mismodia = d.toDateString() === hoy.toDateString()
     const ayer = new Date(hoy); ayer.setDate(hoy.getDate() - 1)
@@ -134,7 +137,7 @@ export default function MensajesPage() {
   }
 
   const formatFechaCompleta = (iso: string) =>
-    new Date(iso).toLocaleString('es-ES', {
+    parseUTC(iso).toLocaleString('es-ES', {
       weekday: 'long', year: 'numeric', month: 'long',
       day: 'numeric', hour: '2-digit', minute: '2-digit',
     })

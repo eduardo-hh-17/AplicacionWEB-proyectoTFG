@@ -770,7 +770,8 @@ export default function Pedidos() {
                 ) : (
                   pedidosMesa.map((p: any) => {
                     const cancelado = p.estado === 'cancelado'
-                    const hora = new Date(p.creado_en).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                    const _d = new Date(p.creado_en?.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(p.creado_en ?? '') ? p.creado_en : (p.creado_en ?? '') + 'Z')
+                    const hora = _d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
                     return (
                       <div key={p.id}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
