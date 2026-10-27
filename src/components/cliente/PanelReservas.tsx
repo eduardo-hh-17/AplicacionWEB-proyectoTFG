@@ -181,7 +181,7 @@ export default function PanelReservas() {
   /* ── Submit ── */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
+    
     if (!nombre.trim()) {
       showToast('⚠️ El nombre es obligatorio', 'error'); return
     }
