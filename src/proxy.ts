@@ -11,19 +11,17 @@ const RUTAS_PROTEGIDAS = [
   '/reservas',
 ]
 
-export async function middleware(request: NextRequest) {
+// CAMBIADO: Ahora la función se llama proxy en lugar de middleware
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const esProtegida = RUTAS_PROTEGIDAS.some(r => pathname.startsWith(r))
 
-  // 1. Creamos una respuesta base
   let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   })
 
-  // 2. Inicializamos el cliente de Supabase específico para Middleware
-  // Esto refresca automáticamente el token si ha expirado (¡Crucial para seguridad!)
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -45,11 +43,9 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // 3. Obtenemos el usuario real de la sesión (Forma segura y oficial)
   const { data: { user } } = await supabase.auth.getUser()
   const tieneSesion = !!user
 
-  // 4. Lógica de Redirección (Tu lógica original mejorada)
   if (esProtegida && !tieneSesion) {
     const url = new URL('/login', request.url)
     url.searchParams.set('from', pathname) 
@@ -63,7 +59,6 @@ export async function middleware(request: NextRequest) {
   return response
 }
 
-// Configuración nativa que Next.js SÍ va a leer
 export const config = {
   matcher: [
     '/dashboard/:path*',
