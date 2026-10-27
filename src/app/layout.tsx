@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,8 +36,15 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col" style={{ fontFamily: 'var(--font-inter), sans-serif' }}>
+        
+        {/* COMPONENTE DE ADSENSE OPTIMIZADO CON TU ID REAL */}
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1312947847865141"
+          crossOrigin="anonymous">
+        </script>
+
         {children}
       </body>
     </html>
   );
 }
+

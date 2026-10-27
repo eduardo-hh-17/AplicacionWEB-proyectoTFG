@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: 'https://restaurantelempira.xyz',
+      url: 'https://www.restaurantelempira.xyz',
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1.0,
